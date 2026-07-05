@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="image converter, png to jpg converter, jpg to png converter, webp to png converter, png to webp converter, image format converter online, convert image online free, bmp converter, ico converter, tiff converter, batch image converter, convert multiple images at once, free image converter no upload limit"/>
+<meta name="description" content="Convert images between PNG, JPG, WEBP, BMP, ICO, and TIFF formats for free, right in your browser. Batch convert multiple files and download as a ZIP. No uploads, fully private."/>
+<link rel="canonical" href="https://abhaylab.fun/image-converter/"/>
+<meta property="og:title" content="Free Online Image Converter — PNG, JPG, WEBP, ICO, BMP, TIFF | Abhay Lab"/>
+<meta property="og:description" content="Convert images between PNG, JPG, WEBP, BMP, ICO, and TIFF formats for free, right in your browser. Batch convert multiple files and download as a ZIP. No uploads, fully private."/>
+<meta property="og:url" content="https://abhaylab.fun/image-converter/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Online Image Converter — PNG, JPG, WEBP, ICO, BMP, TIFF | Abhay Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;
+  --phosphor:#5dffb0;--phosphor-dim:#2d6b4f;
+  --amber:#ffb454;--text:#d8e6df;--text-dim:#6c8579;
+  --red:#ff6a8a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:36px 36px;opacity:0;animation:fadeIn .6s ease forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:linear-gradient(180deg,transparent 0%,rgba(93,255,176,.03) 50%,transparent 100%);
+  background-size:100% 6px;animation:scan 9s linear infinite;mix-blend-mode:screen}
+@keyframes scan{from{background-position-y:0}to{background-position-y:1000px}}
+::selection{background:var(--phosphor-dim);color:#fff}
+
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:32px;flex-wrap:wrap;gap:10px}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--phosphor);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.brand .dot{width:7px;height:7px;border-radius:50%;background:var(--phosphor);box-shadow:0 0 8px var(--phosphor),0 0 16px var(--phosphor);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.readout{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.readout span{color:var(--phosphor)}
+
+.hero{margin-bottom:32px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;opacity:0;animation:rise .6s ease forwards .1s}
+h1{font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.05;letter-spacing:-.02em;color:#f3fbf7;opacity:0;animation:rise .6s ease forwards .2s}
+h1 span{color:var(--phosphor)}
+.sub{margin-top:12px;color:var(--text-dim);font-size:15px;max-width:560px;line-height:1.6;opacity:0;animation:rise .6s ease forwards .3s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.rail{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;opacity:0;animation:rise .6s ease forwards .35s}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;color:var(--text-dim);border:1px solid var(--line);border-radius:20px;padding:5px 12px 5px 9px;display:inline-flex;align-items:center;gap:6px;text-transform:uppercase}
+.tag::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--text-dim)}
+.tag.out{color:var(--phosphor);border-color:var(--phosphor-dim)}
+.tag.out::before{background:var(--phosphor)}
+
+/* CARD (shared with dropzone / controls panel) */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px;position:relative}
+.card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);pointer-events:none}
+.card-title-row{display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor);padding:14px 18px 0}
+.card-title-row .dot2{width:5px;height:5px;border-radius:50%;background:var(--phosphor);flex-shrink:0}
+
+.stage{margin-top:36px;opacity:0;animation:rise .6s ease forwards .4s}
+
+/* DROPZONE */
+.dropzone-outer{padding:18px}
+.dropzone{border:1px dashed var(--line);border-radius:10px;padding:52px 24px;text-align:center;cursor:pointer;transition:border-color .18s ease,background .18s ease;position:relative}
+.dropzone:hover,.dropzone.drag{border-color:var(--phosphor);background:rgba(93,255,176,.04)}
+.dropzone .corner{position:absolute;width:14px;height:14px;border-color:var(--phosphor-dim)}
+.dropzone .corner.tl{top:8px;left:8px;border-top:2px solid;border-left:2px solid}
+.dropzone .corner.tr{top:8px;right:8px;border-top:2px solid;border-right:2px solid}
+.dropzone .corner.bl{bottom:8px;left:8px;border-bottom:2px solid;border-left:2px solid}
+.dropzone .corner.br{bottom:8px;right:8px;border-bottom:2px solid;border-right:2px solid}
+.dropzone .icon{width:42px;height:42px;margin:0 auto 16px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.dropzone .icon svg{width:19px;height:19px;stroke:var(--text-dim)}
+.dropzone .title{font-weight:600;font-size:16px;margin-bottom:6px;color:#f3fbf7}
+.dropzone .subtext{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.04em}
+.dropzone .subtext .mono{color:var(--phosphor-dim)}
+input[type=file]{display:none}
+
+/* CONTROLS PANEL */
+.controls-inner{display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:16px 18px}
+.controls-inner.show{display:flex}
+.controls-left{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.field-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+select{width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:7px;padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+select:focus{outline:none;border-color:var(--phosphor-dim);box-shadow:0 0 0 3px rgba(93,255,176,.08)}
+input[type=range]{width:120px;accent-color:var(--phosphor)}
+.qty-out{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--phosphor)}
+
+.btn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:9px 15px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;transition:all .18s ease;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--phosphor);color:var(--phosphor);background:rgba(93,255,176,.06);transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn.primary{background:var(--phosphor);border-color:var(--phosphor);color:#06120c;font-weight:600}
+.btn.primary:hover:not(:disabled){background:#74ffc0;color:#06120c}
+.btn.small{padding:7px 11px;font-size:10.5px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.btn.danger:hover:not(:disabled){border-color:var(--red);color:var(--red);background:rgba(255,106,138,.08)}
+
+/* FILE LIST */
+.files{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.file-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.file-card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent)}
+.file-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.thumb{width:48px;height:48px;border-radius:8px;flex-shrink:0;overflow:hidden;
+  background:repeating-conic-gradient(#141a17 0% 25%,#0d1210 0% 50%) 50%/10px 10px;
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.file-info{flex:1;min-width:140px}
+.file-name{font-size:13px;font-weight:500;color:#f3fbf7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);margin-top:4px;letter-spacing:.03em}
+.file-meta .ok{color:var(--phosphor)}
+.file-meta .err{color:var(--red)}
+
+.chain{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.chain-tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:6px 10px;border-radius:6px;background:#070b09;border:1px solid var(--line);color:var(--text-dim);text-transform:uppercase}
+.chain-arrow{color:var(--phosphor-dim);font-size:13px}
+.chain select{width:auto;padding:6px 8px;font-size:10.5px}
+
+.file-actions{display:flex;gap:6px;flex-shrink:0;margin-left:auto}
+
+.progress-wrap{margin-top:12px;display:none}
+.progress-wrap.show{display:block}
+.progress-label{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.progress-label span.pct{color:var(--phosphor)}
+.progress-track{height:5px;border-radius:4px;background:#070b09;border:1px solid var(--line);overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--phosphor-dim),var(--phosphor));transition:width .18s ease;box-shadow:0 0 6px var(--phosphor)}
+
+/* SUPPORT SECTION */
+.support{margin-top:52px;padding-top:22px;border-top:1px solid var(--line)}
+.support h2{font-weight:600;font-size:17px;color:#f3fbf7;margin-bottom:6px}
+.support p{font-size:13px;color:var(--text-dim);max-width:64ch;line-height:1.6;margin-bottom:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.support-block{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--panel)}
+.support-block h3{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--phosphor);margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:4px 9px;border-radius:5px;background:#070b09;border:1px solid var(--line);color:var(--text-dim)}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.08em}
+
+@media(max-width:640px){
+  .grid2{grid-template-columns:1fr}
+  .chain{width:100%;order:3;margin-top:8px}
+  .file-actions{margin-left:0}
+}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/" class="active" aria-current="page">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="scanline"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span> Abhay Lab</div>
+    <div class="readout">MODULE // IMG-CONVERT&nbsp;&nbsp;STATUS: <span>READY</span></div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Client-side format converter</div>
+    <h1>Route any image to <span>any format.</span></h1>
+    <p class="sub">Drop files in, pick an output tag per file, hit convert. Everything decodes and re-encodes right here in your browser — nothing is uploaded anywhere.</p>
+    <div class="rail" id="formatRail"></div>
+  </div>
+
+  <div class="stage">
+    <div class="card">
+      <div class="dropzone-outer">
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop image files to convert">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          </div>
+          <div class="title">Drop images here, or click to browse</div>
+          <div class="subtext">reads <span class="mono">PNG · JPG · WEBP · GIF · BMP · SVG · ICO · AVIF · TIFF</span></div>
+        </div>
+        <input type="file" id="fileInput" multiple accept="image/*,.tif,.tiff,.ico">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="controls-inner" id="controls">
+        <div class="controls-left">
+          <div>
+            <span class="field-label">Output for all</span>
+            <select id="bulkFormat" style="width:auto">
+              <option value="">— choose —</option>
+              <option value="png">PNG</option>
+              <option value="jpeg">JPG</option>
+              <option value="webp">WEBP</option>
+              <option value="bmp">BMP</option>
+              <option value="ico">ICO</option>
+              <option value="tiff">TIFF</option>
+            </select>
+          </div>
+          <div>
+            <span class="field-label">Quality <span class="qty-out" id="qtyOut">90%</span></span>
+            <input type="range" id="qtySlider" min="10" max="100" value="90" step="1">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn danger" id="clearAll">Clear all</button>
+          <button class="btn" id="convertAll">Convert all</button>
+          <button class="btn primary" id="downloadZip" disabled>Download .zip</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="files" id="fileList"></div>
+  </div>
+
+  <section class="support">
+    <h2>What's under the hood</h2>
+    <p>Decoding leans on the browser's native image support plus a small library for TIFF; encoding for BMP and ICO is hand-rolled. Nothing here needs a server, an account, or a file size limit beyond your own RAM.</p>
+    <div class="grid2">
+      <div class="support-block">
+        <h3>Reads in</h3>
+        <div class="chips">
+          <span class="chip">.png</span><span class="chip">.jpg / .jpeg</span><span class="chip">.webp</span>
+          <span class="chip">.gif</span><span class="chip">.bmp</span><span class="chip">.svg</span>
+          <span class="chip">.ico</span><span class="chip">.avif*</span><span class="chip">.tif / .tiff</span>
+        </div>
+      </div>
+      <div class="support-block">
+        <h3>Writes out</h3>
+        <div class="chips">
+          <span class="chip">.png</span><span class="chip">.jpg</span><span class="chip">.webp</span>
+          <span class="chip">.bmp</span><span class="chip">.ico</span><span class="chip">.tiff</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">*AVIF decoding depends on your browser's built-in support. Animated GIFs and multi-page TIFFs convert from their first frame only.</p>
+  </section>
+
+  <footer>
+    <span>ABHAY LAB — RUNS ENTIRELY CLIENT-SIDE</span>
+    <span>CLOSE THE TAB AND IT'S GONE</span>
+  </footer>
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/UTIF/3.1.0/UTIF.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var OUT_FORMATS = [
+    {v:"png",  label:"PNG"},
+    {v:"jpeg", label:"JPG"},
+    {v:"webp", label:"WEBP"},
+    {v:"bmp",  label:"BMP"},
+    {v:"ico",  label:"ICO"},
+    {v:"tiff", label:"TIFF"}
+  ];
+  var IN_FORMATS = ["PNG","JPG","WEBP","GIF","BMP","SVG","ICO","AVIF","TIFF"];
+
+  var railEl = document.getElementById('formatRail');
+  IN_FORMATS.forEach(function(f){
+    var s = document.createElement('span');
+    s.className = 'tag';
+    s.textContent = f;
+    railEl.appendChild(s);
+  });
+  OUT_FORMATS.forEach(function(f){
+    var s = document.createElement('span');
+    s.className = 'tag out';
+    s.textContent = f.label;
+    railEl.appendChild(s);
+  });
+
+  var dropzone = document.getElementById('dropzone');
+  var fileInput = document.getElementById('fileInput');
+  var fileListEl = document.getElementById('fileList');
+  var controlsEl = document.getElementById('controls');
+  var bulkFormat = document.getElementById('bulkFormat');
+  var qtySlider = document.getElementById('qtySlider');
+  var qtyOut = document.getElementById('qtyOut');
+  var convertAllBtn = document.getElementById('convertAll');
+  var downloadZipBtn = document.getElementById('downloadZip');
+  var clearAllBtn = document.getElementById('clearAll');
+
+  var items = [];
+  var idCounter = 0;
+
+  qtySlider.addEventListener('input', function(){
+    qtyOut.textContent = qtySlider.value + '%';
+  });
+
+  dropzone.addEventListener('click', function(){ fileInput.click(); });
+  dropzone.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInput.click(); }
+  });
+  ['dragenter','dragover'].forEach(function(evt){
+    dropzone.addEventListener(evt, function(e){ e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(function(evt){
+    dropzone.addEventListener(evt, function(e){ e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', function(e){ handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', function(e){ handleFiles(e.target.files); fileInput.value = ''; });
+
+  function extOf(name){
+    var m = /\.([a-z0-9]+)$/i.exec(name);
+    return m ? m[1].toLowerCase() : '';
+  }
+  function niceInExt(ext){
+    if(ext === 'jpg' || ext === 'jpeg') return 'JPG';
+    if(ext === 'tif' || ext === 'tiff') return 'TIFF';
+    return ext.toUpperCase();
+  }
+  function extFor(fmt){ return fmt === 'jpeg' ? 'jpg' : fmt; }
+  var DOWNLOAD_BASE = 'abhaylabimageconvert';
+  var nameCounts = {};
+  function nextDownloadName(ext){
+    var n = (nameCounts[ext] = (nameCounts[ext] || 0) + 1);
+    return n === 1 ? (DOWNLOAD_BASE + '.' + ext) : (DOWNLOAD_BASE + '-' + n + '.' + ext);
+  }
+  function formatBytes(n){
+    if(n < 1024) return n + ' B';
+    if(n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+    return (n/(1024*1024)).toFixed(2) + ' MB';
+  }
+
+  function handleFiles(fileArr){
+    var files = Array.prototype.slice.call(fileArr);
+    if(!files.length) return;
+    files.forEach(function(file){
+      var id = 'f' + (++idCounter);
+      var item = {
+        id: id, file: file, name: file.name, inExt: extOf(file.name),
+        canvas: null, error: null, outFormat: 'png',
+        blob: null, outName: null,
+        converting: false, progress: 0, progressTimer: null
+      };
+      items.push(item);
+      renderCard(item);
+      loadImage(item);
+    });
+    controlsEl.classList.add('show');
+  }
+
+  function loadImage(item){
+    var ext = item.inExt;
+    if(ext === 'tif' || ext === 'tiff'){
+      var reader = new FileReader();
+      reader.onload = function(){
+        try{
+          var buf = reader.result;
+          var ifds = UTIF.decode(buf);
+          UTIF.decodeImage(buf, ifds[0]);
+          var rgba = UTIF.toRGBA8(ifds[0]);
+          var w = ifds[0].width, h = ifds[0].height;
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          var imgData = ctx.createImageData(w, h);
+          imgData.data.set(rgba);
+          ctx.putImageData(imgData, 0, 0);
+          item.canvas = canvas;
+          updateCard(item);
+        }catch(err){
+          item.error = 'could not decode TIFF';
+          updateCard(item);
+        }
+      };
+      reader.onerror = function(){ item.error = 'could not read file'; updateCard(item); };
+      reader.readAsArrayBuffer(item.file);
+      return;
+    }
+
+    var url = URL.createObjectURL(item.file);
+    var img = new Image();
+    img.onload = function(){
+      var canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      item.canvas = canvas;
+      URL.revokeObjectURL(url);
+      updateCard(item);
+    };
+    img.onerror = function(){
+      item.error = 'browser could not decode this file';
+      URL.revokeObjectURL(url);
+      updateCard(item);
+    };
+    img.src = url;
+  }
+
+  function renderCard(item){
+    var card = document.createElement('div');
+    card.className = 'file-card';
+    card.id = 'card-' + item.id;
+
+    var row = document.createElement('div');
+    row.className = 'file-row';
+
+    var thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    row.appendChild(thumb);
+
+    var info = document.createElement('div');
+    info.className = 'file-info';
+    var nameEl = document.createElement('div');
+    nameEl.className = 'file-name';
+    nameEl.textContent = item.name;
+    var metaEl = document.createElement('div');
+    metaEl.className = 'file-meta';
+    metaEl.textContent = 'reading…';
+    info.appendChild(nameEl);
+    info.appendChild(metaEl);
+    row.appendChild(info);
+
+    var chain = document.createElement('div');
+    chain.className = 'chain';
+    var inTag = document.createElement('span');
+    inTag.className = 'chain-tag';
+    inTag.textContent = niceInExt(item.inExt) || '?';
+    var arrow = document.createElement('span');
+    arrow.className = 'chain-arrow';
+    arrow.textContent = '\u2192';
+    var sel = document.createElement('select');
+    sel.setAttribute('aria-label', 'Output format for ' + item.name);
+    OUT_FORMATS.forEach(function(f){
+      var o = document.createElement('option');
+      o.value = f.v; o.textContent = f.label;
+      if(f.v === item.outFormat) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function(){
+      item.outFormat = sel.value;
+      item.blob = null;
+      updateCard(item);
+    });
+    chain.appendChild(inTag);
+    chain.appendChild(arrow);
+    chain.appendChild(sel);
+    row.appendChild(chain);
+
+    var actions = document.createElement('div');
+    actions.className = 'file-actions';
+
+    var convertBtn = document.createElement('button');
+    convertBtn.className = 'btn small';
+    convertBtn.textContent = 'Convert';
+    convertBtn.addEventListener('click', function(){ convertItem(item); });
+
+    var downloadBtn = document.createElement('button');
+    downloadBtn.className = 'btn small primary';
+    downloadBtn.textContent = 'Download';
+    downloadBtn.disabled = true;
+    downloadBtn.addEventListener('click', function(){ downloadItem(item); });
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn small danger';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', function(){
+      items = items.filter(function(i){ return i.id !== item.id; });
+      card.remove();
+      if(items.length === 0) controlsEl.classList.remove('show');
+    });
+
+    actions.appendChild(convertBtn);
+    actions.appendChild(downloadBtn);
+    actions.appendChild(removeBtn);
+    row.appendChild(actions);
+
+    card.appendChild(row);
+
+    var progWrap = document.createElement('div');
+    progWrap.className = 'progress-wrap';
+    progWrap.innerHTML =
+      '<div class="progress-label"><span>Converting</span><span class="pct">0%</span></div>' +
+      '<div class="progress-track"><div class="progress-fill"></div></div>';
+    card.appendChild(progWrap);
+
+    fileListEl.appendChild(card);
+  }
+
+  function updateCard(item){
+    var card = document.getElementById('card-' + item.id);
+    if(!card) return;
+    var thumb = card.querySelector('.thumb');
+    var meta = card.querySelector('.file-meta');
+    var convertBtn = card.querySelectorAll('.file-actions .btn')[0];
+    var downloadBtn = card.querySelectorAll('.file-actions .btn')[1];
+    var progWrap = card.querySelector('.progress-wrap');
+    var progFill = card.querySelector('.progress-fill');
+    var progPct = card.querySelector('.progress-label .pct');
+
+    if(item.error){
+      meta.innerHTML = '<span class="err">' + item.error + '</span>';
+      convertBtn.disabled = true;
+      return;
+    }
+
+    if(item.converting){
+      progWrap.classList.add('show');
+      progFill.style.width = item.progress + '%';
+      progPct.textContent = item.progress + '%';
+      convertBtn.disabled = true;
+      downloadBtn.disabled = true;
+      meta.textContent = (item.canvas ? item.canvas.width + '\u00d7' + item.canvas.height + ' \u00b7 ' : '') + 'converting…';
+      return;
+    }
+
+    progWrap.classList.remove('show');
+    convertBtn.disabled = !item.canvas;
+
+    if(item.canvas){
+      thumb.innerHTML = '';
+      var previewImg = document.createElement('img');
+      previewImg.src = item.canvas.toDataURL('image/png');
+      thumb.appendChild(previewImg);
+      var dims = item.canvas.width + '\u00d7' + item.canvas.height;
+      if(item.blob){
+        meta.innerHTML = dims + ' \u00b7 <span class="ok">ready \u00b7 ' + formatBytes(item.blob.size) + '</span>';
+        downloadBtn.disabled = false;
+      } else {
+        meta.textContent = dims + ' \u00b7 decoded, not converted yet';
+        downloadBtn.disabled = true;
+      }
+    }
+  }
+
+  function canvasToBMPBlob(canvas){
+    var w = canvas.width, h = canvas.height;
+    var ctx = canvas.getContext('2d');
+    var data = ctx.getImageData(0,0,w,h).data;
+    var rowSize = Math.floor((24*w+31)/32)*4;
+    var pixelArraySize = rowSize*h;
+    var fileSize = 54 + pixelArraySize;
+    var buffer = new ArrayBuffer(fileSize);
+    var view = new DataView(buffer);
+    view.setUint8(0,0x42); view.setUint8(1,0x4D);
+    view.setUint32(2, fileSize, true);
+    view.setUint32(6,0,true);
+    view.setUint32(10,54,true);
+    view.setUint32(14,40,true);
+    view.setInt32(18,w,true);
+    view.setInt32(22,h,true);
+    view.setUint16(26,1,true);
+    view.setUint16(28,24,true);
+    view.setUint32(30,0,true);
+    view.setUint32(34,pixelArraySize,true);
+    view.setInt32(38,2835,true);
+    view.setInt32(42,2835,true);
+    view.setUint32(46,0,true);
+    view.setUint32(50,0,true);
+    var offset = 54;
+    for(var y=h-1;y>=0;y--){
+      for(var x=0;x<w;x++){
+        var i=(y*w+x)*4;
+        view.setUint8(offset++, data[i+2]);
+        view.setUint8(offset++, data[i+1]);
+        view.setUint8(offset++, data[i]);
+      }
+      var pad = rowSize - w*3;
+      for(var p=0;p<pad;p++) view.setUint8(offset++, 0);
+    }
+    return new Blob([buffer], {type:'image/bmp'});
+  }
+
+  function canvasToICOBlob(canvas){
+    return new Promise(function(resolve){
+      var icoCanvas = canvas;
+      if(canvas.width > 256 || canvas.height > 256){
+        var scale = Math.min(256/canvas.width, 256/canvas.height);
+        var tmp = document.createElement('canvas');
+        tmp.width = Math.max(1, Math.round(canvas.width*scale));
+        tmp.height = Math.max(1, Math.round(canvas.height*scale));
+        tmp.getContext('2d').drawImage(canvas, 0, 0, tmp.width, tmp.height);
+        icoCanvas = tmp;
+      }
+      icoCanvas.toBlob(function(pngBlob){
+        pngBlob.arrayBuffer().then(function(ab){
+          var pngBuf = new Uint8Array(ab);
+          var w = icoCanvas.width === 256 ? 0 : icoCanvas.width;
+          var h = icoCanvas.height === 256 ? 0 : icoCanvas.height;
+          var header = new ArrayBuffer(6);
+          var hv = new DataView(header);
+          hv.setUint16(0,0,true);
+          hv.setUint16(2,1,true);
+          hv.setUint16(4,1,true);
+          var entry = new ArrayBuffer(16);
+          var ev = new DataView(entry);
+          ev.setUint8(0,w);
+          ev.setUint8(1,h);
+          ev.setUint8(2,0);
+          ev.setUint8(3,0);
+          ev.setUint16(4,1,true);
+          ev.setUint16(6,32,true);
+          ev.setUint32(8,pngBuf.length,true);
+          ev.setUint32(12,22,true);
+          resolve(new Blob([header, entry, pngBuf], {type:'image/x-icon'}));
+        });
+      }, 'image/png');
+    });
+  }
+
+  function canvasToTIFFBlob(canvas){
+    var ctx = canvas.getContext('2d');
+    var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    var tiffBuf = UTIF.encodeImage(imgData.data, canvas.width, canvas.height);
+    return new Blob([tiffBuf], {type:'image/tiff'});
+  }
+
+  function doEncode(item){
+    var fmt = item.outFormat;
+    var quality = parseInt(qtySlider.value, 10) / 100;
+
+    return new Promise(function(resolve){
+      if(fmt === 'png' || fmt === 'jpeg' || fmt === 'webp'){
+        var mime = fmt === 'jpeg' ? 'image/jpeg' : (fmt === 'webp' ? 'image/webp' : 'image/png');
+        var canvasForExport = item.canvas;
+        if(fmt === 'jpeg'){
+          var flat = document.createElement('canvas');
+          flat.width = item.canvas.width; flat.height = item.canvas.height;
+          var fctx = flat.getContext('2d');
+          fctx.fillStyle = '#FFFFFF';
+          fctx.fillRect(0,0,flat.width,flat.height);
+          fctx.drawImage(item.canvas, 0, 0);
+          canvasForExport = flat;
+        }
+        canvasForExport.toBlob(function(blob){
+          item.blob = blob;
+          item.outName = nextDownloadName(extFor(fmt));
+          resolve();
+        }, mime, (fmt === 'png') ? undefined : quality);
+      } else if(fmt === 'bmp'){
+        item.blob = canvasToBMPBlob(item.canvas);
+        item.outName = nextDownloadName('bmp');
+        resolve();
+      } else if(fmt === 'ico'){
+        canvasToICOBlob(item.canvas).then(function(blob){
+          item.blob = blob;
+          item.outName = nextDownloadName('ico');
+          resolve();
+        });
+      } else if(fmt === 'tiff'){
+        item.blob = canvasToTIFFBlob(item.canvas);
+        item.outName = nextDownloadName('tiff');
+        resolve();
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  function convertItem(item){
+    if(!item.canvas || item.converting) return Promise.resolve();
+    item.converting = true;
+    item.progress = 4;
+    item.blob = null;
+    updateCard(item);
+
+    if(item.progressTimer) clearInterval(item.progressTimer);
+    item.progressTimer = setInterval(function(){
+      if(item.progress < 88){
+        item.progress += Math.max(1, Math.round((88 - item.progress) * 0.18));
+        updateCard(item);
+      }
+    }, 80);
+
+    return doEncode(item).then(function(){
+      clearInterval(item.progressTimer);
+      item.progress = 100;
+      updateCard(item);
+      setTimeout(function(){
+        item.converting = false;
+        updateCard(item);
+      }, 260);
+    });
+  }
+
+  function downloadItem(item){
+    if(!item.blob) return;
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(item.blob);
+    a.download = item.outName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  bulkFormat.addEventListener('change', function(){
+    if(!bulkFormat.value) return;
+    items.forEach(function(item){
+      item.outFormat = bulkFormat.value;
+      item.blob = null;
+      var card = document.getElementById('card-' + item.id);
+      if(card){
+        var sel = card.querySelector('.chain select');
+        if(sel) sel.value = bulkFormat.value;
+      }
+      updateCard(item);
+    });
+  });
+
+  convertAllBtn.addEventListener('click', function(){
+    var ready = items.filter(function(i){ return i.canvas && !i.error && !i.converting; });
+    Promise.all(ready.map(convertItem)).then(function(){
+      var anyReady = items.some(function(i){ return i.blob; });
+      downloadZipBtn.disabled = !anyReady;
+    });
+  });
+
+  downloadZipBtn.addEventListener('click', function(){
+    var zip = new JSZip();
+    var ready = items.filter(function(i){ return i.blob; });
+    if(!ready.length) return;
+    ready.forEach(function(item){ zip.file(item.outName, item.blob); });
+    zip.generateAsync({type:'blob'}).then(function(content){
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(content);
+      a.download = 'abhay-lab-converted.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  });
+
+  clearAllBtn.addEventListener('click', function(){
+    items.forEach(function(i){ if(i.progressTimer) clearInterval(i.progressTimer); });
+    items = [];
+    fileListEl.innerHTML = '';
+    controlsEl.classList.remove('show');
+    downloadZipBtn.disabled = true;
+    nameCounts = {};
+  });
+
+})();
+</script>
+</body>
+</html>

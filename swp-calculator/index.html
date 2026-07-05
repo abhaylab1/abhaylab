@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="swp calculator, systematic withdrawal plan calculator, retirement withdrawal calculator, swp planner online, monthly withdrawal calculator, mutual fund withdrawal calculator, how long will my money last calculator"/>
+<meta name="description" content="Plan a Systematic Withdrawal Plan and see how long your investment corpus will last based on withdrawal amount and expected returns. Free and works in any currency."/>
+<link rel="canonical" href="https://abhaylab.fun/swp-calculator/"/>
+<meta property="og:title" content="Free SWP Calculator — Systematic Withdrawal Plan Planner | Abhay Lab"/>
+<meta property="og:description" content="Plan a Systematic Withdrawal Plan and see how long your investment corpus will last based on withdrawal amount and expected returns. Free and works in any currency."/>
+<meta property="og:url" content="https://abhaylab.fun/swp-calculator/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free SWP Calculator — Systematic Withdrawal Plan Planner | Abhay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0d10;--panel:#0f1416;--line:#242a2e;--ph:#818cf8;--ph2:#3a3f7a;--amber:#ffb454;--text:#e3e5ee;--dim:#7c80a0;--red:#ff6a8a;--green:#5dffb0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:900px;margin:0 auto;padding:32px 16px 60px;}
+.brand{font-family:monospace;font-size:12px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(24px,5vw,40px);font-weight:700;letter-spacing:-.02em;color:#f2f2fb;margin-bottom:6px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:14px;margin-bottom:28px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+label{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.field{margin-bottom:18px;}
+select,input[type=number]{width:100%;background:#08090c;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:11px 13px;font-size:14px;}
+select:focus,input:focus{outline:none;border-color:var(--ph);}
+.slider-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.slider-row .val{font-family:monospace;color:var(--ph);font-weight:700;}
+input[type=range]{width:100%;height:5px;background:var(--line);border-radius:4px;outline:none;-webkit-appearance:none;margin-bottom:4px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ph);cursor:pointer;box-shadow:0 0 8px rgba(129,140,248,.6);}
+.result-hero{text-align:center;padding:22px;background:#08090c;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;}
+.result-hero .lbl{font-family:monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.result-hero .num{font-size:2.1rem;font-weight:700;color:var(--ph);font-family:monospace;word-break:break-all;}
+.result-hero.depleted .num{color:var(--red);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-chip{background:#08090c;border:1px solid var(--line);border-radius:10px;padding:14px;}
+.stat-chip .k{font-family:monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+.stat-chip .v{font-size:16px;font-weight:700;margin-top:5px;font-family:monospace;color:var(--text);}
+.chart-wrap{max-width:220px;margin:0 auto 10px;}
+.warn-banner{background:rgba(255,106,138,.1);border:1px solid #5a2030;color:var(--red);padding:12px 16px;border-radius:10px;font-size:12.5px;margin-bottom:16px;display:none;}
+.warn-banner.show{display:block;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;}
+th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);font-family:monospace;}
+th:first-child,td:first-child{text-align:left;}
+th{color:var(--dim);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
+.table-wrap{max-height:320px;overflow-y:auto;margin-top:8px;}
+tr.depleted-row td{color:var(--red);}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/" class="active" aria-current="page">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — SWP Calculator</div>
+  <h1>SWP <span>Calculator</span></h1>
+  <p class="sub">Plan a Systematic Withdrawal Plan in any currency — see how long your corpus lasts, and what's left at the end.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="field">
+        <label>Currency</label>
+        <select id="currency"></select>
+      </div>
+      <div class="field">
+        <label>Total Investment (starting corpus)</label>
+        <input type="number" id="corpus" value="2000000" min="0" step="10000"/>
+      </div>
+      <div class="field">
+        <label>Monthly Withdrawal</label>
+        <input type="number" id="withdrawal" value="15000" min="0" step="500"/>
+      </div>
+      <div class="field">
+        <div class="slider-row"><label style="margin-bottom:0;">Expected Annual Return</label><span class="val" id="rateVal">8%</span></div>
+        <input type="range" id="rateSlider" min="0" max="25" step="0.5" value="8"/>
+      </div>
+      <div class="field">
+        <div class="slider-row"><label style="margin-bottom:0;">Withdrawal Period</label><span class="val" id="tenureVal">15 yrs</span></div>
+        <input type="range" id="tenureSlider" min="1" max="40" value="15"/>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="warn-banner" id="warnBanner"></div>
+      <div class="result-hero" id="resultHero">
+        <div class="lbl" id="resultLbl">Balance at End of Period</div>
+        <div class="num" id="fvOut">—</div>
+      </div>
+      <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+      <div class="stat-grid">
+        <div class="stat-chip"><div class="k">Total Withdrawn</div><div class="v" id="statWithdrawn">—</div></div>
+        <div class="stat-chip"><div class="k">Total Growth Earned</div><div class="v" id="statGrowth">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>Year-by-Year Balance</label>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Year</th><th>Withdrawn (that yr)</th><th>Growth (that yr)</th><th>Balance at year end</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+var CURRENCIES=[['USD','$'],['EUR','€'],['GBP','£'],['INR','₹'],['JPY','¥'],['AUD','A$'],['CAD','C$'],['CHF','CHF'],['CNY','¥'],['SGD','S$'],['AED','د.إ'],['ZAR','R'],['BRL','R$'],['MXN','MX$'],['NZD','NZ$'],['HKD','HK$'],['KRW','₩'],['RUB','₽'],['SEK','kr'],['THB','฿'],['MYR','RM'],['PLN','zł'],['TRY','₺'],['NGN','₦']];
+var curSel=document.getElementById('currency');
+CURRENCIES.forEach(function(c){ var o=document.createElement('option'); o.value=c[1]; o.textContent=c[0]+' ('+c[1]+')'; curSel.appendChild(o); });
+curSel.value='₹';
+
+function fmt(n){
+  var sym=curSel.value;
+  return sym+' '+Math.round(Math.max(0,n)).toLocaleString('en-US');
+}
+
+var chart=null;
+function calc(){
+  document.getElementById('rateVal').textContent=parseFloat(document.getElementById('rateSlider').value).toFixed(1)+'%';
+  document.getElementById('tenureVal').textContent=document.getElementById('tenureSlider').value+' yrs';
+
+  var corpus=parseFloat(document.getElementById('corpus').value)||0;
+  var withdrawal=parseFloat(document.getElementById('withdrawal').value)||0;
+  var annualRate=parseFloat(document.getElementById('rateSlider').value);
+  var years=parseInt(document.getElementById('tenureSlider').value);
+  var monthlyRate=annualRate/12/100;
+
+  var balance=corpus, totalWithdrawn=0, totalGrowth=0, depletedAt=null;
+  var tbody=document.getElementById('tableBody'); tbody.innerHTML='';
+  for(var y=1;y<=years;y++){
+    var yearWithdrawn=0, yearGrowth=0;
+    for(var m=1;m<=12;m++){
+      if(balance<=0){ balance=0; continue; }
+      var growth=balance*monthlyRate;
+      balance+=growth;
+      var actualW=Math.min(withdrawal,balance);
+      balance-=actualW;
+      yearWithdrawn+=actualW; yearGrowth+=growth;
+      if(balance<=0 && depletedAt===null){ depletedAt=y+'y '+m+'m'; }
+    }
+    totalWithdrawn+=yearWithdrawn; totalGrowth+=yearGrowth;
+    var tr=document.createElement('tr');
+    if(balance<=0) tr.className='depleted-row';
+    tr.innerHTML='<td>Year '+y+'</td><td>'+fmt(yearWithdrawn)+'</td><td>'+fmt(yearGrowth)+'</td><td>'+fmt(balance)+'</td>';
+    tbody.appendChild(tr);
+  }
+
+  var hero=document.getElementById('resultHero'), warn=document.getElementById('warnBanner');
+  if(depletedAt){
+    hero.classList.add('depleted');
+    document.getElementById('resultLbl').textContent='Corpus Depleted After';
+    document.getElementById('fvOut').textContent=depletedAt;
+    warn.className='warn-banner show';
+    warn.textContent='⚠ At this withdrawal rate, your investment runs out before the end of the '+years+'-year period. Consider a lower withdrawal amount or a longer time horizon.';
+  } else {
+    hero.classList.remove('depleted');
+    document.getElementById('resultLbl').textContent='Balance at End of Period';
+    document.getElementById('fvOut').textContent=fmt(balance);
+    warn.className='warn-banner';
+  }
+  document.getElementById('statWithdrawn').textContent=fmt(totalWithdrawn);
+  document.getElementById('statGrowth').textContent=fmt(totalGrowth);
+
+  try{
+    if(chart) chart.destroy();
+    chart=new Chart(document.getElementById('pieChart'),{
+      type:'doughnut',
+      data:{labels:['Withdrawn','Remaining Balance'],datasets:[{data:[totalWithdrawn,Math.max(0,balance)],backgroundColor:['#818cf8','#6ee7b7'],borderWidth:0}]},
+      options:{plugins:{legend:{labels:{color:'#e3e5ee',font:{size:11}}}},cutout:'65%'}
+    });
+  }catch(chartErr){
+    console.error('Chart render failed:', chartErr);
+  }
+}
+
+['corpus','withdrawal','rateSlider','tenureSlider'].forEach(function(id){ document.getElementById(id).addEventListener('input',calc); });
+curSel.addEventListener('change',calc);
+calc();
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

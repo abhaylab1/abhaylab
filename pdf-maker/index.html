@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="pdf maker, image to pdf converter, jpg to pdf converter, png to pdf converter, create pdf online free, convert images to pdf free, photo to pdf online, multiple images to one pdf, pdf maker no watermark, pdf creator online free"/>
+<meta name="description" content="Turn your images into a PDF for free. Drag to reposition, rotate, and resize each page, choose page size and orientation, then download your PDF instantly. Runs entirely in your browser."/>
+<link rel="canonical" href="https://abhaylab.fun/pdf-maker/"/>
+<meta property="og:title" content="Free PDF Maker — Convert Images to PDF Online | Abhay Lab"/>
+<meta property="og:description" content="Turn your images into a PDF for free. Drag to reposition, rotate, and resize each page, choose page size and orientation, then download your PDF instantly. Runs entirely in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/pdf-maker/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free PDF Maker — Convert Images to PDF Online | Abhay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;--ph:#5dffb0;--ph2:#2d6b4f;--amber:#ffb454;--text:#d8e6df;--dim:#6c8579;--red:#ff6a8a;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 14px 60px;}
+.brand{font-family:monospace;font-size:11px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(22px,5vw,38px);font-weight:700;letter-spacing:-.02em;color:#f3fbf7;margin-bottom:4px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:13px;margin-bottom:22px;}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+lbl{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.drop-zone{border:2px dashed var(--line);border-radius:10px;padding:26px 20px;text-align:center;cursor:pointer;transition:.2s;position:relative;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--ph);background:rgba(93,255,176,.04);}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+select{width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 12px;font-size:13px;font-family:monospace;}
+select:focus{outline:none;border-color:var(--ph);}
+
+/* PAGE EDITOR */
+.pages-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.page-card{background:#070b09;border:1px solid var(--line);border-radius:10px;overflow:hidden;width:160px;flex-shrink:0;}
+.page-card.dragging{opacity:.4;}
+.page-card.drag-over{border-color:var(--ph);}
+.page-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:grab;background:rgba(93,255,176,.02);}
+.page-header:active{cursor:grabbing;}
+.drag-handle{color:var(--dim);font-size:14px;flex-shrink:0;user-select:none;}
+.page-num{font-family:monospace;font-size:11px;color:var(--ph);flex-shrink:0;}
+.page-name{flex:1;font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.page-actions{display:flex;gap:6px;}
+.pg-btn{background:none;border:1px solid var(--line);border-radius:6px;color:var(--dim);font-size:12px;padding:5px 9px;cursor:pointer;transition:.15s;}
+.pg-btn:hover{border-color:var(--ph);color:var(--ph);}
+.pg-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* Live canvas preview with draggable image */
+.page-preview-wrap{position:relative;background:#000;overflow:hidden;touch-action:none;}
+.page-preview-canvas{width:100%;display:block;cursor:grab;}
+.page-preview-canvas:active{cursor:grabbing;}
+.page-preview-page{position:relative;margin:0 auto;background:#fff;overflow:hidden;box-shadow:0 0 0 1px var(--line);}
+.page-preview-img{position:absolute;cursor:grab;user-select:none;transform-origin:center center;touch-action:none;}
+.page-preview-img:active{cursor:grabbing;}
+.page-preview-page.dragging-img{cursor:grabbing;}
+
+.page-controls{padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+.pc-row{display:flex;align-items:center;gap:8px;flex:1;min-width:min(180px,100%);}
+.pc-row lbl,.pc-row label{margin:0;white-space:nowrap;font-size:10px;color:var(--dim);}
+.pc-row input[type=range]{flex:1;accent-color:var(--ph);}
+.pc-val{font-family:monospace;font-size:11px;color:var(--ph);width:36px;text-align:right;}
+.rotate-btns{display:flex;gap:6px;}
+.rotate-btn{background:none;border:1px solid var(--line);border-radius:6px;color:var(--dim);font-size:14px;padding:6px 10px;cursor:pointer;transition:.15s;}
+.rotate-btn:hover{border-color:var(--ph);color:var(--ph);}
+.hint{font-family:monospace;font-size:10px;color:var(--dim);padding:0 14px 12px;}
+.hint b{color:var(--ph);}
+
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.btn{padding:11px 20px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;font-family:monospace;}
+.btn-primary{background:var(--ph);color:#06120c;}
+.btn-primary:hover:not(:disabled){background:#74ffc0;}
+.btn-secondary{background:transparent;border:1px solid var(--line);color:var(--text);}
+.btn-secondary:hover{border-color:var(--ph);color:var(--ph);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Progress + Download */
+.progress-wrap{display:none;margin-top:14px;}
+.progress-wrap.show{display:block;}
+.progress-label{display:flex;justify-content:space-between;font-family:monospace;font-size:11px;color:var(--dim);margin-bottom:6px;}
+.progress-label .pct{color:var(--ph);}
+.progress-track{height:8px;border-radius:6px;background:#070b09;border:1px solid var(--line);overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ph2),var(--ph));transition:width .15s ease;box-shadow:0 0 8px var(--ph);}
+.download-box{display:none;margin-top:14px;background:rgba(93,255,176,.06);border:1px solid var(--ph2);border-radius:10px;padding:16px;text-align:center;}
+.download-box.show{display:block;animation:popIn .3s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.download-box .check{font-size:1.6rem;margin-bottom:6px;}
+.download-box p{font-family:monospace;font-size:12px;color:var(--dim);margin-bottom:12px;}
+.dl-btn-final{background:var(--ph);color:#06120c;border:none;border-radius:8px;padding:11px 26px;font-size:13px;font-weight:700;cursor:pointer;font-family:monospace;transition:.18s;}
+.dl-btn-final:hover{background:#74ffc0;transform:translateY(-1px);}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/" class="active" aria-current="page">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — PDF Maker</div>
+  <h1>PDF <span>Maker</span></h1>
+  <p class="sub">Drag images to reposition, rotate, resize — everything updates live before you export.</p>
+
+  <div class="panel">
+    <lbl>Add Images</lbl>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/*" multiple/>
+      <div style="font-size:1.8rem;margin-bottom:6px;">📄</div>
+      <div style="font-size:13px;color:var(--dim);"><b style="color:var(--ph);">Click or drag</b> images here — each becomes a page</div>
+    </div>
+    <div class="pages-list" id="pagesList"></div>
+  </div>
+
+  <div class="panel">
+    <lbl>PDF Settings</lbl>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <lbl>Page Size</lbl>
+        <select id="pageSize">
+          <option value="a4">A4 (210×297mm)</option>
+          <option value="a3">A3 (297×420mm)</option>
+          <option value="letter">Letter (8.5×11in)</option>
+          <option value="a5">A5 (148×210mm)</option>
+        </select>
+      </div>
+      <div>
+        <lbl>Orientation</lbl>
+        <select id="orientation">
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="generateBtn" disabled>⚡ Generate PDF</button>
+    <button class="btn btn-secondary" id="clearBtn">✕ Clear All</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label"><span>Building PDF...</span><span class="pct" id="pct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+
+  <div class="download-box" id="downloadBox">
+    <div class="check">✅</div>
+    <p>Your PDF is ready — <span id="pageCountText"></span></p>
+    <button class="dl-btn-final" id="finalDownloadBtn">⬇️ Download PDF</button>
+  </div>
+</div>
+
+<script>
+var pages = [];
+var pdfBlobUrl = null;
+var draggedIdx = null;
+
+var fileInput = document.getElementById('fileInput');
+var dropZone = document.getElementById('dropZone');
+var pagesList = document.getElementById('pagesList');
+var generateBtn = document.getElementById('generateBtn');
+
+fileInput.onchange = function(){ addFiles(Array.from(this.files)); this.value=''; };
+dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.classList.add('drag');});
+dropZone.addEventListener('dragleave',function(){dropZone.classList.remove('drag');});
+dropZone.addEventListener('drop',function(e){
+  e.preventDefault(); dropZone.classList.remove('drag');
+  addFiles(Array.from(e.dataTransfer.files).filter(function(f){return f.type.startsWith('image/');}));
+});
+
+function addFiles(files){
+  files.forEach(function(f){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        pages.push({
+          name:f.name, dataUrl:e.target.result,
+          natW:img.naturalWidth, natH:img.naturalHeight,
+          scale:100, x:50, y:50, rotation:0
+        });
+        renderPages();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function pageDims(){
+  var size = document.getElementById('pageSize').value;
+  var ori = document.getElementById('orientation').value;
+  var sizeMap = {a4:[210,297],a3:[297,420],letter:[215.9,279.4],a5:[148,210]};
+  var d = sizeMap[size]||[210,297];
+  return ori==='landscape' ? [d[1],d[0]] : [d[0],d[1]];
+}
+
+function renderPages(){
+  hideDownload();
+  pagesList.innerHTML='';
+  var dims = pageDims();
+  var pageRatio = dims[1]/dims[0]; // h/w
+
+  pages.forEach(function(pg, i){
+    var card = document.createElement('div');
+    card.className = 'page-card';
+    card.draggable = false;
+    card.dataset.idx = i;
+
+    var previewW = 100; // percentage container
+    var canvasHeight = 190;
+    var canvasWidth = canvasHeight / pageRatio;
+
+    card.innerHTML =
+      '<div class="page-header">'
+      +'<span class="drag-handle">⠿⠿</span>'
+      +'<span class="page-num">PAGE '+(i+1)+'</span>'
+      +'<span class="page-name">'+pg.name+'</span>'
+      +'<div class="page-actions">'
+      +'<button class="pg-btn danger" data-action="del" data-i="'+i+'" title="Delete">✕</button>'
+      +'</div></div>'
+      +'<div class="page-preview-wrap" style="display:flex;justify-content:center;padding:16px;background:#05070d;">'
+      +'  <div class="page-preview-page" data-i="'+i+'" style="width:'+canvasWidth+'px;height:'+canvasHeight+'px;">'
+      +'    <img class="page-preview-img" data-i="'+i+'" src="'+pg.dataUrl+'" draggable="false"/>'
+      +'  </div>'
+      +'</div>'
+      +'<div class="page-controls">'
+      +'<div class="pc-row">'
+      +'<label>Scale</label>'
+      +'<input type="range" min="20" max="200" value="'+pg.scale+'" data-i="'+i+'" data-prop="scale">'
+      +'<span class="pc-val">'+pg.scale+'%</span>'
+      +'</div>'
+      +'<div class="rotate-btns">'
+      +'<button class="rotate-btn" data-action="rotL" data-i="'+i+'" title="Rotate left">⟲</button>'
+      +'<button class="rotate-btn" data-action="rotR" data-i="'+i+'" title="Rotate right">⟳</button>'
+      +'<button class="rotate-btn" data-action="rotReset" data-i="'+i+'" title="Reset rotation">↺</button>'
+      +'</div>'
+      +'</div>';
+    pagesList.appendChild(card);
+
+    updatePreviewTransform(i);
+  });
+
+  // Wire drag-reorder on page-header
+  pagesList.querySelectorAll('.page-card').forEach(function(card){
+    var handle = card.querySelector('.drag-handle');
+    if(handle){
+      handle.addEventListener('mousedown', function(){ card.draggable = true; });
+      handle.addEventListener('touchstart', function(){ card.draggable = true; }, {passive:true});
+    }
+    document.addEventListener('mouseup', function(){ card.draggable = false; });
+    card.addEventListener('dragstart', function(e){
+      draggedIdx = parseInt(card.dataset.idx);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', function(){
+      card.classList.remove('dragging');
+      card.draggable = false;
+      pagesList.querySelectorAll('.page-card').forEach(function(c){c.classList.remove('drag-over');});
+    });
+    card.addEventListener('dragover', function(e){
+      e.preventDefault();
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', function(){ card.classList.remove('drag-over'); });
+    card.addEventListener('drop', function(e){
+      e.preventDefault();
+      var targetIdx = parseInt(card.dataset.idx);
+      if(draggedIdx!==null && draggedIdx!==targetIdx){
+        var moved = pages.splice(draggedIdx,1)[0];
+        pages.splice(targetIdx,0,moved);
+        renderPages();
+      }
+    });
+  });
+
+  // Wire buttons
+  pagesList.querySelectorAll('.pg-btn').forEach(function(btn){
+    btn.onclick = function(){
+      var i=parseInt(btn.dataset.i), a=btn.dataset.action;
+      if(a==='del') pages.splice(i,1);
+      renderPages();
+    };
+  });
+
+  pagesList.querySelectorAll('.rotate-btn').forEach(function(btn){
+    btn.onclick = function(){
+      var i=parseInt(btn.dataset.i), a=btn.dataset.action;
+      if(a==='rotL') pages[i].rotation = (pages[i].rotation - 90 + 360) % 360;
+      else if(a==='rotR') pages[i].rotation = (pages[i].rotation + 90) % 360;
+      else if(a==='rotReset') pages[i].rotation = 0;
+      updatePreviewTransform(i);
+    };
+  });
+
+  pagesList.querySelectorAll('input[type=range]').forEach(function(inp){
+    inp.oninput = function(){
+      var i=parseInt(inp.dataset.i), prop=inp.dataset.prop;
+      pages[i][prop]=parseInt(inp.value);
+      inp.nextElementSibling.textContent=inp.value+'%';
+      updatePreviewTransform(i);
+    };
+  });
+
+  // Wire draggable image positioning
+  pagesList.querySelectorAll('.page-preview-page').forEach(function(pageEl){
+    var i = parseInt(pageEl.dataset.i);
+    var imgEl = pageEl.querySelector('.page-preview-img');
+    var dragging = false, startX, startY, startPctX, startPctY;
+
+    function startDrag(clientX, clientY){
+      dragging = true;
+      startX = clientX; startY = clientY;
+      startPctX = pages[i].x; startPctY = pages[i].y;
+      pageEl.classList.add('dragging-img');
+    }
+    function moveDrag(clientX, clientY){
+      if(!dragging) return;
+      var rect = pageEl.getBoundingClientRect();
+      var dxPct = ((clientX - startX) / rect.width) * 100;
+      var dyPct = ((clientY - startY) / rect.height) * 100;
+      pages[i].x = Math.max(0, Math.min(100, startPctX + dxPct));
+      pages[i].y = Math.max(0, Math.min(100, startPctY + dyPct));
+      updatePreviewTransform(i);
+    }
+    function endDrag(){ dragging=false; pageEl.classList.remove('dragging-img'); }
+
+    imgEl.addEventListener('mousedown', function(e){ e.preventDefault(); startDrag(e.clientX,e.clientY); });
+    document.addEventListener('mousemove', function(e){ moveDrag(e.clientX,e.clientY); });
+    document.addEventListener('mouseup', endDrag);
+
+    imgEl.addEventListener('touchstart', function(e){ var t=e.touches[0]; startDrag(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+    document.addEventListener('touchmove', function(e){ if(dragging){ var t=e.touches[0]; moveDrag(t.clientX,t.clientY); e.preventDefault(); } }, {passive:false});
+    document.addEventListener('touchend', endDrag);
+  });
+
+  generateBtn.disabled = pages.length===0;
+}
+
+function updatePreviewTransform(i){
+  var pageEl = pagesList.querySelector('.page-preview-page[data-i="'+i+'"]');
+  if(!pageEl) return;
+  var imgEl = pageEl.querySelector('.page-preview-img');
+  var pg = pages[i];
+  var pageRect = {w: pageEl.offsetWidth, h: pageEl.offsetHeight};
+
+  // Fit image within page at scale%, maintaining aspect ratio
+  var ratio = pg.natW / pg.natH;
+  var baseW, baseH;
+  if(ratio > pageRect.w/pageRect.h){
+    baseW = pageRect.w * (pg.scale/100);
+    baseH = baseW / ratio;
+  } else {
+    baseH = pageRect.h * (pg.scale/100);
+    baseW = baseH * ratio;
+  }
+
+  imgEl.style.width = baseW+'px';
+  imgEl.style.height = baseH+'px';
+  // pg.x/pg.y are the CENTER point of the image as a % of the page,
+  // so resizing (scale) keeps the image anchored at that same center
+  // instead of shifting position — only dragging moves the center.
+  var left = (pageRect.w * (pg.x/100)) - baseW/2;
+  var top = (pageRect.h * (pg.y/100)) - baseH/2;
+  imgEl.style.left = left+'px';
+  imgEl.style.top = top+'px';
+  imgEl.style.transform = 'rotate('+pg.rotation+'deg)';
+}
+
+document.getElementById('pageSize').onchange = renderPages;
+document.getElementById('orientation').onchange = renderPages;
+document.getElementById('clearBtn').onclick = function(){ pages=[]; renderPages(); };
+
+function hideDownload(){
+  document.getElementById('downloadBox').classList.remove('show');
+  document.getElementById('progressWrap').classList.remove('show');
+}
+
+generateBtn.onclick = function(){
+  if(!pages.length) return;
+  hideDownload();
+  var progressWrap = document.getElementById('progressWrap');
+  var progFill = document.getElementById('progFill');
+  var pctEl = document.getElementById('pct');
+  progressWrap.classList.add('show');
+  generateBtn.disabled = true;
+
+  var progress = 0;
+  var duration = 2200 + Math.random()*1800; // 2.2-4s
+  var startTime = Date.now();
+  var timer = setInterval(function(){
+    var elapsed = Date.now() - startTime;
+    progress = Math.min(96, (elapsed/duration)*100);
+    progFill.style.width = progress+'%';
+    pctEl.textContent = Math.round(progress)+'%';
+  }, 50);
+
+  setTimeout(function(){
+    buildPDF();
+    clearInterval(timer);
+    progFill.style.width = '100%';
+    pctEl.textContent = '100%';
+    setTimeout(function(){
+      progressWrap.classList.remove('show');
+      document.getElementById('downloadBox').classList.add('show');
+      document.getElementById('pageCountText').textContent = pages.length+' page'+(pages.length>1?'s':'')+' · ready to download';
+      generateBtn.disabled = false;
+    }, 300);
+  }, duration);
+};
+
+function buildPDF(){
+  var {jsPDF} = window.jspdf;
+  var size = document.getElementById('pageSize').value;
+  var ori = document.getElementById('orientation').value;
+  var dims = pageDims();
+  var pw = dims[0], ph = dims[1];
+
+  var doc = new jsPDF({orientation:ori,unit:'mm',format:size});
+
+  pages.forEach(function(pg, idx){
+    if(idx>0) doc.addPage(size, ori);
+    var ratio = pg.natW / pg.natH;
+    var baseW, baseH;
+    if(ratio > pw/ph){ baseW = pw*(pg.scale/100); baseH = baseW/ratio; }
+    else { baseH = ph*(pg.scale/100); baseW = baseH*ratio; }
+    var dx = (pw-baseW)*(pg.x/100);
+    var dy = (ph-baseH)*(pg.y/100);
+
+    if(pg.rotation !== 0){
+      // Render rotated image to an offscreen canvas first
+      var img = new Image();
+      img.src = pg.dataUrl;
+      var cvs = document.createElement('canvas');
+      var rad = pg.rotation * Math.PI/180;
+      var absCos = Math.abs(Math.cos(rad)), absSin = Math.abs(Math.sin(rad));
+      var rw = pg.natW*absCos + pg.natH*absSin;
+      var rh = pg.natW*absSin + pg.natH*absCos;
+      cvs.width = rw; cvs.height = rh;
+      var ctx = cvs.getContext('2d');
+      ctx.translate(rw/2, rh/2);
+      ctx.rotate(rad);
+      ctx.drawImage(img, -pg.natW/2, -pg.natH/2);
+      var rotatedData = cvs.toDataURL('image/png');
+
+      var rotRatio = rw/rh;
+      if(rotRatio > pw/ph){ baseW = pw*(pg.scale/100); baseH = baseW/rotRatio; }
+      else { baseH = ph*(pg.scale/100); baseW = baseH*rotRatio; }
+      dx = (pw-baseW)*(pg.x/100);
+      dy = (ph-baseH)*(pg.y/100);
+      doc.addImage(rotatedData,'PNG',dx,dy,baseW,baseH);
+    } else {
+      doc.addImage(pg.dataUrl,'PNG',dx,dy,baseW,baseH);
+    }
+  });
+
+  var blob = doc.output('blob');
+  if(pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+  pdfBlobUrl = URL.createObjectURL(blob);
+}
+
+document.getElementById('finalDownloadBtn').onclick = function(){
+  if(!pdfBlobUrl) return;
+  var a = document.createElement('a');
+  a.href = pdfBlobUrl;
+  a.download = 'abhay-lab-document.pdf';
+  a.click();
+};
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

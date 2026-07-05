@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="graph generator, online chart maker, bar chart generator, line chart maker, pie chart generator, doughnut chart maker, radar chart generator, scatter plot maker, free graph maker, chart.js generator, data visualization tool, create graph online free, chart maker no signup, excel chart alternative online, graph maker for students, download chart as png"/>
+<meta name="description" content="Create bar, line, pie, doughnut, radar, and scatter charts online for free. Type your data, customize colors and styling, and download as PNG or JPG. No signup, runs in your browser."/>
+<link rel="canonical" href="https://abhaylab.fun/graph-generator/"/>
+<meta property="og:title" content="Free Online Graph Generator — Bar, Line, Pie & More | Abhay Lab"/>
+<meta property="og:description" content="Create bar, line, pie, doughnut, radar, and scatter charts online for free. Type your data, customize colors and styling, and download as PNG or JPG. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/graph-generator/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Online Graph Generator — Bar, Line, Pie & More | Abhay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';document.head.appendChild(s);"></script>
+<style>
+  :root{
+    --bg: #0b0f0d;
+    --panel: #0f1512;
+    --line: #1d2b24;
+    --phosphor: #5dffb0;
+    --phosphor-dim: #2d6b4f;
+    --amber: #ffb454;
+    --text: #d8e6df;
+    --text-dim: #6c8579;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html,body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body{
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 36px 36px;
+    background-position: center;
+    opacity: 0;
+    animation: fadeIn .6s ease forwards;
+  }
+
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  .scanline{
+    position: fixed; inset:0; pointer-events:none; z-index: 50;
+    background: linear-gradient(180deg, transparent 0%, rgba(93,255,176,0.03) 50%, transparent 100%);
+    background-size: 100% 6px;
+    animation: scan 9s linear infinite;
+    mix-blend-mode: screen;
+  }
+  @keyframes scan{ from{ background-position-y: 0; } to{ background-position-y: 1000px; } }
+
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+    position: relative;
+  }
+
+  header{
+    display:flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .brand{
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--phosphor);
+    text-transform: uppercase;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand .dot{
+    width:7px;height:7px;border-radius:50%;
+    background: var(--phosphor);
+    box-shadow: 0 0 8px var(--phosphor), 0 0 16px var(--phosphor);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+  .readout{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .hero{ margin-bottom: 40px; }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity:0;
+    animation: rise .6s ease forwards .1s;
+  }
+  h1{
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 54px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #f3fbf7;
+    opacity:0;
+    animation: rise .6s ease forwards .2s;
+  }
+  h1 span{ color: var(--phosphor); }
+  .sub{
+    margin-top: 14px;
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.6;
+    opacity:0;
+    animation: rise .6s ease forwards .3s;
+  }
+  @keyframes rise{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform:none; } }
+
+  .console{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    position: relative;
+    opacity:0;
+    animation: rise .6s ease forwards .4s;
+  }
+  .console::before{
+    content:'';
+    position:absolute; top:-1px; left:18px; right:18px; height:1px;
+    background: linear-gradient(90deg, transparent, var(--phosphor-dim), transparent);
+  }
+
+  @media (max-width: 860px){
+    .console{ grid-template-columns: 1fr; }
+  }
+
+  .controls label{
+    display:block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .controls label:first-child{ margin-top: 0; }
+
+  textarea, select, input[type=text]{
+    width: 100%;
+    background: #070b09;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 44px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  textarea{ min-height: 96px; font-family: var(--mono); font-size: 13px; line-height: 1.6; }
+
+  textarea:focus, select:focus, input:focus{
+    outline: none;
+    border-color: var(--phosphor-dim);
+    box-shadow: 0 0 0 3px rgba(93,255,176,0.08);
+  }
+
+  .hint{
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .rows{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .data-row{
+    display:flex;
+    gap: 8px;
+    align-items:center;
+    opacity:0;
+    transform: translateY(-4px);
+    animation: rowIn .22s ease forwards;
+  }
+  @keyframes rowIn{ to{ opacity:1; transform:none; } }
+  .data-row input{
+    background: #070b09;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 7px;
+    padding: 9px 10px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    transition: border-color .2s, box-shadow .2s;
+    min-height: auto;
+  }
+  .data-row input:focus{
+    outline:none;
+    border-color: var(--phosphor-dim);
+    box-shadow: 0 0 0 3px rgba(93,255,176,0.08);
+  }
+  .data-row .row-label{ flex: 1.3; min-width:0; }
+  .data-row .row-value{ flex: 1; min-width:0; font-family: var(--mono); }
+  .data-row .row-remove{
+    flex: 0 0 auto;
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-dim);
+    cursor:pointer;
+    font-size: 14px;
+    line-height:1;
+    transition: all .15s ease;
+  }
+  .data-row .row-remove:hover{
+    border-color: #ff6a8a;
+    color: #ff6a8a;
+    background: rgba(255,106,138,0.08);
+  }
+
+  .add-row{
+    margin-top: 10px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    padding: 10px;
+    border-radius: 8px;
+    cursor:pointer;
+    transition: all .18s ease;
+    text-transform: uppercase;
+  }
+  .add-row:hover{
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    background: rgba(93,255,176,0.05);
+  }
+
+  /* chart type picker */
+  .type-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .type-btn{
+    background: #070b09;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 6px;
+    cursor:pointer;
+    text-align:center;
+    transition: all .15s ease;
+  }
+  .type-btn svg{ width:22px; height:22px; stroke: var(--text-dim); fill:none; stroke-width:1.6; }
+  .type-btn span{
+    display:block; margin-top:6px;
+    font-family: var(--mono); font-size: 9px; letter-spacing:0.05em;
+    color: var(--text-dim); text-transform:uppercase;
+  }
+  .type-btn:hover{ border-color: var(--phosphor-dim); }
+  .type-btn.active{ border-color: var(--phosphor); background: rgba(93,255,176,0.06); }
+  .type-btn.active svg{ stroke: var(--phosphor); }
+  .type-btn.active span{ color: var(--phosphor); }
+
+  .palette{
+    display:flex; gap:8px; flex-wrap:wrap; margin-top: 4px;
+  }
+  .pal{
+    width:28px; height:28px; border-radius:7px; cursor:pointer;
+    border: 2px solid var(--line);
+    transition: transform .15s, border-color .15s;
+    position:relative;
+  }
+  .pal:hover{ transform: translateY(-2px); }
+  .pal.active{ border-color: var(--phosphor); }
+  .pal.active::after{
+    content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:#08120d; font-weight:700;
+  }
+
+  .stage{
+    display:flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .chart-frame{
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 0 0 1px var(--line), 0 18px 40px -16px rgba(93,255,176,0.18);
+    height: 380px;
+  }
+  .corner{ position:absolute; width:16px; height:16px; border-color: var(--phosphor-dim); }
+  .corner.tl{ top:6px; left:6px; border-top:2px solid; border-left:2px solid; }
+  .corner.tr{ top:6px; right:6px; border-top:2px solid; border-right:2px solid; }
+  .corner.bl{ bottom:6px; left:6px; border-bottom:2px solid; border-left:2px solid; }
+  .corner.br{ bottom:6px; right:6px; border-bottom:2px solid; border-right:2px solid; }
+
+  .meta{
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-align:center;
+  }
+
+  .downloads{
+    display:flex; gap: 8px; margin-top: 16px;
+  }
+  .dl-btn{
+    flex:1;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    padding: 11px 8px;
+    border-radius: 8px;
+    cursor:pointer;
+    transition: all .18s ease;
+    text-transform: uppercase;
+  }
+  .dl-btn:hover{
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    background: rgba(93,255,176,0.06);
+    transform: translateY(-1px);
+  }
+  .dl-btn.primary{
+    background: var(--phosphor);
+    border-color: var(--phosphor);
+    color: #06120c;
+    font-weight: 600;
+  }
+  .dl-btn.primary:hover{ background: #74ffc0; color:#06120c; }
+
+  footer{
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display:flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+
+  /* Advanced Panel */
+  .adv-toggle{
+    margin-top:16px;width:100%;background:transparent;border:1px dashed var(--phosphor-dim);
+    color:var(--phosphor);font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    padding:9px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:.18s;
+  }
+  .adv-toggle:hover{background:rgba(93,255,176,.05);}
+  .adv-panel{display:none;margin-top:12px;background:#070b09;border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .adv-panel.open{display:block;}
+  .adv-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;}
+  .adv-row label{margin:0;flex-shrink:0;}
+  .adv-row input[type=color]{width:36px;height:28px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:#070b09;padding:2px;}
+  .adv-row input[type=range]{flex:1;min-width:80px;accent-color:var(--phosphor);}
+  .adv-row input[type=checkbox]{accent-color:var(--phosphor);width:16px;height:16px;cursor:pointer;}
+  .adv-val{font-family:var(--mono);font-size:11px;color:var(--phosphor);width:36px;text-align:right;}
+  .adv-row select{width:auto;flex:1;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:6px;padding:5px 8px;font-size:12px;min-width:80px;}
+
+  ::selection{ background: var(--phosphor-dim); color: #fff; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/" class="active" aria-current="page">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="scanline"></div>
+<div class="wrap">
+
+  <header>
+    <div class="brand"><span class="dot"></span> Abhay Lab</div>
+    <div class="readout">MODULE // GRAPH-GEN&nbsp;&nbsp;STATUS: <span style="color:var(--phosphor)">READY</span></div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Instrument 05 — Plotter</div>
+    <h1>Turn numbers into<br>a clear <span>signal</span>.</h1>
+    <p class="sub">Type your labels and values. Pick a chart style. The plotter draws it live — nothing leaves your browser.</p>
+  </div>
+
+  <div class="console">
+    <div class="controls">
+      <label>Chart style</label>
+      <div class="type-grid" id="typeGrid">
+        <div class="type-btn active" data-type="bar">
+          <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20V13M22 20V7"/></svg>
+          <span>Bar</span>
+        </div>
+        <div class="type-btn" data-type="line">
+          <svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 9-10"/></svg>
+          <span>Line</span>
+        </div>
+        <div class="type-btn" data-type="area">
+          <svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 9-10v16H3z"/></svg>
+          <span>Area</span>
+        </div>
+        <div class="type-btn" data-type="pie">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l7 4"/></svg>
+          <span>Pie</span>
+        </div>
+        <div class="type-btn" data-type="doughnut">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>Donut</span>
+        </div>
+        <div class="type-btn" data-type="radar">
+          <svg viewBox="0 0 24 24"><path d="M12 2l8 6-3 10H7L4 8z"/></svg>
+          <span>Radar</span>
+        </div>
+        <div class="type-btn" data-type="polarArea">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12L12 3M12 12l7.8 4.5M12 12l-7.8 4.5"/></svg>
+          <span>Polar</span>
+        </div>
+        <div class="type-btn" data-type="scatter">
+          <svg viewBox="0 0 24 24"><circle cx="6" cy="16" r="1.4"/><circle cx="10" cy="9" r="1.4"/><circle cx="14" cy="13" r="1.4"/><circle cx="18" cy="6" r="1.4"/><circle cx="8" cy="6" r="1.4"/></svg>
+          <span>Scatter</span>
+        </div>
+        <div class="type-btn" data-type="horizontalBar">
+          <svg viewBox="0 0 24 24"><path d="M4 5h12M4 11h17M4 17h8"/></svg>
+          <span>H-Bar</span>
+        </div>
+      </div>
+
+      <label>Data points</label>
+      <div id="rows" class="rows"></div>
+      <button type="button" id="addRow" class="add-row">+ add point</button>
+      <div class="hint">Type a label, tab to value, press Enter to add the next point. For scatter, put the y-value (x is the point index).</div>
+
+      <label for="title">Chart title</label>
+      <input type="text" id="title" value="Weekly Activity">
+
+      <label>Color theme</label>
+      <div class="palette" id="palette">
+        <div class="pal active" data-c="#5dffb0" style="background:#5dffb0"></div>
+        <div class="pal" data-c="#ffb454" style="background:#ffb454"></div>
+        <div class="pal" data-c="#6aa9ff" style="background:#6aa9ff"></div>
+        <div class="pal" data-c="#ff6a8a" style="background:#ff6a8a"></div>
+        <div class="pal" data-c="#c97dff" style="background:#c97dff"></div>
+        <div class="pal" data-c="multi" style="background:conic-gradient(#5dffb0,#ffb454,#6aa9ff,#ff6a8a,#c97dff,#5dffb0)"></div>
+      <button class="adv-toggle" id="advToggle" onclick="document.getElementById('advPanel').classList.toggle('open');this.textContent=document.getElementById('advPanel').classList.contains('open')?'▲ Hide Advanced Styling':'▼ Advanced Styling'">▼ Advanced Styling</button>
+      <div class="adv-panel" id="advPanel">
+        <div class="adv-row">
+          <label>BG Color</label>
+          <input type="color" id="advBg" value="#ffffff"/>
+        </div>
+        <div class="adv-row">
+          <label>Grid Color</label>
+          <input type="color" id="advGrid" value="#eef1ef"/>
+        </div>
+        <div class="adv-row">
+          <label>Text Color</label>
+          <input type="color" id="advText" value="#444444"/>
+        </div>
+        <div class="adv-row">
+          <label>Title Color</label>
+          <input type="color" id="advTitle" value="#1a221d"/>
+        </div>
+        <div class="adv-row">
+          <label>Border Radius</label>
+          <input type="range" id="advRadius" min="0" max="20" value="6"/>
+          <span class="adv-val" id="advRadiusVal">6px</span>
+        </div>
+        <div class="adv-row">
+          <label>Border Width</label>
+          <input type="range" id="advBorder" min="1" max="6" value="2" step="0.5"/>
+          <span class="adv-val" id="advBorderVal">2px</span>
+        </div>
+        <div class="adv-row">
+          <label>Point Size</label>
+          <input type="range" id="advPoint" min="2" max="12" value="4"/>
+          <span class="adv-val" id="advPointVal">4</span>
+        </div>
+        <div class="adv-row">
+          <label>Fill Opacity</label>
+          <input type="range" id="advFill" min="0" max="1" step="0.05" value="0.25"/>
+          <span class="adv-val" id="advFillVal">25%</span>
+        </div>
+        <div class="adv-row">
+          <label>Font Family</label>
+          <select id="advFont">
+            <option value="'IBM Plex Mono', monospace">Mono</option>
+            <option value="'Inter', sans-serif" selected>Sans</option>
+            <option value="Georgia, serif">Serif</option>
+          </select>
+        </div>
+        <div class="adv-row">
+          <label>Show Legend</label>
+          <input type="checkbox" id="advLegend" checked/>
+        </div>
+        <div class="adv-row">
+          <label>Show Grid</label>
+          <input type="checkbox" id="advShowGrid" checked/>
+        </div>
+        <div class="adv-row">
+          <label>Smooth Lines</label>
+          <input type="checkbox" id="advSmooth" checked/>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="chart-frame">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <canvas id="chartCanvas" width="800" height="380"></canvas>
+      </div>
+      <div class="meta" id="meta">—</div>
+      <div class="downloads">
+        <button class="dl-btn primary" id="dlPng">DOWNLOAD PNG</button>
+        <button class="dl-btn" id="dlJpg">DOWNLOAD JPG</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© Abhay Lab — Client-side plotter</span>
+    <span>No data leaves your device</span>
+  </footer>
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+
+
+</div>
+
+<script>
+(function(){
+  function boot(){
+    if(typeof Chart === 'undefined'){
+      // fallback script may still be loading — retry briefly
+      let tries = 0;
+      const waitId = setInterval(() => {
+        tries++;
+        if(typeof Chart !== 'undefined'){
+          clearInterval(waitId);
+          init();
+        } else if(tries > 40){
+          clearInterval(waitId);
+          const meta = document.getElementById('meta');
+          if(meta) meta.textContent = 'ERROR — CHART LIBRARY FAILED TO LOAD (CHECK INTERNET CONNECTION)';
+        }
+      }, 100);
+      return;
+    }
+    init();
+  }
+
+  function init(){
+  const typeGrid = document.getElementById('typeGrid');
+  const palette = document.getElementById('palette');
+  const rowsEl = document.getElementById('rows');
+  const addRowBtn = document.getElementById('addRow');
+  const titleEl = document.getElementById('title');
+  const meta = document.getElementById('meta');
+  const canvas = document.getElementById('chartCanvas');
+  const dlPng = document.getElementById('dlPng');
+  const dlJpg = document.getElementById('dlJpg');
+
+  let currentType = 'bar';
+  let currentColor = '#5dffb0';
+  let chart = null;
+  let debounceTimer = null;
+
+  const palettes = ['#5dffb0','#ffb454','#6aa9ff','#ff6a8a','#c97dff'];
+
+  const seedData = [
+    ['Mon', 12], ['Tue', 19], ['Wed', 8], ['Thu', 24],
+    ['Fri', 17], ['Sat', 28], ['Sun', 21]
+  ];
+
+  function hexToRgba(hex, a){
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function addRow(label, value, focus){
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    row.innerHTML = `
+      <input type="text" class="row-label" placeholder="Label" value="${label !== undefined ? label : ''}">
+      <input type="text" class="row-value" placeholder="Value" value="${value !== undefined ? value : ''}">
+      <button type="button" class="row-remove" title="Remove">✕</button>
+    `;
+    rowsEl.appendChild(row);
+
+    const labelInput = row.querySelector('.row-label');
+    const valueInput = row.querySelector('.row-value');
+    const removeBtn = row.querySelector('.row-remove');
+
+    function onEnter(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const isLastRow = row === rowsEl.lastElementChild;
+        if(isLastRow){
+          addRow('', '', true);
+        } else {
+          const next = row.nextElementSibling;
+          if(next) next.querySelector('.row-label').focus();
+        }
+      }
+    }
+
+    labelInput.addEventListener('keydown', onEnter);
+    valueInput.addEventListener('keydown', onEnter);
+    labelInput.addEventListener('input', scheduleRender);
+    valueInput.addEventListener('input', scheduleRender);
+    removeBtn.addEventListener('click', () => {
+      row.remove();
+      render();
+    });
+
+    if(focus) labelInput.focus();
+  }
+
+  function getRowsData(){
+    return Array.from(rowsEl.querySelectorAll('.data-row')).map(row => {
+      const label = row.querySelector('.row-label').value.trim();
+      const value = row.querySelector('.row-value').value.trim();
+      return { label, value };
+    }).filter(d => d.label !== '' || d.value !== '');
+  }
+
+  addRowBtn.addEventListener('click', () => addRow('', '', true));
+
+  typeGrid.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeGrid.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentType = btn.dataset.type;
+      render();
+    });
+  });
+
+  palette.querySelectorAll('.pal').forEach(p => {
+    p.addEventListener('click', () => {
+      palette.querySelectorAll('.pal').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+      currentColor = p.dataset.c;
+      render();
+    });
+  });
+
+
+  function getAdv(){
+    return {
+      bg: document.getElementById('advBg').value,
+      grid: document.getElementById('advGrid').value,
+      textColor: document.getElementById('advText').value,
+      titleColor: document.getElementById('advTitle').value,
+      radius: parseInt(document.getElementById('advRadius').value),
+      border: parseFloat(document.getElementById('advBorder').value),
+      point: parseInt(document.getElementById('advPoint').value),
+      fill: parseFloat(document.getElementById('advFill').value),
+      font: document.getElementById('advFont').value,
+      legend: document.getElementById('advLegend').checked,
+      showGrid: document.getElementById('advShowGrid').checked,
+      smooth: document.getElementById('advSmooth').checked,
+    };
+  }
+
+  // Wire up adv controls
+  ['advBg','advGrid','advText','advTitle','advRadius','advBorder','advPoint','advFill','advFont','advLegend','advShowGrid','advSmooth'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', function(){
+      if(id==='advBg') document.querySelector('.chart-frame').style.background=el.value;
+      if(id==='advRadius') document.getElementById('advRadiusVal').textContent=el.value+'px';
+      if(id==='advBorder') document.getElementById('advBorderVal').textContent=el.value+'px';
+      if(id==='advPoint') document.getElementById('advPointVal').textContent=el.value;
+      if(id==='advFill') document.getElementById('advFillVal').textContent=Math.round(el.value*100)+'%';
+      scheduleRender();
+    });
+    el.addEventListener('change', scheduleRender);
+  });
+
+  function buildConfig(points){
+    const adv = getAdv();
+    const labels = points.map(p => p.label || p.value);
+    const title = titleEl.value || 'Untitled';
+    const isScatter = currentType === 'scatter';
+    const multi = currentColor === 'multi';
+
+    let chartType = currentType;
+    let dataset;
+
+    if(isScatter){
+      const pointsXY = points.map((p, i) => ({ x: i + 1, y: Number(p.value) || 0 }));
+      dataset = {
+        label: title,
+        data: pointsXY,
+        backgroundColor: multi ? palettes[0] : currentColor,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      };
+      chartType = 'scatter';
+    } else {
+      const values = points.map(p => Number(p.value) || 0);
+      const colors = labels.map((_, i) => multi ? palettes[i % palettes.length] : currentColor);
+      const baseColor = multi ? palettes[0] : currentColor;
+      const isLineLike = currentType === 'line' || currentType === 'area';
+
+      dataset = {
+        label: title,
+        data: values,
+        backgroundColor: isLineLike ? hexToRgba(baseColor, currentType==='area' ? adv.fill : adv.fill*0.6) : colors,
+        borderColor: isLineLike ? baseColor : colors,
+        borderWidth: isLineLike ? adv.border : 1,
+        fill: currentType === 'area',
+        tension: isLineLike ? (adv.smooth?0.35:0) : 0,
+        pointRadius: isLineLike ? adv.point : 0,
+        pointBackgroundColor: baseColor,
+        borderRadius: (currentType === 'bar' || currentType === 'horizontalBar') ? adv.radius : 0,
+        hoverOffset: (currentType === 'pie' || currentType === 'doughnut' || currentType === 'polarArea') ? 14 : 0
+      };
+
+      if(currentType === 'line' || currentType === 'area') chartType = 'line';
+      if(currentType === 'horizontalBar') chartType = 'bar';
+    }
+
+    const isCircular = ['pie','doughnut','polarArea'].includes(currentType);
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: currentType === 'horizontalBar' ? 'y' : 'x',
+      animation: { duration: 700, easing: 'easeOutQuart' },
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+          color: adv.titleColor,
+          font: { family: "'IBM Plex Mono', monospace", size: 13, weight: '600' },
+          padding: { bottom: 16 }
+        },
+        legend: {
+          display: adv.legend && (isCircular || isScatter || true),
+          labels: { color: adv.textColor, font: { family: adv.font, size: 11 } }
+        },
+        tooltip: {
+          backgroundColor: '#0f1512',
+          titleColor: '#5dffb0',
+          bodyColor: '#d8e6df',
+          borderColor: '#2d6b4f',
+          borderWidth: 1,
+          padding: 10
+        }
+      },
+      scales: (isCircular || isScatter) ? (isScatter ? {
+        x: { grid: { color: adv.showGrid?adv.grid:'transparent', display:adv.showGrid }, ticks: { color: adv.textColor, font: { size: 11 } } },
+        y: { grid: { color: adv.showGrid?adv.grid:'transparent', display:adv.showGrid }, ticks: { color: adv.textColor, font: { size: 11 } }, beginAtZero: true }
+      } : {}) : {
+        x: { grid: { color: adv.showGrid?adv.grid:'transparent', display:adv.showGrid }, ticks: { color: adv.textColor, font: { size: 11 } } },
+        y: { grid: { color: adv.showGrid?adv.grid:'transparent', display:adv.showGrid }, ticks: { color: adv.textColor, font: { size: 11 } }, beginAtZero: true }
+      }
+    };
+
+    return {
+      type: chartType,
+      data: isCircular
+        ? { labels, datasets: [{
+            data: dataset.data,
+            backgroundColor: multi
+              ? labels.map((_,i)=>palettes[i%palettes.length])
+              : labels.map((_,i)=>{ const f = 1 - i*0.12; return hexToRgba(currentColor, f > 0.25 ? f : 0.25); }),
+            borderColor: '#fff',
+            borderWidth: 2
+          }] }
+        : { labels: isScatter ? undefined : labels, datasets: [dataset] },
+      options
+    };
+  }
+
+  function scheduleRender(){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(render, 200);
+  }
+
+  function render(){
+    const points = getRowsData();
+
+    if(points.length === 0){
+      if(chart){ chart.destroy(); chart = null; }
+      meta.textContent = 'NO DATA — ADD A POINT TO BEGIN';
+      return;
+    }
+
+    meta.textContent = `${points.length} POINTS — STYLE: ${currentType.toUpperCase()}`;
+
+    if(chart) chart.destroy();
+    const cfg = buildConfig(points);
+    chart = new Chart(canvas, cfg);
+  }
+
+  function exportImage(type, filename){
+    if(!chart) return;
+    // Draw with background color
+    const adv = getAdv();
+    const offscreen = document.createElement('canvas');
+    offscreen.width = canvas.width; offscreen.height = canvas.height;
+    const octx = offscreen.getContext('2d');
+    octx.fillStyle = adv.bg;
+    octx.fillRect(0,0,offscreen.width,offscreen.height);
+    octx.drawImage(canvas,0,0);
+    const url = offscreen.toDataURL(type, 0.95);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  dlPng.addEventListener('click', () => exportImage('image/png', 'abhay-lab-graph.png'));
+  dlJpg.addEventListener('click', () => exportImage('image/jpeg', 'abhay-lab-graph.jpg'));
+
+  titleEl.addEventListener('input', scheduleRender);
+
+  // seed initial rows
+  seedData.forEach(([label, value]) => addRow(label, value, false));
+  render();
+  } // end init
+
+  boot();
+})();
+</script>
+</body>
+</html>

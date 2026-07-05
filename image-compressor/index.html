@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="image compressor, compress jpg online, compress png online, reduce image size free, online image compressor no upload, photo size reducer, compress image without losing quality, batch image compressor, reduce photo file size for email, image optimizer free"/>
+<meta name="description" content="Compress JPG, PNG, and WEBP images online for free without a noticeable quality loss. Batch compress and download as ZIP. Files never leave your browser."/>
+<link rel="canonical" href="https://abhaylab.fun/image-compressor/"/>
+<meta property="og:title" content="Free Online Image Compressor — Reduce File Size | Abhay Lab"/>
+<meta property="og:description" content="Compress JPG, PNG, and WEBP images online for free without a noticeable quality loss. Batch compress and download as ZIP. Files never leave your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/image-compressor/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Online Image Compressor — Reduce File Size | Abhay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;--ph:#f59e0b;--ph2:#7a5416;--amber:#ffb454;--text:#ede4d8;--dim:#8a7d6c;--green:#5dffb0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:840px;margin:0 auto;padding:32px 16px 60px;}
+.brand{font-family:monospace;font-size:12px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(24px,5vw,40px);font-weight:700;letter-spacing:-.02em;color:#fbf3ea;margin-bottom:6px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:14px;margin-bottom:28px;}
+.dropzone{border:2px dashed var(--line);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:20px;}
+.dropzone:hover,.dropzone.drag{border-color:var(--ph);background:rgba(245,158,11,.05);}
+.dropzone .icn{font-size:34px;margin-bottom:10px;}
+.dropzone .t1{font-size:15px;font-weight:600;margin-bottom:4px;}
+.dropzone .t2{font-size:12px;color:var(--dim);}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+label{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.controls-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+.ctrl-block{flex:1;min-width:160px;}
+select,input[type=number]{width:100%;background:#070604;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 12px;font-size:14px;}
+input[type=range]{width:100%;height:5px;background:var(--line);border-radius:4px;outline:none;-webkit-appearance:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ph);cursor:pointer;box-shadow:0 0 8px rgba(245,158,11,.6);}
+.slider-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.slider-row .val{font-family:monospace;color:var(--ph);font-weight:700;}
+.btn-primary{background:linear-gradient(125deg,var(--ph),#fb923c);color:#1a0f00;border:none;border-radius:10px;padding:13px 22px;font-size:13px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.18s;text-transform:uppercase;}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{background:rgba(245,158,11,.08);border:1px solid var(--ph2);color:var(--ph);border-radius:10px;padding:13px 20px;font-size:13px;font-weight:600;cursor:pointer;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.file-list{display:flex;flex-direction:column;gap:10px;}
+.file-item{display:flex;align-items:center;gap:14px;background:#0a0d0a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.file-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;background:#000;}
+.file-info{flex:1;min-width:0;}
+.file-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-sizes{font-family:monospace;font-size:11.5px;color:var(--dim);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.badge-saved{background:rgba(93,255,176,.12);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:700;}
+.spinner{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--ph);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.file-dl{background:rgba(245,158,11,.1);border:1px solid var(--ph2);color:var(--ph);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.summary-bar{display:flex;justify-content:space-between;align-items:center;background:#0a0d0a;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:18px;font-family:monospace;font-size:13px;}
+.summary-bar b{color:var(--ph);}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/" class="active" aria-current="page">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — Image Compressor</div>
+  <h1>Image <span>Compressor</span></h1>
+  <p class="sub">Shrink photos for web or email without a noticeable quality loss. Everything happens in your browser — files are never uploaded.</p>
+
+  <div class="dropzone" id="dropzone">
+    <div class="icn">🖼️</div>
+    <div class="t1">Drop images here or click to browse</div>
+    <div class="t2">JPG, PNG, WEBP — multiple files supported</div>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;"/>
+  </div>
+
+  <div class="panel">
+    <div class="controls-row">
+      <div class="ctrl-block">
+        <label>Output Format</label>
+        <select id="fmtSelect">
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WEBP</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <div class="ctrl-block">
+        <label>Max Width (px, 0 = no resize)</label>
+        <input type="number" id="maxWidth" value="0" min="0" step="50"/>
+      </div>
+    </div>
+    <div class="slider-row"><label style="margin-bottom:0;">Quality</label><span class="val" id="qVal">75%</span></div>
+    <input type="range" id="qSlider" min="1" max="100" value="75"/>
+    <div class="actions">
+      <button class="btn-primary" id="compressBtn" disabled>Compress All</button>
+      <button class="btn-ghost" id="zipBtn" disabled>Download All as ZIP</button>
+      <button class="btn-ghost" id="clearBtn" disabled>Clear</button>
+    </div>
+  </div>
+
+  <div class="summary-bar" id="summaryBar" style="display:none;">
+    <span>Total: <b id="sumOrig">—</b> → <b id="sumNew">—</b></span>
+    <span class="badge-saved" id="sumSaved">0% smaller</span>
+  </div>
+
+  <div class="file-list" id="fileList"></div>
+</div>
+
+<script>
+var files=[]; // {id, file, origSize, resultBlob, resultSize, url}
+var dropzone=document.getElementById('dropzone'), fileInput=document.getElementById('fileInput');
+var fileList=document.getElementById('fileList');
+var qSlider=document.getElementById('qSlider'), qVal=document.getElementById('qVal');
+qSlider.oninput=function(){qVal.textContent=this.value+'%';};
+
+dropzone.onclick=function(){fileInput.click();};
+dropzone.ondragover=function(e){e.preventDefault();dropzone.classList.add('drag');};
+dropzone.ondragleave=function(){dropzone.classList.remove('drag');};
+dropzone.ondrop=function(e){e.preventDefault();dropzone.classList.remove('drag');handleFiles(e.dataTransfer.files);};
+fileInput.onchange=function(){handleFiles(this.files);};
+
+function fmtBytes(b){
+  if(b<1024) return b+' B';
+  if(b<1024*1024) return (b/1024).toFixed(1)+' KB';
+  return (b/1024/1024).toFixed(2)+' MB';
+}
+
+function handleFiles(fl){
+  Array.from(fl).forEach(function(f){
+    if(!f.type.startsWith('image/')) return;
+    var id='f'+Math.random().toString(36).slice(2);
+    files.push({id:id,file:f,origSize:f.size,resultBlob:null,resultSize:0});
+  });
+  renderList();
+  document.getElementById('compressBtn').disabled=files.length===0;
+  document.getElementById('clearBtn').disabled=files.length===0;
+}
+
+function renderList(){
+  fileList.innerHTML='';
+  files.forEach(function(item){
+    var el=document.createElement('div'); el.className='file-item'; el.id=item.id;
+    var url=URL.createObjectURL(item.file);
+    var sizeHtml=fmtBytes(item.origSize)+(item.resultSize?' → <b style="color:var(--ph);">'+fmtBytes(item.resultSize)+'</b> <span class="badge-saved">'+Math.max(0,Math.round((1-item.resultSize/item.origSize)*100))+'% smaller</span>':'');
+    el.innerHTML='<img src="'+url+'"/><div class="file-info"><div class="file-name">'+item.file.name+'</div><div class="file-sizes" id="sz-'+item.id+'">'+sizeHtml+'</div></div>';
+    if(item.resultBlob){
+      var dl=document.createElement('button'); dl.className='file-dl'; dl.textContent='Download';
+      dl.onclick=function(){
+        var a=document.createElement('a'); a.href=URL.createObjectURL(item.resultBlob);
+        a.download=item.file.name.replace(/\.[^.]+$/,'')+'-compressed.'+extForType(document.getElementById('fmtSelect').value);
+        a.click();
+      };
+      el.appendChild(dl);
+    }
+    fileList.appendChild(el);
+  });
+}
+
+function extForType(t){
+  if(t==='image/webp') return 'webp';
+  if(t==='image/png') return 'png';
+  return 'jpg';
+}
+
+function compressOne(item){
+  return new Promise(function(resolve){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width, h=img.height;
+      var maxW=parseInt(document.getElementById('maxWidth').value)||0;
+      if(maxW>0 && w>maxW){ h=Math.round(h*(maxW/w)); w=maxW; }
+      var canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      var q=parseInt(qSlider.value)/100;
+      var type=document.getElementById('fmtSelect').value;
+      canvas.toBlob(function(blob){
+        item.resultBlob=blob; item.resultSize=blob.size;
+        URL.revokeObjectURL(img.src);
+        resolve();
+      },type,type==='image/png'?undefined:q);
+    };
+    img.src=URL.createObjectURL(item.file);
+  });
+}
+
+document.getElementById('compressBtn').onclick=async function(){
+  this.disabled=true; this.textContent='Compressing…';
+  for(var i=0;i<files.length;i++){ await compressOne(files[i]); }
+  this.textContent='Compress All'; this.disabled=false;
+  document.getElementById('zipBtn').disabled=false;
+  renderList();
+  updateSummary();
+};
+
+function updateSummary(){
+  var orig=0,neu=0,any=false;
+  files.forEach(function(it){ orig+=it.origSize; if(it.resultSize){neu+=it.resultSize;any=true;} else neu+=it.origSize; });
+  if(!any) return;
+  document.getElementById('summaryBar').style.display='flex';
+  document.getElementById('sumOrig').textContent=fmtBytes(orig);
+  document.getElementById('sumNew').textContent=fmtBytes(neu);
+  document.getElementById('sumSaved').textContent=Math.max(0,Math.round((1-neu/orig)*100))+'% smaller';
+}
+
+document.getElementById('zipBtn').onclick=async function(){
+  var zip=new JSZip();
+  files.forEach(function(it){
+    if(it.resultBlob){ zip.file(it.file.name.replace(/\.[^.]+$/,'')+'-compressed.'+extForType(document.getElementById('fmtSelect').value), it.resultBlob); }
+  });
+  var content=await zip.generateAsync({type:'blob'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(content); a.download='compressed-images.zip'; a.click();
+};
+
+document.getElementById('clearBtn').onclick=function(){
+  files=[]; renderList();
+  document.getElementById('compressBtn').disabled=true;
+  document.getElementById('zipBtn').disabled=true;
+  document.getElementById('clearBtn').disabled=true;
+  document.getElementById('summaryBar').style.display='none';
+};
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

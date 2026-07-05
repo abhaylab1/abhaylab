@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="periodic table, interactive periodic table, periodic table of elements, chemistry element lookup, element properties, atomic number search, element symbols list, electron configuration lookup, melting point of elements, periodic table for students, chemistry study tool, online periodic table free"/>
+<meta name="description" content="Explore all 118 elements with an interactive periodic table. Search by name, symbol, or number, filter by category, and view detailed properties like melting point, density, and electron configuration."/>
+<link rel="canonical" href="https://abhaylab.fun/periodic-table/"/>
+<meta property="og:title" content="Interactive Periodic Table of Elements | Abhay Lab"/>
+<meta property="og:description" content="Explore all 118 elements with an interactive periodic table. Search by name, symbol, or number, filter by category, and view detailed properties like melting point, density, and electron configuration."/>
+<meta property="og:url" content="https://abhaylab.fun/periodic-table/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Interactive Periodic Table of Elements | Abhay Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0d1420;
+    --surface2: #111827;
+    --border: #1e2d45;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+
+    /* Category Colors */
+    --alkali: #ef4444;
+    --alkaline: #f97316;
+    --lanthanide: #eab308;
+    --actinide: #84cc16;
+    --transition: #06b6d4;
+    --post-transition: #8b5cf6;
+    --metalloid: #ec4899;
+    --nonmetal: #10b981;
+    --halogen: #f59e0b;
+    --noble: #6366f1;
+    --unknown: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cell: 52px;
+    --cell-sym: 1rem;
+    --cell-num: 0.5rem;
+    --cell-mass: 0.42rem;
+    --gap: 3px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: clip; /* clip body overflow but allow child scroll containers */
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -1px;
+    line-height: 1.2;
+  }
+  .logo span { color: var(--text); }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    flex: 1;
+    max-width: 320px;
+    min-width: 140px;
+  }
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+  .search-box input::placeholder { color: var(--muted); }
+
+  /* ── FILTERS ── */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    font-size: 0.7rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.7;
+    background: transparent;
+  }
+  .filter-btn:hover, .filter-btn.active { opacity: 1; border-color: currentColor; }
+  .filter-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── MAIN & TABLE ── */
+  .main { padding: 16px 0; }
+
+  .table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 8px 16px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    /* Center on wide screens, left-align (scrollable) on narrow */
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  /* On wide screens center it */
+  @media (min-width: 1020px) {
+    .table-wrapper { justify-content: center; }
+  }
+
+  .pt-outer {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  /* Period labels column to the right */
+  .period-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding-top: calc(var(--cell) + var(--gap));
+  }
+  .period-label {
+    width: 22px;
+    height: var(--cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  /* Grid */
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(18, var(--cell));
+    grid-template-rows: repeat(10, var(--cell));
+    gap: var(--gap);
+  }
+
+  /* Element cells */
+  .cell {
+    width: var(--cell); height: var(--cell);
+    border-radius: 5px;
+    border: 1px solid transparent;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cell::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: currentColor;
+    opacity: 0.12;
+    transition: opacity 0.15s;
+  }
+  .cell:hover::before { opacity: 0.25; }
+  .cell:hover {
+    transform: scale(1.1);
+    border-color: currentColor;
+    box-shadow: 0 0 10px currentColor;
+    z-index: 10;
+  }
+  .cell:active { transform: scale(0.95); }
+  .cell.dimmed { opacity: 0.12; }
+  .cell.highlighted::before { opacity: 0.3; }
+
+  .cell-num {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--cell-num);
+    color: inherit; opacity: 0.7; line-height: 1;
+  }
+  .cell-sym {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--cell-sym);
+    font-weight: 700; color: inherit; line-height: 1.1;
+  }
+  .cell-mass {
+    font-size: var(--cell-mass);
+    color: inherit; opacity: 0.65; line-height: 1;
+  }
+
+  .group-label {
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  /* La/Ac gap */
+  .la-ac-gap {
+    grid-column: 3 / 4;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.45rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 0.68rem; color: var(--muted);
+  }
+  .legend-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 680px;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px 20px 32px;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* drag handle */
+  .modal::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-close {
+    position: absolute; top: 20px; right: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--border); }
+
+  /* ── RESPONSIVE — header/modal adapt, table stays full size and scrolls ── */
+  @media (max-width: 768px) {
+    header { padding: 12px 14px; gap: 8px; flex-wrap: wrap; }
+    .logo { font-size: 1rem; }
+    .search-box { flex: 1; min-width: 120px; }
+    .filters { padding: 8px 10px; gap: 5px; }
+    .filter-btn { font-size: 0.62rem; padding: 3px 8px; }
+    .main { padding: 12px 8px; }
+    .modal { padding: 20px 14px 28px; }
+    .modal-header { flex-direction: column; gap: 12px; }
+    .modal-symbol-box { width: 72px; height: 72px; }
+    .modal-title h2 { font-size: 1.4rem; }
+    .prop-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .prop-value { font-size: 0.82rem; }
+  }
+
+  @media (max-width: 480px) {
+    header { flex-direction: column; align-items: flex-start; }
+    .search-box { width: 100%; max-width: 100%; }
+    .logo { font-size: 0.9rem; }
+  }
+
+  .modal-header {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .modal-symbol-box {
+    width: 86px; height: 86px;
+    border-radius: 12px;
+    border: 2px solid currentColor;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .modal-symbol-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: currentColor;
+    opacity: 0.15;
+  }
+  .modal-symbol-box .s-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .modal-symbol-box .s-sym {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: inherit;
+    line-height: 1;
+  }
+  .modal-symbol-box .s-mass {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .modal-title h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .modal-category {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid currentColor;
+    margin-bottom: 8px;
+  }
+  .modal-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .prop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .prop-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .prop-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .prop-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .prop-sub {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .section-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 18px 0 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  .config-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--accent);
+    word-break: break-all;
+    line-height: 1.7;
+  }
+
+  .uses-list { display: flex; flex-wrap: wrap; gap: 7px; }
+  .use-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+    color: var(--text);
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/" class="active" aria-current="page">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+
+<header>
+  <div class="logo">Periodic<span>Table</span> <span style="font-size:1.1rem;font-weight:500;color:var(--muted);letter-spacing:0;">by Abhay Lab</span></div>
+  <div class="search-box">
+    <svg width="14" height="14" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search element, symbol, or number…">
+  </div>
+
+</header>
+
+<div class="filters" id="filterBar"></div>
+
+<div class="main">
+  <div class="table-wrapper">
+    <div class="pt-outer">
+      <div class="pt-grid" id="ptGrid"></div>
+      <div class="period-col" id="periodCol"></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const CATEGORIES = {
+  'alkali-metal':        { label: 'Alkali Metal',        color: '#ef4444' },
+  'alkaline-earth-metal':{ label: 'Alkaline Earth Metal', color: '#f97316' },
+  'lanthanide':          { label: 'Lanthanide',           color: '#eab308' },
+  'actinide':            { label: 'Actinide',             color: '#84cc16' },
+  'transition-metal':    { label: 'Transition Metal',     color: '#06b6d4' },
+  'post-transition-metal':{ label: 'Post-Transition Metal', color: '#8b5cf6' },
+  'metalloid':           { label: 'Metalloid',            color: '#ec4899' },
+  'nonmetal':            { label: 'Nonmetal',             color: '#10b981' },
+  'halogen':             { label: 'Halogen',              color: '#f59e0b' },
+  'noble-gas':           { label: 'Noble Gas',            color: '#6366f1' },
+  'unknown':             { label: 'Unknown',              color: '#6b7280' },
+};
+
+// Full element data — all 118
+const ELEMENTS = [
+  { z:1,  sym:'H',  name:'Hydrogen',      mass:1.008,    massInt:1,   cat:'nonmetal',            group:1,  period:1, phase:'Gas',    config:'1s¹',                          discovery:1766, discoverer:'Henry Cavendish', melt:-259.16, boil:-252.88, density:0.0000899, electronegativity:2.20, ionization:13.598, radius:53,  uses:['Fuel cells','Ammonia production','Petroleum refining','Rocket fuel'] },
+  { z:2,  sym:'He', name:'Helium',        mass:4.003,    massInt:4,   cat:'noble-gas',           group:18, period:1, phase:'Gas',    config:'1s²',                          discovery:1868, discoverer:'Pierre Janssen', melt:null, boil:-268.93, density:0.0001785, electronegativity:null, ionization:24.587, radius:31, uses:['Balloons','MRI cooling','Welding','Diving'] },
+  { z:3,  sym:'Li', name:'Lithium',       mass:6.94,     massInt:7,   cat:'alkali-metal',        group:1,  period:2, phase:'Solid',  config:'[He] 2s¹',                     discovery:1817, discoverer:'Johan August Arfwedson', melt:180.5, boil:1342, density:0.534, electronegativity:0.98, ionization:5.392, radius:167, uses:['Batteries','Ceramics','Mood stabilizer','Alloys'] },
+  { z:4,  sym:'Be', name:'Beryllium',     mass:9.012,    massInt:9,   cat:'alkaline-earth-metal', group:2, period:2, phase:'Solid',  config:'[He] 2s²',                     discovery:1798, discoverer:'Louis-Nicolas Vauquelin', melt:1287, boil:2469, density:1.85, electronegativity:1.57, ionization:9.323, radius:112, uses:['Aerospace alloys','X-ray windows','Nuclear reactors','Gyroscopes'] },
+  { z:5,  sym:'B',  name:'Boron',         mass:10.81,    massInt:11,  cat:'metalloid',           group:13, period:2, phase:'Solid',  config:'[He] 2s² 2p¹',                discovery:1808, discoverer:'Louis-Nicolas Vauquelin', melt:2075, boil:4000, density:2.37, electronegativity:2.04, ionization:8.298, radius:87, uses:['Borosilicate glass','Detergents','Semiconductors','Fibers'] },
+  { z:6,  sym:'C',  name:'Carbon',        mass:12.011,   massInt:12,  cat:'nonmetal',            group:14, period:2, phase:'Solid',  config:'[He] 2s² 2p²',                discovery:'Ancient', discoverer:'Known to ancients', melt:3550, boil:4827, density:2.267, electronegativity:2.55, ionization:11.260, radius:67, uses:['Steel','Plastics','Fuels','Diamond','Medicine'] },
+  { z:7,  sym:'N',  name:'Nitrogen',      mass:14.007,   massInt:14,  cat:'nonmetal',            group:15, period:2, phase:'Gas',    config:'[He] 2s² 2p³',                discovery:1772, discoverer:'Daniel Rutherford', melt:-210.01, boil:-195.79, density:0.001251, electronegativity:3.04, ionization:14.534, radius:56, uses:['Fertilizers','Explosives','Cryogenics','Food packaging'] },
+  { z:8,  sym:'O',  name:'Oxygen',        mass:15.999,   massInt:16,  cat:'nonmetal',            group:16, period:2, phase:'Gas',    config:'[He] 2s² 2p⁴',                discovery:1774, discoverer:'Carl Wilhelm Scheele', melt:-218.79, boil:-182.96, density:0.001429, electronegativity:3.44, ionization:13.618, radius:48, uses:['Respiration','Steel making','Water treatment','Medicine'] },
+  { z:9,  sym:'F',  name:'Fluorine',      mass:18.998,   massInt:19,  cat:'halogen',             group:17, period:2, phase:'Gas',    config:'[He] 2s² 2p⁵',                discovery:1886, discoverer:'Henri Moissan', melt:-219.67, boil:-188.11, density:0.001696, electronegativity:3.98, ionization:17.423, radius:42, uses:['Toothpaste','Teflon','Refrigerants','Pharmaceuticals'] },
+  { z:10, sym:'Ne', name:'Neon',          mass:20.180,   massInt:20,  cat:'noble-gas',           group:18, period:2, phase:'Gas',    config:'[He] 2s² 2p⁶',                discovery:1898, discoverer:'William Ramsay', melt:-248.61, boil:-246.08, density:0.0009002, electronegativity:null, ionization:21.565, radius:38, uses:['Neon signs','Lasers','Cryogenics','High-voltage indicators'] },
+  { z:11, sym:'Na', name:'Sodium',        mass:22.990,   massInt:23,  cat:'alkali-metal',        group:1,  period:3, phase:'Solid',  config:'[Ne] 3s¹',                     discovery:1807, discoverer:'Humphry Davy', melt:97.79, boil:882.8, density:0.971, electronegativity:0.93, ionization:5.139, radius:190, uses:['Table salt','Street lights','Soap','Paper'] },
+  { z:12, sym:'Mg', name:'Magnesium',     mass:24.305,   massInt:24,  cat:'alkaline-earth-metal', group:2, period:3, phase:'Solid',  config:'[Ne] 3s²',                     discovery:1755, discoverer:'Joseph Black', melt:650, boil:1090, density:1.738, electronegativity:1.31, ionization:7.646, radius:145, uses:['Alloys','Fireworks','Chlorophyll','Antacids'] },
+  { z:13, sym:'Al', name:'Aluminum',      mass:26.982,   massInt:27,  cat:'post-transition-metal', group:13,period:3, phase:'Solid', config:'[Ne] 3s² 3p¹',                discovery:1825, discoverer:'Hans Christian Ørsted', melt:660.32, boil:2519, density:2.698, electronegativity:1.61, ionization:5.986, radius:143, uses:['Aircraft','Cans','Foil','Construction','Electrical'] },
+  { z:14, sym:'Si', name:'Silicon',       mass:28.086,   massInt:28,  cat:'metalloid',           group:14, period:3, phase:'Solid',  config:'[Ne] 3s² 3p²',                discovery:1824, discoverer:'Jöns Jacob Berzelius', melt:1414, boil:3265, density:2.329, electronegativity:1.90, ionization:8.151, radius:111, uses:['Semiconductors','Solar cells','Glass','Computer chips'] },
+  { z:15, sym:'P',  name:'Phosphorus',    mass:30.974,   massInt:31,  cat:'nonmetal',            group:15, period:3, phase:'Solid',  config:'[Ne] 3s² 3p³',                discovery:1669, discoverer:'Hennig Brand', melt:44.15, boil:280.5, density:1.82, electronegativity:2.19, ionization:10.486, radius:98, uses:['Fertilizers','Detergents','Matches','DNA & ATP'] },
+  { z:16, sym:'S',  name:'Sulfur',        mass:32.06,    massInt:32,  cat:'nonmetal',            group:16, period:3, phase:'Solid',  config:'[Ne] 3s² 3p⁴',                discovery:'Ancient', discoverer:'Known to ancients', melt:115.21, boil:444.72, density:2.067, electronegativity:2.58, ionization:10.360, radius:88, uses:['Sulfuric acid','Fertilizers','Rubber vulcanization','Gunpowder'] },
+  { z:17, sym:'Cl', name:'Chlorine',      mass:35.45,    massInt:35,  cat:'halogen',             group:17, period:3, phase:'Gas',    config:'[Ne] 3s² 3p⁵',                discovery:1774, discoverer:'Carl Wilhelm Scheele', melt:-101.5, boil:-34.04, density:0.003214, electronegativity:3.16, ionization:12.968, radius:79, uses:['Water purification','PVC plastic','Disinfectants','Bleach'] },
+  { z:18, sym:'Ar', name:'Argon',         mass:39.948,   massInt:40,  cat:'noble-gas',           group:18, period:3, phase:'Gas',    config:'[Ne] 3s² 3p⁶',                discovery:1894, discoverer:'Lord Rayleigh', melt:-189.35, boil:-185.85, density:0.001784, electronegativity:null, ionization:15.760, radius:71, uses:['Welding','Light bulbs','Wine preservation','Lasers'] },
+  { z:19, sym:'K',  name:'Potassium',     mass:39.098,   massInt:39,  cat:'alkali-metal',        group:1,  period:4, phase:'Solid',  config:'[Ar] 4s¹',                     discovery:1807, discoverer:'Humphry Davy', melt:63.38, boil:759, density:0.862, electronegativity:0.82, ionization:4.341, radius:243, uses:['Fertilizers','Gunpowder','Soap','Food additive'] },
+  { z:20, sym:'Ca', name:'Calcium',       mass:40.078,   massInt:40,  cat:'alkaline-earth-metal', group:2, period:4, phase:'Solid',  config:'[Ar] 4s²',                     discovery:1808, discoverer:'Humphry Davy', melt:842, boil:1484, density:1.55, electronegativity:1.00, ionization:6.113, radius:194, uses:['Cement','Bones & teeth','Dairy','Steel making'] },
+  { z:21, sym:'Sc', name:'Scandium',      mass:44.956,   massInt:45,  cat:'transition-metal',    group:3,  period:4, phase:'Solid',  config:'[Ar] 3d¹ 4s²',                discovery:1879, discoverer:'Lars Fredrik Nilson', melt:1541, boil:2836, density:2.985, electronegativity:1.36, ionization:6.561, radius:184, uses:['Aircraft alloys','Sports equipment','High-intensity lights'] },
+  { z:22, sym:'Ti', name:'Titanium',      mass:47.867,   massInt:48,  cat:'transition-metal',    group:4,  period:4, phase:'Solid',  config:'[Ar] 3d² 4s²',                discovery:1791, discoverer:'William Gregor', melt:1668, boil:3287, density:4.506, electronegativity:1.54, ionization:6.828, radius:176, uses:['Aerospace','Medical implants','Paint pigment','Jewelry'] },
+  { z:23, sym:'V',  name:'Vanadium',      mass:50.942,   massInt:51,  cat:'transition-metal',    group:5,  period:4, phase:'Solid',  config:'[Ar] 3d³ 4s²',                discovery:1801, discoverer:'Andrés Manuel del Río', melt:1910, boil:3407, density:6.0, electronegativity:1.63, ionization:6.746, radius:171, uses:['Steel alloys','Tools','Batteries','Chemicals'] },
+  { z:24, sym:'Cr', name:'Chromium',      mass:51.996,   massInt:52,  cat:'transition-metal',    group:6,  period:4, phase:'Solid',  config:'[Ar] 3d⁵ 4s¹',                discovery:1797, discoverer:'Louis-Nicolas Vauquelin', melt:1907, boil:2671, density:7.19, electronegativity:1.66, ionization:6.767, radius:166, uses:['Stainless steel','Chrome plating','Pigments','Catalysts'] },
+  { z:25, sym:'Mn', name:'Manganese',     mass:54.938,   massInt:55,  cat:'transition-metal',    group:7,  period:4, phase:'Solid',  config:'[Ar] 3d⁵ 4s²',                discovery:1774, discoverer:'Carl Wilhelm Scheele', melt:1246, boil:2061, density:7.21, electronegativity:1.55, ionization:7.434, radius:161, uses:['Steel production','Batteries','Pigments','Fertilizers'] },
+  { z:26, sym:'Fe', name:'Iron',          mass:55.845,   massInt:56,  cat:'transition-metal',    group:8,  period:4, phase:'Solid',  config:'[Ar] 3d⁶ 4s²',                discovery:'Ancient', discoverer:'Known to ancients', melt:1538, boil:2861, density:7.874, electronegativity:1.83, ionization:7.902, radius:156, uses:['Steel','Construction','Hemoglobin','Machines'] },
+  { z:27, sym:'Co', name:'Cobalt',        mass:58.933,   massInt:59,  cat:'transition-metal',    group:9,  period:4, phase:'Solid',  config:'[Ar] 3d⁷ 4s²',                discovery:1735, discoverer:'Georg Brandt', melt:1495, boil:2927, density:8.9, electronegativity:1.88, ionization:7.881, radius:152, uses:['Magnets','Batteries','Blue pigment','Superalloys'] },
+  { z:28, sym:'Ni', name:'Nickel',        mass:58.693,   massInt:59,  cat:'transition-metal',    group:10, period:4, phase:'Solid',  config:'[Ar] 3d⁸ 4s²',                discovery:1751, discoverer:'Axel Fredrik Cronstedt', melt:1455, boil:2913, density:8.908, electronegativity:1.91, ionization:7.640, radius:149, uses:['Stainless steel','Coins','Batteries','Plating'] },
+  { z:29, sym:'Cu', name:'Copper',        mass:63.546,   massInt:64,  cat:'transition-metal',    group:11, period:4, phase:'Solid',  config:'[Ar] 3d¹⁰ 4s¹',               discovery:'Ancient', discoverer:'Known to ancients', melt:1084.62, boil:2562, density:8.96, electronegativity:1.90, ionization:7.727, radius:145, uses:['Electrical wiring','Plumbing','Coins','Alloys'] },
+  { z:30, sym:'Zn', name:'Zinc',          mass:65.38,    massInt:65,  cat:'transition-metal',    group:12, period:4, phase:'Solid',  config:'[Ar] 3d¹⁰ 4s²',               discovery:1746, discoverer:'Andreas Sigismund Marggraf', melt:419.53, boil:907, density:7.134, electronegativity:1.65, ionization:9.394, radius:142, uses:['Galvanizing','Batteries','Alloys','Sunscreen'] },
+  { z:31, sym:'Ga', name:'Gallium',       mass:69.723,   massInt:70,  cat:'post-transition-metal', group:13,period:4, phase:'Solid', config:'[Ar] 3d¹⁰ 4s² 4p¹',           discovery:1875, discoverer:'Paul Emile Lecoq de Boisbaudran', melt:29.76, boil:2400, density:5.91, electronegativity:1.81, ionization:5.999, radius:136, uses:['Semiconductors','LEDs','Solar cells','Thermometers'] },
+  { z:32, sym:'Ge', name:'Germanium',     mass:72.630,   massInt:73,  cat:'metalloid',           group:14, period:4, phase:'Solid',  config:'[Ar] 3d¹⁰ 4s² 4p²',           discovery:1886, discoverer:'Clemens Winkler', melt:938.25, boil:2833, density:5.323, electronegativity:2.01, ionization:7.900, radius:125, uses:['Semiconductors','Fiber optics','Infrared optics','Solar cells'] },
+  { z:33, sym:'As', name:'Arsenic',       mass:74.922,   massInt:75,  cat:'metalloid',           group:15, period:4, phase:'Solid',  config:'[Ar] 3d¹⁰ 4s² 4p³',           discovery:'Ancient', discoverer:'Albertus Magnus', melt:817, boil:614, density:5.727, electronegativity:2.18, ionization:9.815, radius:114, uses:['Pesticides','Semiconductors','Wood preservation','Medicine'] },
+  { z:34, sym:'Se', name:'Selenium',      mass:78.971,   massInt:79,  cat:'nonmetal',            group:16, period:4, phase:'Solid',  config:'[Ar] 3d¹⁰ 4s² 4p⁴',           discovery:1817, discoverer:'Jöns Jacob Berzelius', melt:220.5, boil:685, density:4.81, electronegativity:2.55, ionization:9.752, radius:103, uses:['Photocopiers','Glass','Electronics','Dietary supplement'] },
+  { z:35, sym:'Br', name:'Bromine',       mass:79.904,   massInt:80,  cat:'halogen',             group:17, period:4, phase:'Liquid', config:'[Ar] 3d¹⁰ 4s² 4p⁵',           discovery:1826, discoverer:'Antoine Jérôme Balard', melt:-7.3, boil:58.8, density:3.1028, electronegativity:2.96, ionization:11.814, radius:94, uses:['Flame retardants','Photography','Medicine','Fumigants'] },
+  { z:36, sym:'Kr', name:'Krypton',       mass:83.798,   massInt:84,  cat:'noble-gas',           group:18, period:4, phase:'Gas',    config:'[Ar] 3d¹⁰ 4s² 4p⁶',           discovery:1898, discoverer:'William Ramsay', melt:-157.36, boil:-153.22, density:0.003733, electronegativity:3.00, ionization:13.999, radius:88, uses:['Lasers','Photography','Lighting','Nuclear reactors'] },
+  { z:37, sym:'Rb', name:'Rubidium',      mass:85.468,   massInt:85,  cat:'alkali-metal',        group:1,  period:5, phase:'Solid',  config:'[Kr] 5s¹',                     discovery:1861, discoverer:'Robert Bunsen', melt:39.31, boil:688, density:1.532, electronegativity:0.82, ionization:4.177, radius:265, uses:['Atomic clocks','Medical imaging','Photocells','Research'] },
+  { z:38, sym:'Sr', name:'Strontium',     mass:87.62,    massInt:88,  cat:'alkaline-earth-metal', group:2, period:5, phase:'Solid',  config:'[Kr] 5s²',                     discovery:1790, discoverer:'Adair Crawford', melt:777, boil:1382, density:2.64, electronegativity:0.95, ionization:5.695, radius:219, uses:['Fireworks','Flares','Cathode ray tubes','Nuclear medicine'] },
+  { z:39, sym:'Y',  name:'Yttrium',       mass:88.906,   massInt:89,  cat:'transition-metal',    group:3,  period:5, phase:'Solid',  config:'[Kr] 4d¹ 5s²',                 discovery:1794, discoverer:'Johan Gadolin', melt:1522, boil:3345, density:4.469, electronegativity:1.22, ionization:6.217, radius:212, uses:['LEDs','Lasers','Superconductors','Camera lenses'] },
+  { z:40, sym:'Zr', name:'Zirconium',     mass:91.224,   massInt:91,  cat:'transition-metal',    group:4,  period:5, phase:'Solid',  config:'[Kr] 4d² 5s²',                 discovery:1789, discoverer:'Martin Heinrich Klaproth', melt:1854, boil:4409, density:6.506, electronegativity:1.33, ionization:6.634, radius:206, uses:['Nuclear reactors','Ceramics','Knives','Chemical plants'] },
+  { z:41, sym:'Nb', name:'Niobium',       mass:92.906,   massInt:93,  cat:'transition-metal',    group:5,  period:5, phase:'Solid',  config:'[Kr] 4d⁴ 5s¹',                 discovery:1801, discoverer:'Charles Hatchett', melt:2477, boil:4744, density:8.57, electronegativity:1.6, ionization:6.759, radius:198, uses:['Steel alloys','Superconductors','Jet engines','MRI machines'] },
+  { z:42, sym:'Mo', name:'Molybdenum',    mass:95.95,    massInt:96,  cat:'transition-metal',    group:6,  period:5, phase:'Solid',  config:'[Kr] 4d⁵ 5s¹',                 discovery:1778, discoverer:'Carl Wilhelm Scheele', melt:2622, boil:4639, density:10.28, electronegativity:2.16, ionization:7.092, radius:190, uses:['Steel alloys','Lubricants','Pigments','Catalysts'] },
+  { z:43, sym:'Tc', name:'Technetium',    mass:98,       massInt:98,  cat:'transition-metal',    group:7,  period:5, phase:'Solid',  config:'[Kr] 4d⁵ 5s²',                 discovery:1937, discoverer:'Carlo Perrier', melt:2157, boil:4265, density:11.0, electronegativity:1.9, ionization:7.28, radius:183, uses:['Medical imaging','Radioactive tracers','Corrosion inhibitor'] },
+  { z:44, sym:'Ru', name:'Ruthenium',     mass:101.07,   massInt:101, cat:'transition-metal',    group:8,  period:5, phase:'Solid',  config:'[Kr] 4d⁷ 5s¹',                 discovery:1844, discoverer:'Karl Ernst Claus', melt:2333, boil:4150, density:12.45, electronegativity:2.2, ionization:7.361, radius:178, uses:['Electronics','Catalysts','Electrical contacts','Hardening Pt'] },
+  { z:45, sym:'Rh', name:'Rhodium',       mass:102.906,  massInt:103, cat:'transition-metal',    group:9,  period:5, phase:'Solid',  config:'[Kr] 4d⁸ 5s¹',                 discovery:1803, discoverer:'William Hyde Wollaston', melt:1964, boil:3695, density:12.41, electronegativity:2.28, ionization:7.459, radius:173, uses:['Catalytic converters','Jewelry','Mirrors','Chemical catalysts'] },
+  { z:46, sym:'Pd', name:'Palladium',     mass:106.42,   massInt:106, cat:'transition-metal',    group:10, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰',                    discovery:1803, discoverer:'William Hyde Wollaston', melt:1554.9, boil:2963, density:12.023, electronegativity:2.20, ionization:8.337, radius:169, uses:['Catalytic converters','Jewelry','Electronics','Dentistry'] },
+  { z:47, sym:'Ag', name:'Silver',        mass:107.868,  massInt:108, cat:'transition-metal',    group:11, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰ 5s¹',                discovery:'Ancient', discoverer:'Known to ancients', melt:961.78, boil:2162, density:10.49, electronegativity:1.93, ionization:7.576, radius:165, uses:['Jewelry','Photography','Electronics','Antimicrobial'] },
+  { z:48, sym:'Cd', name:'Cadmium',       mass:112.414,  massInt:112, cat:'transition-metal',    group:12, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰ 5s²',                discovery:1817, discoverer:'Friedrich Stromeyer', melt:321.07, boil:767, density:8.65, electronegativity:1.69, ionization:8.994, radius:161, uses:['Batteries','Pigments','Plating','Nuclear reactors'] },
+  { z:49, sym:'In', name:'Indium',        mass:114.818,  massInt:115, cat:'post-transition-metal', group:13,period:5, phase:'Solid', config:'[Kr] 4d¹⁰ 5s² 5p¹',            discovery:1863, discoverer:'Ferdinand Reich', melt:156.6, boil:2072, density:7.31, electronegativity:1.78, ionization:5.786, radius:156, uses:['LCD screens','Solders','Mirrors','Semiconductors'] },
+  { z:50, sym:'Sn', name:'Tin',           mass:118.710,  massInt:119, cat:'post-transition-metal', group:14,period:5, phase:'Solid', config:'[Kr] 4d¹⁰ 5s² 5p²',            discovery:'Ancient', discoverer:'Known to ancients', melt:231.93, boil:2602, density:7.287, electronegativity:1.96, ionization:7.344, radius:145, uses:['Bronze alloys','Soldering','Tin cans','Plating'] },
+  { z:51, sym:'Sb', name:'Antimony',      mass:121.760,  massInt:122, cat:'metalloid',           group:15, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰ 5s² 5p³',            discovery:'Ancient', discoverer:'Known to ancients', melt:630.63, boil:1635, density:6.697, electronegativity:2.05, ionization:8.608, radius:133, uses:['Flame retardants','Alloys','Semiconductors','Medicines'] },
+  { z:52, sym:'Te', name:'Tellurium',     mass:127.60,   massInt:128, cat:'metalloid',           group:16, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰ 5s² 5p⁴',            discovery:1782, discoverer:'Franz-Joseph Müller von Reichenstein', melt:449.51, boil:988, density:6.24, electronegativity:2.1, ionization:9.010, radius:123, uses:['Solar cells','Alloys','Semiconductors','Rubber'] },
+  { z:53, sym:'I',  name:'Iodine',        mass:126.904,  massInt:127, cat:'halogen',             group:17, period:5, phase:'Solid',  config:'[Kr] 4d¹⁰ 5s² 5p⁵',            discovery:1811, discoverer:'Bernard Courtois', melt:113.7, boil:184.3, density:4.933, electronegativity:2.66, ionization:10.451, radius:115, uses:['Disinfectants','Thyroid medicine','Photography','Nutrition'] },
+  { z:54, sym:'Xe', name:'Xenon',         mass:131.293,  massInt:131, cat:'noble-gas',           group:18, period:5, phase:'Gas',    config:'[Kr] 4d¹⁰ 5s² 5p⁶',            discovery:1898, discoverer:'William Ramsay', melt:-111.75, boil:-108.09, density:0.005887, electronegativity:2.60, ionization:12.130, radius:108, uses:['Flash lamps','Ion propulsion','Anesthesia','NMR spectroscopy'] },
+  { z:55, sym:'Cs', name:'Cesium',        mass:132.905,  massInt:133, cat:'alkali-metal',        group:1,  period:6, phase:'Solid',  config:'[Xe] 6s¹',                     discovery:1860, discoverer:'Robert Bunsen', melt:28.44, boil:671, density:1.93, electronegativity:0.79, ionization:3.894, radius:298, uses:['Atomic clocks','Oil drilling','Photoelectric cells'] },
+  { z:56, sym:'Ba', name:'Barium',        mass:137.327,  massInt:137, cat:'alkaline-earth-metal', group:2, period:6, phase:'Solid',  config:'[Xe] 6s²',                     discovery:1808, discoverer:'Humphry Davy', melt:727, boil:1845, density:3.51, electronegativity:0.89, ionization:5.212, radius:253, uses:['X-ray imaging','Fireworks','Glass','Oil well drilling'] },
+  { z:57, sym:'La', name:'Lanthanum',     mass:138.905,  massInt:139, cat:'lanthanide',          group:3,  period:6, phase:'Solid',  config:'[Xe] 5d¹ 6s²',                 discovery:1839, discoverer:'Carl Gustaf Mosander', melt:920, boil:3464, density:6.145, electronegativity:1.10, ionization:5.577, radius:240, uses:['Camera lenses','Catalysts','Batteries','Lasers'] },
+  { z:58, sym:'Ce', name:'Cerium',        mass:140.116,  massInt:140, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹ 5d¹ 6s²',             discovery:1803, discoverer:'Wilhelm Hisinger', melt:798, boil:3443, density:6.77, electronegativity:1.12, ionization:5.539, radius:235, uses:['Catalytic converters','Glass polishing','Lighter flints','Steel'] },
+  { z:59, sym:'Pr', name:'Praseodymium',  mass:140.908,  massInt:141, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f³ 6s²',                  discovery:1885, discoverer:'Carl Auer von Welsbach', melt:931, boil:3520, density:6.773, electronegativity:1.13, ionization:5.473, radius:239, uses:['Magnets','Lasers','Aircraft engines','Fiber optics'] },
+  { z:60, sym:'Nd', name:'Neodymium',     mass:144.242,  massInt:144, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁴ 6s²',                  discovery:1885, discoverer:'Carl Auer von Welsbach', melt:1021, boil:3074, density:7.007, electronegativity:1.14, ionization:5.525, radius:229, uses:['Powerful magnets','Headphones','Wind turbines','Hard drives'] },
+  { z:61, sym:'Pm', name:'Promethium',    mass:145,      massInt:145, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁵ 6s²',                  discovery:1945, discoverer:'Jacob A. Marinsky', melt:1042, boil:3000, density:7.26, electronegativity:1.13, ionization:5.582, radius:236, uses:['Nuclear batteries','Luminescent paint','X-ray sources'] },
+  { z:62, sym:'Sm', name:'Samarium',      mass:150.36,   massInt:150, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁶ 6s²',                  discovery:1879, discoverer:'Paul Emile Lecoq de Boisbaudran', melt:1072, boil:1794, density:7.52, electronegativity:1.17, ionization:5.644, radius:229, uses:['Magnets','Cancer treatment','Infrared lasers','Headphones'] },
+  { z:63, sym:'Eu', name:'Europium',      mass:151.964,  massInt:152, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁷ 6s²',                  discovery:1901, discoverer:'Eugène-Anatole Demarçay', melt:822, boil:1527, density:5.243, electronegativity:1.2, ionization:5.670, radius:233, uses:['Phosphors in TV','Euro banknotes','Lasers','MRI contrast'] },
+  { z:64, sym:'Gd', name:'Gadolinium',    mass:157.25,   massInt:157, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁷ 5d¹ 6s²',             discovery:1880, discoverer:'Jean Charles de Marignac', melt:1313, boil:3273, density:7.9, electronegativity:1.20, ionization:6.150, radius:233, uses:['MRI contrast agents','Neutron capture','Magnets','Phosphors'] },
+  { z:65, sym:'Tb', name:'Terbium',       mass:158.925,  massInt:159, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f⁹ 6s²',                  discovery:1843, discoverer:'Carl Gustaf Mosander', melt:1356, boil:3230, density:8.229, electronegativity:1.1, ionization:5.864, radius:225, uses:['Green phosphors','Fuel cells','Sensors','Magnets'] },
+  { z:66, sym:'Dy', name:'Dysprosium',    mass:162.500,  massInt:163, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹⁰ 6s²',                 discovery:1886, discoverer:'Paul Emile Lecoq de Boisbaudran', melt:1412, boil:2567, density:8.55, electronegativity:1.22, ionization:5.939, radius:228, uses:['Wind turbine magnets','Nuclear reactors','Data storage'] },
+  { z:67, sym:'Ho', name:'Holmium',       mass:164.930,  massInt:165, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹¹ 6s²',                 discovery:1878, discoverer:'Marc Delafontaine', melt:1474, boil:2700, density:8.795, electronegativity:1.23, ionization:6.022, radius:226, uses:['Lasers','Magnets','Nuclear reactors','MRI'] },
+  { z:68, sym:'Er', name:'Erbium',        mass:167.259,  massInt:167, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹² 6s²',                 discovery:1843, discoverer:'Carl Gustaf Mosander', melt:1529, boil:2868, density:9.066, electronegativity:1.24, ionization:6.108, radius:226, uses:['Fiber optic amplifiers','Lasers','Nuclear technology','Glass coloring'] },
+  { z:69, sym:'Tm', name:'Thulium',       mass:168.934,  massInt:169, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹³ 6s²',                 discovery:1879, discoverer:'Per Teodor Cleve', melt:1545, boil:1950, density:9.321, electronegativity:1.25, ionization:6.184, radius:222, uses:['Lasers','Medical X-rays','Portable X-ray sources'] },
+  { z:70, sym:'Yb', name:'Ytterbium',     mass:173.045,  massInt:173, cat:'lanthanide',          group:null,period:6, phase:'Solid', config:'[Xe] 4f¹⁴ 6s²',                 discovery:1878, discoverer:'Jean Charles de Marignac', melt:824, boil:1196, density:6.965, electronegativity:1.1, ionization:6.254, radius:222, uses:['Atomic clocks','Lasers','Steel alloys','Cancer radiation therapy'] },
+  { z:71, sym:'Lu', name:'Lutetium',      mass:174.967,  massInt:175, cat:'lanthanide',          group:3,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d¹ 6s²',            discovery:1907, discoverer:'Georges Urbain', melt:1663, boil:3402, density:9.84, electronegativity:1.27, ionization:5.426, radius:217, uses:['PET scan detectors','Catalysts','Alloys','Dating minerals'] },
+  { z:72, sym:'Hf', name:'Hafnium',       mass:178.49,   massInt:178, cat:'transition-metal',    group:4,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d² 6s²',            discovery:1923, discoverer:'Dirk Coster', melt:2233, boil:4603, density:13.31, electronegativity:1.3, ionization:6.825, radius:208, uses:['Nuclear reactors','Microprocessors','Alloys','Plasma cutting'] },
+  { z:73, sym:'Ta', name:'Tantalum',      mass:180.948,  massInt:181, cat:'transition-metal',    group:5,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d³ 6s²',            discovery:1802, discoverer:'Anders Gustaf Ekeberg', melt:3017, boil:5458, density:16.69, electronegativity:1.5, ionization:7.549, radius:200, uses:['Capacitors','Medical implants','Surgical tools','Jet engines'] },
+  { z:74, sym:'W',  name:'Tungsten',      mass:183.84,   massInt:184, cat:'transition-metal',    group:6,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d⁴ 6s²',            discovery:1783, discoverer:'Juan José Elhuyar', melt:3422, boil:5555, density:19.3, electronegativity:2.36, ionization:7.864, radius:193, uses:['Lightbulb filaments','Drill bits','Radiation shielding','Alloys'] },
+  { z:75, sym:'Re', name:'Rhenium',       mass:186.207,  massInt:186, cat:'transition-metal',    group:7,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d⁵ 6s²',            discovery:1925, discoverer:'Masataka Ogawa', melt:3185, boil:5590, density:21.02, electronegativity:1.9, ionization:7.833, radius:188, uses:['Jet engines','Catalysts','Thermocouples','High-temp alloys'] },
+  { z:76, sym:'Os', name:'Osmium',        mass:190.23,   massInt:190, cat:'transition-metal',    group:8,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d⁶ 6s²',            discovery:1803, discoverer:'Smithson Tennant', melt:3033, boil:5012, density:22.587, electronegativity:2.2, ionization:8.438, radius:185, uses:['Pen tips','Electrical contacts','Alloys','Catalysts'] },
+  { z:77, sym:'Ir', name:'Iridium',       mass:192.217,  massInt:192, cat:'transition-metal',    group:9,  period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d⁷ 6s²',            discovery:1803, discoverer:'Smithson Tennant', melt:2446, boil:4428, density:22.56, electronegativity:2.2, ionization:8.967, radius:180, uses:['Spark plugs','Crucibles','Standards','Satellite parts'] },
+  { z:78, sym:'Pt', name:'Platinum',      mass:195.084,  massInt:195, cat:'transition-metal',    group:10, period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d⁹ 6s¹',            discovery:1735, discoverer:'Antonio de Ulloa', melt:1768.3, boil:3825, density:21.45, electronegativity:2.28, ionization:8.959, radius:177, uses:['Jewelry','Catalytic converters','Cancer drugs','Electronics'] },
+  { z:79, sym:'Au', name:'Gold',          mass:196.967,  massInt:197, cat:'transition-metal',    group:11, period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d¹⁰ 6s¹',           discovery:'Ancient', discoverer:'Known to ancients', melt:1064.18, boil:2856, density:19.3, electronegativity:2.54, ionization:9.226, radius:174, uses:['Jewelry','Electronics','Dentistry','Space technology'] },
+  { z:80, sym:'Hg', name:'Mercury',       mass:200.592,  massInt:201, cat:'transition-metal',    group:12, period:6, phase:'Liquid', config:'[Xe] 4f¹⁴ 5d¹⁰ 6s²',           discovery:'Ancient', discoverer:'Known to ancients', melt:-38.83, boil:356.73, density:13.546, electronegativity:2.00, ionization:10.438, radius:171, uses:['Thermometers','Fluorescent lights','Dental amalgam','Switches'] },
+  { z:81, sym:'Tl', name:'Thallium',      mass:204.38,   massInt:204, cat:'post-transition-metal', group:13,period:6, phase:'Solid', config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹',       discovery:1861, discoverer:'William Crookes', melt:304, boil:1473, density:11.85, electronegativity:1.62, ionization:6.108, radius:156, uses:['Electronics','Glass','Medical imaging','Infrared detectors'] },
+  { z:82, sym:'Pb', name:'Lead',          mass:207.2,    massInt:207, cat:'post-transition-metal', group:14,period:6, phase:'Solid', config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²',       discovery:'Ancient', discoverer:'Known to ancients', melt:327.46, boil:1749, density:11.34, electronegativity:2.33, ionization:7.417, radius:154, uses:['Batteries','Radiation shielding','Ammunition','Roofing'] },
+  { z:83, sym:'Bi', name:'Bismuth',       mass:208.980,  massInt:209, cat:'post-transition-metal', group:15,period:6, phase:'Solid', config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³',       discovery:1753, discoverer:'Claude François Geoffroy', melt:271.3, boil:1564, density:9.78, electronegativity:2.02, ionization:7.289, radius:143, uses:['Medicine','Cosmetics','Alloys','Fire sprinklers'] },
+  { z:84, sym:'Po', name:'Polonium',      mass:209,      massInt:209, cat:'metalloid',           group:16, period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴',       discovery:1898, discoverer:'Marie Curie', melt:254, boil:962, density:9.196, electronegativity:2.0, ionization:8.414, radius:135, uses:['Anti-static devices','Neutron sources','Research'] },
+  { z:85, sym:'At', name:'Astatine',      mass:210,      massInt:210, cat:'halogen',             group:17, period:6, phase:'Solid',  config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵',       discovery:1940, discoverer:'Dale R. Corson', melt:302, boil:337, density:null, electronegativity:2.2, ionization:9.318, radius:127, uses:['Cancer treatment','Radiotherapy research'] },
+  { z:86, sym:'Rn', name:'Radon',         mass:222,      massInt:222, cat:'noble-gas',           group:18, period:6, phase:'Gas',    config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶',       discovery:1900, discoverer:'Friedrich Ernst Dorn', melt:-71, boil:-61.7, density:0.00973, electronegativity:2.2, ionization:10.745, radius:120, uses:['Cancer radiotherapy','Earthquake monitoring','Research'] },
+  { z:87, sym:'Fr', name:'Francium',      mass:223,      massInt:223, cat:'alkali-metal',        group:1,  period:7, phase:'Solid',  config:'[Rn] 7s¹',                     discovery:1939, discoverer:'Marguerite Perey', melt:27, boil:677, density:null, electronegativity:0.7, ionization:4.073, radius:null, uses:['Scientific research only'] },
+  { z:88, sym:'Ra', name:'Radium',        mass:226,      massInt:226, cat:'alkaline-earth-metal', group:2, period:7, phase:'Solid',  config:'[Rn] 7s²',                     discovery:1898, discoverer:'Marie Curie', melt:696, boil:1737, density:5.5, electronegativity:0.9, ionization:5.279, radius:null, uses:['Cancer treatment','Luminescent paint (historical)','Research'] },
+  { z:89, sym:'Ac', name:'Actinium',      mass:227,      massInt:227, cat:'actinide',            group:3,  period:7, phase:'Solid',  config:'[Rn] 6d¹ 7s²',                 discovery:1899, discoverer:'André-Louis Debierne', melt:1050, boil:3200, density:10.07, electronegativity:1.1, ionization:5.17, radius:null, uses:['Neutron sources','Cancer treatment','Thermoelectric power'] },
+  { z:90, sym:'Th', name:'Thorium',       mass:232.038,  massInt:232, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 6d² 7s²',                  discovery:1829, discoverer:'Jöns Jacob Berzelius', melt:1750, boil:4788, density:11.72, electronegativity:1.3, ionization:6.307, radius:237, uses:['Nuclear fuel','Gas mantles','Alloys'] },
+  { z:91, sym:'Pa', name:'Protactinium',  mass:231.036,  massInt:231, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f² 6d¹ 7s²',              discovery:1913, discoverer:'Kasimir Fajans', melt:1572, boil:4000, density:15.37, electronegativity:1.5, ionization:5.89, radius:243, uses:['Research only (radioactive)'] },
+  { z:92, sym:'U',  name:'Uranium',       mass:238.029,  massInt:238, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f³ 6d¹ 7s²',              discovery:1789, discoverer:'Martin Heinrich Klaproth', melt:1135, boil:4131, density:19.05, electronegativity:1.38, ionization:6.194, radius:240, uses:['Nuclear fuel','Munitions','Dating rocks'] },
+  { z:93, sym:'Np', name:'Neptunium',     mass:237,      massInt:237, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f⁴ 6d¹ 7s²',              discovery:1940, discoverer:'Edwin McMillan', melt:644, boil:4000, density:20.45, electronegativity:1.36, ionization:6.266, radius:221, uses:['Neutron detection','Research'] },
+  { z:94, sym:'Pu', name:'Plutonium',     mass:244,      massInt:244, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f⁶ 7s²',                  discovery:1940, discoverer:'Glenn T. Seaborg', melt:639.4, boil:3228, density:19.84, electronegativity:1.28, ionization:6.026, radius:243, uses:['Nuclear weapons','Nuclear power','Spacecraft power'] },
+  { z:95, sym:'Am', name:'Americium',     mass:243,      massInt:243, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f⁷ 7s²',                  discovery:1944, discoverer:'Glenn T. Seaborg', melt:1176, boil:2607, density:13.67, electronegativity:1.3, ionization:5.974, radius:244, uses:['Smoke detectors','Research'] },
+  { z:96, sym:'Cm', name:'Curium',        mass:247,      massInt:247, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f⁷ 6d¹ 7s²',              discovery:1944, discoverer:'Glenn T. Seaborg', melt:1345, boil:3110, density:13.51, electronegativity:1.3, ionization:5.991, radius:245, uses:['Power source in spacecraft','Research'] },
+  { z:97, sym:'Bk', name:'Berkelium',     mass:247,      massInt:247, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f⁹ 7s²',                  discovery:1949, discoverer:'Glenn T. Seaborg', melt:986, boil:null, density:14.79, electronegativity:1.3, ionization:6.198, radius:244, uses:['Synthesis of heavier elements'] },
+  { z:98, sym:'Cf', name:'Californium',   mass:251,      massInt:251, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f¹⁰ 7s²',                 discovery:1950, discoverer:'Glenn T. Seaborg', melt:900, boil:null, density:15.1, electronegativity:1.3, ionization:6.282, radius:245, uses:['Neutron sources','Oil well logging','Cancer treatment'] },
+  { z:99, sym:'Es', name:'Einsteinium',   mass:252,      massInt:252, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f¹¹ 7s²',                 discovery:1952, discoverer:'Albert Ghiorso', melt:860, boil:996, density:null, electronegativity:1.3, ionization:6.42, radius:245, uses:['Research only'] },
+  { z:100,sym:'Fm', name:'Fermium',       mass:257,      massInt:257, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f¹² 7s²',                 discovery:1952, discoverer:'Albert Ghiorso', melt:1527, boil:null, density:null, electronegativity:1.3, ionization:6.50, radius:null, uses:['Research only'] },
+  { z:101,sym:'Md', name:'Mendelevium',   mass:258,      massInt:258, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f¹³ 7s²',                 discovery:1955, discoverer:'Glenn T. Seaborg', melt:827, boil:null, density:null, electronegativity:1.3, ionization:6.58, radius:null, uses:['Research only'] },
+  { z:102,sym:'No', name:'Nobelium',      mass:259,      massInt:259, cat:'actinide',            group:null,period:7, phase:'Solid', config:'[Rn] 5f¹⁴ 7s²',                 discovery:1958, discoverer:'Albert Ghiorso', melt:830, boil:null, density:null, electronegativity:1.3, ionization:6.65, radius:null, uses:['Research only'] },
+  { z:103,sym:'Lr', name:'Lawrencium',    mass:266,      massInt:266, cat:'actinide',            group:3,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 7s² 7p¹',            discovery:1961, discoverer:'Albert Ghiorso', melt:1627, boil:null, density:null, electronegativity:1.3, ionization:4.96, radius:null, uses:['Research only'] },
+  { z:104,sym:'Rf', name:'Rutherfordium', mass:267,      massInt:267, cat:'transition-metal',    group:4,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d² 7s²',            discovery:1964, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:105,sym:'Db', name:'Dubnium',       mass:268,      massInt:268, cat:'transition-metal',    group:5,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d³ 7s²',            discovery:1967, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:106,sym:'Sg', name:'Seaborgium',    mass:269,      massInt:269, cat:'transition-metal',    group:6,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d⁴ 7s²',            discovery:1974, discoverer:'Albert Ghiorso', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:107,sym:'Bh', name:'Bohrium',       mass:270,      massInt:270, cat:'transition-metal',    group:7,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d⁵ 7s²',            discovery:1981, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:108,sym:'Hs', name:'Hassium',       mass:269,      massInt:269, cat:'transition-metal',    group:8,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d⁶ 7s²',            discovery:1984, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:109,sym:'Mt', name:'Meitnerium',    mass:278,      massInt:278, cat:'unknown',             group:9,  period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d⁷ 7s²',            discovery:1982, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:110,sym:'Ds', name:'Darmstadtium',  mass:281,      massInt:281, cat:'unknown',             group:10, period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d⁹ 7s¹',            discovery:1994, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:111,sym:'Rg', name:'Roentgenium',   mass:282,      massInt:282, cat:'unknown',             group:11, period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d¹⁰ 7s¹',           discovery:1994, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:112,sym:'Cn', name:'Copernicium',   mass:285,      massInt:285, cat:'transition-metal',    group:12, period:7, phase:'Gas',    config:'[Rn] 5f¹⁴ 6d¹⁰ 7s²',           discovery:1996, discoverer:'GSI Helmholtz Centre', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:113,sym:'Nh', name:'Nihonium',      mass:286,      massInt:286, cat:'post-transition-metal', group:13,period:7, phase:'Solid', config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹',       discovery:2003, discoverer:'RIKEN', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:114,sym:'Fl', name:'Flerovium',     mass:289,      massInt:289, cat:'post-transition-metal', group:14,period:7, phase:'Solid', config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²',       discovery:1998, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:115,sym:'Mc', name:'Moscovium',     mass:290,      massInt:290, cat:'post-transition-metal', group:15,period:7, phase:'Solid', config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³',       discovery:2003, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:116,sym:'Lv', name:'Livermorium',   mass:293,      massInt:293, cat:'post-transition-metal', group:16,period:7, phase:'Solid', config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴',       discovery:2000, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:117,sym:'Ts', name:'Tennessine',    mass:294,      massInt:294, cat:'halogen',             group:17, period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵',       discovery:2010, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+  { z:118,sym:'Og', name:'Oganesson',     mass:294,      massInt:294, cat:'noble-gas',           group:18, period:7, phase:'Solid',  config:'[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶',       discovery:2002, discoverer:'Joint Institute for Nuclear Research', melt:null, boil:null, density:null, electronegativity:null, ionization:null, radius:null, uses:['Research only'] },
+];
+
+// Grid positions: [period, group] (lanthanides/actinides placed in rows 9/10)
+// Lanthanides: 57-71 → row 9, cols 4-18
+// Actinides: 89-103 → row 10, cols 4-18
+function getGridPos(el) {
+  if (el.z >= 57 && el.z <= 71) return { row: 9, col: el.z - 57 + 4 };
+  if (el.z >= 89 && el.z <= 103) return { row: 10, col: el.z - 89 + 4 };
+  return { row: el.period, col: el.group };
+}
+
+let activeFilter = null;
+let searchTerm = '';
+
+function buildTable() {
+  const grid = document.getElementById('ptGrid');
+  grid.innerHTML = '';
+
+  // Group labels row 1
+  for (let c = 1; c <= 18; c++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'group-label';
+    lbl.style.gridColumn = c; lbl.style.gridRow = 1;
+    lbl.textContent = c;
+    grid.appendChild(lbl);
+  }
+
+  // Period labels — separate column to the right
+  const periodCol = document.getElementById('periodCol');
+  periodCol.innerHTML = '';
+  for (let p = 1; p <= 7; p++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'period-label';
+    lbl.textContent = p;
+    periodCol.appendChild(lbl);
+  }
+
+  // La/Ac gap placeholders
+  ['La-Lu', 'Ac-Lr'].forEach((txt, i) => {
+    const d = document.createElement('div');
+    d.className = 'la-ac-gap';
+    d.style.gridColumn = 3; d.style.gridRow = i === 0 ? 7 : 8;
+    d.innerHTML = txt;
+    grid.appendChild(d);
+  });
+
+  ELEMENTS.forEach(el => {
+    const pos = getGridPos(el);
+    const catInfo = CATEGORIES[el.cat] || CATEGORIES['unknown'];
+    const color = catInfo.color;
+
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.style.gridColumn = pos.col;
+    cell.style.gridRow = pos.row + 1; // +1 for group label row
+    cell.style.color = color;
+    cell.dataset.z = el.z;
+    cell.title = el.name;
+
+    cell.innerHTML = `
+      <span class="cell-num">${el.z}</span>
+      <span class="cell-sym">${el.sym}</span>
+      <span class="cell-mass">${el.mass}</span>
+    `;
+
+    cell.addEventListener('click', () => openModal(el));
+    grid.appendChild(cell);
+  });
+
+  applyFilters();
+}
+
+function applyFilters() {
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach(cell => {
+    const el = ELEMENTS.find(e => e.z === parseInt(cell.dataset.z));
+    if (!el) return;
+
+    const matchesFilter = !activeFilter || el.cat === activeFilter;
+    const s = searchTerm.toLowerCase();
+    const matchesSearch = !s || el.name.toLowerCase().includes(s)
+      || el.sym.toLowerCase().includes(s)
+      || String(el.z).includes(s);
+
+    if (matchesFilter && matchesSearch) {
+      cell.classList.remove('dimmed');
+      cell.classList.add('highlighted');
+    } else {
+      cell.classList.add('dimmed');
+      cell.classList.remove('highlighted');
+    }
+  });
+}
+
+function buildFilters() {
+  const bar = document.getElementById('filterBar');
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn active';
+  allBtn.style.color = '#e2e8f0';
+  allBtn.innerHTML = `<span class="filter-dot" style="background:#64748b"></span>All`;
+  allBtn.addEventListener('click', () => {
+    activeFilter = null;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    allBtn.classList.add('active');
+    applyFilters();
+  });
+  bar.appendChild(allBtn);
+
+  Object.entries(CATEGORIES).forEach(([key, cat]) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.style.color = cat.color;
+    btn.innerHTML = `<span class="filter-dot" style="background:${cat.color}"></span>${cat.label}`;
+    btn.addEventListener('click', () => {
+      if (activeFilter === key) {
+        activeFilter = null;
+        btn.classList.remove('active');
+        allBtn.classList.add('active');
+      } else {
+        activeFilter = key;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      applyFilters();
+    });
+    bar.appendChild(btn);
+  });
+}
+
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  Object.entries(CATEGORIES).forEach(([key, cat]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${cat.color}"></span>${cat.label}`;
+    leg.appendChild(item);
+  });
+}
+
+function openModal(el) {
+  const catInfo = CATEGORIES[el.cat] || CATEGORIES['unknown'];
+  const color = catInfo.color;
+  const fmt = v => v !== null && v !== undefined ? v : '—';
+  const fmtT = v => v !== null && v !== undefined ? `${v} °C` : '—';
+  const fmtD = v => v !== null && v !== undefined ? `${v} g/cm³` : '—';
+  const fmtR = v => v !== null && v !== undefined ? `${v} pm` : '—';
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-symbol-box" style="color:${color}">
+        <span class="s-num">${el.z}</span>
+        <span class="s-sym">${el.sym}</span>
+        <span class="s-mass">${el.mass}</span>
+      </div>
+      <div class="modal-title">
+        <h2>${el.name}</h2>
+        <span class="modal-category" style="color:${color};border-color:${color}">${catInfo.label}</span>
+        <div class="modal-desc">Phase: <strong>${el.phase}</strong> &nbsp;·&nbsp; Discovered: <strong>${el.discovery}</strong> &nbsp;·&nbsp; By: <strong>${el.discoverer}</strong></div>
+      </div>
+    </div>
+
+    <div class="section-title">Core Properties</div>
+    <div class="prop-grid">
+      <div class="prop-card">
+        <div class="prop-label">Atomic Number</div>
+        <div class="prop-value">${el.z}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Atomic Mass (exact)</div>
+        <div class="prop-value">${el.mass} u</div>
+        <div class="prop-sub">Unified atomic mass units</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Atomic Mass (rounded)</div>
+        <div class="prop-value">${el.massInt} u</div>
+        <div class="prop-sub">Nearest whole number</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Symbol</div>
+        <div class="prop-value">${el.sym}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Period</div>
+        <div class="prop-value">${el.period}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Group</div>
+        <div class="prop-value">${fmt(el.group)}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Physical Properties</div>
+    <div class="prop-grid">
+      <div class="prop-card">
+        <div class="prop-label">Melting Point</div>
+        <div class="prop-value">${fmtT(el.melt)}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Boiling Point</div>
+        <div class="prop-value">${fmtT(el.boil)}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Density</div>
+        <div class="prop-value">${fmtD(el.density)}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Atomic Radius</div>
+        <div class="prop-value">${fmtR(el.radius)}</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Standard Phase</div>
+        <div class="prop-value">${el.phase}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Chemical Properties</div>
+    <div class="prop-grid">
+      <div class="prop-card">
+        <div class="prop-label">Electronegativity</div>
+        <div class="prop-value">${fmt(el.electronegativity)}</div>
+        <div class="prop-sub">Pauling scale</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Ionization Energy</div>
+        <div class="prop-value">${el.ionization ? el.ionization + ' eV' : '—'}</div>
+        <div class="prop-sub">First ionization</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-label">Category</div>
+        <div class="prop-value" style="font-size:0.75rem">${catInfo.label}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Electron Configuration</div>
+    <div class="config-display">${el.config}</div>
+
+    <div class="section-title">Common Uses</div>
+    <div class="uses-list">
+      ${el.uses.map(u => `<span class="use-tag">${u}</span>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  searchTerm = this.value.trim();
+  applyFilters();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+buildFilters();
+buildLegend();
+buildTable();
+
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

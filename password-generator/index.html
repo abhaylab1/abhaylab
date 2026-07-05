@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="password generator, strong password generator online, random password generator free, secure password maker, pin generator, password strength checker, generate password with symbols, unbreakable password creator, custom length password generator"/>
+<meta name="description" content="Generate strong random passwords or PINs, or check how long yours would take to crack. Fully client-side — nothing is stored or transmitted."/>
+<link rel="canonical" href="https://abhaylab.fun/password-generator/"/>
+<meta property="og:title" content="Free Password Generator — Strong, Secure Passwords & PINs | Abhay Lab"/>
+<meta property="og:description" content="Generate strong random passwords or PINs, or check how long yours would take to crack. Fully client-side — nothing is stored or transmitted."/>
+<meta property="og:url" content="https://abhaylab.fun/password-generator/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Password Generator — Strong, Secure Passwords & PINs | Abhay Lab</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0b0a0f;--panel:#141220;--line:#2a2540;--ph:#c084fc;--ph2:#5b3d8a;--amber:#ffb454;--text:#e9e3f5;--dim:#8a80a8;--red:#ff6a8a;--green:#5dffb0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:720px;margin:0 auto;padding:32px 16px 60px;}
+.brand{font-family:monospace;font-size:12px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(24px,5vw,40px);font-weight:700;letter-spacing:-.02em;color:#f6f2fb;margin-bottom:6px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:14px;margin-bottom:28px;}
+.mode-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.mode-tab{padding:8px 16px;border:1px solid var(--line);border-radius:20px;font-size:12px;font-family:monospace;cursor:pointer;color:var(--dim);background:#0f0d18;transition:.18s;letter-spacing:.04em;}
+.mode-tab.active{border-color:var(--ph);color:var(--ph);background:rgba(192,132,252,.1);}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+label{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.output-row{display:flex;gap:10px;margin-bottom:18px;}
+#outputField{flex:1;background:#0a0910;border:1px solid var(--line);color:var(--ph);border-radius:10px;padding:16px;font-size:19px;font-family:'Consolas',monospace;letter-spacing:.03em;word-break:break-all;}
+.icon-btn{background:rgba(192,132,252,.1);border:1px solid var(--ph2);color:var(--ph);border-radius:10px;width:52px;flex-shrink:0;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.18s;}
+.icon-btn:hover{background:rgba(192,132,252,.2);}
+.icon-btn.copied{border-color:var(--green);color:var(--green);}
+.slider-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.slider-row .val{font-family:monospace;color:var(--ph);font-weight:700;}
+input[type=range]{width:100%;height:5px;background:var(--line);border-radius:4px;outline:none;-webkit-appearance:none;margin-top:8px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ph);cursor:pointer;box-shadow:0 0 8px rgba(192,132,252,.6);}
+.opts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px;}
+.opt{display:flex;align-items:center;gap:9px;background:#0f0d18;border:1px solid var(--line);border-radius:9px;padding:11px 13px;cursor:pointer;font-size:13px;transition:.15s;}
+.opt:hover{border-color:var(--ph2);}
+.opt input{width:16px;height:16px;accent-color:var(--ph);cursor:pointer;}
+.opt.disabled{opacity:.4;pointer-events:none;}
+.btn-primary{width:100%;background:linear-gradient(125deg,var(--ph),#818cf8);color:#0b0a0f;border:none;border-radius:10px;padding:15px;font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer;margin-top:8px;transition:.18s;text-transform:uppercase;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.strength-bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px;}
+.strength-fill{height:100%;border-radius:6px;transition:width .3s,background .3s;}
+.strength-label{display:flex;justify-content:space-between;margin-top:8px;font-family:monospace;font-size:11px;letter-spacing:.06em;}
+.crack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:14px;}
+.crack-chip{background:#0f0d18;border:1px solid var(--line);border-radius:9px;padding:11px 13px;}
+.crack-chip .k{font-family:monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.crack-chip .v{font-family:monospace;font-size:13px;color:var(--text);margin-top:4px;}
+textarea#testPw{width:100%;background:#0a0910;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:13px;font-size:14px;font-family:monospace;resize:none;}
+.hint{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.6;}
+.pin-note{font-size:12px;color:var(--amber);margin-top:8px;}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/" class="active" aria-current="page">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — Password Generator</div>
+  <h1>Password <span>Generator</span></h1>
+  <p class="sub">Generate strong random passwords, PINs, or check how long yours would take to crack. Everything runs locally — nothing leaves your device.</p>
+
+  <div class="mode-tabs">
+    <div class="mode-tab active" data-mode="random">Random Password</div>
+    <div class="mode-tab" data-mode="pin">PIN</div>
+    <div class="mode-tab" data-mode="check">Check My Password</div>
+  </div>
+
+  <div id="randomPanel" class="panel">
+    <div class="output-row">
+      <div id="outputField">Click Generate</div>
+      <div class="icon-btn" id="copyBtn" title="Copy">⧉</div>
+      <div class="icon-btn" id="regenBtn" title="Regenerate">⟳</div>
+    </div>
+    <div class="slider-row"><label style="margin-bottom:0;">Length</label><span class="val" id="lenVal">16</span></div>
+    <input type="range" id="lenSlider" min="4" max="64" value="16"/>
+    <div class="opts-grid" style="margin-top:16px;">
+      <label class="opt"><input type="checkbox" id="optUpper" checked/> Uppercase (A-Z)</label>
+      <label class="opt"><input type="checkbox" id="optLower" checked/> Lowercase (a-z)</label>
+      <label class="opt"><input type="checkbox" id="optNumber" checked/> Numbers (0-9)</label>
+      <label class="opt"><input type="checkbox" id="optSymbol" checked/> Symbols (!@#$...)</label>
+      <label class="opt"><input type="checkbox" id="optAmbig"/> Exclude ambiguous (l1IO0)</label>
+      <label class="opt"><input type="checkbox" id="optSimilarSpace"/> Exclude spaces</label>
+    </div>
+    <button class="btn-primary" id="genBtn">Generate Password</button>
+  </div>
+
+  <div id="pinPanel" class="panel" style="display:none;">
+    <div class="output-row">
+      <div id="pinField">Click Generate</div>
+      <div class="icon-btn" id="pinCopyBtn" title="Copy">⧉</div>
+      <div class="icon-btn" id="pinRegenBtn" title="Regenerate">⟳</div>
+    </div>
+    <div class="slider-row"><label style="margin-bottom:0;">Digits</label><span class="val" id="pinLenVal">6</span></div>
+    <input type="range" id="pinLenSlider" min="3" max="12" value="6"/>
+    <p class="pin-note">Tip: avoid birthdays, repeated digits (1111) or sequences (1234) — they're the first things attackers try.</p>
+    <button class="btn-primary" id="pinGenBtn" style="margin-top:16px;">Generate PIN</button>
+  </div>
+
+  <div id="checkPanel" class="panel" style="display:none;">
+    <label>Type or paste a password to analyze</label>
+    <textarea id="testPw" rows="2" placeholder="Nothing is stored or sent anywhere — this runs entirely in your browser."></textarea>
+  </div>
+
+  <div class="panel" id="strengthPanel">
+    <label>Strength & Crack Time Estimate</label>
+    <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%;background:var(--red);"></div></div>
+    <div class="strength-label"><span id="strengthText">—</span><span id="entropyText" style="color:var(--dim);">0 bits entropy</span></div>
+    <div class="crack-grid" id="crackGrid"></div>
+    <p class="hint">Estimates assume an offline brute-force attack. "Fast GPU" ≈ 10 billion guesses/sec (typical hash-cracking rig). "Online" ≈ 100 guesses/sec (rate-limited login form). Actual time varies with how the password/PIN is stored and defended.</p>
+  </div>
+</div>
+
+<script>
+var lower='abcdefghijklmnopqrstuvwxyz', upper='ABCDEFGHIJKLMNOPQRSTUVWXYZ', numbers='0123456789', symbols='!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+var ambigChars='l1IO0oB8';
+
+function secureRandomInt(max){
+  var arr=new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0]%max;
+}
+
+function buildCharset(){
+  var set='';
+  if(document.getElementById('optUpper').checked) set+=upper;
+  if(document.getElementById('optLower').checked) set+=lower;
+  if(document.getElementById('optNumber').checked) set+=numbers;
+  if(document.getElementById('optSymbol').checked) set+=symbols;
+  if(document.getElementById('optAmbig').checked){
+    var out='';
+    for(var i=0;i<set.length;i++){ if(ambigChars.indexOf(set[i])===-1) out+=set[i]; }
+    set=out;
+  }
+  return set;
+}
+
+function generatePassword(){
+  var set=buildCharset();
+  if(!set){ document.getElementById('outputField').textContent='Select at least one option'; return; }
+  var len=parseInt(document.getElementById('lenSlider').value);
+  var required=[];
+  if(document.getElementById('optUpper').checked) required.push(upper);
+  if(document.getElementById('optLower').checked) required.push(lower);
+  if(document.getElementById('optNumber').checked) required.push(numbers);
+  if(document.getElementById('optSymbol').checked) required.push(symbols);
+  var pw='';
+  required.forEach(function(pool){
+    if(document.getElementById('optAmbig').checked){
+      var f='';
+      for(var i=0;i<pool.length;i++){ if(ambigChars.indexOf(pool[i])===-1) f+=pool[i]; }
+      pool=f||pool;
+    }
+    pw+=pool[secureRandomInt(pool.length)];
+  });
+  while(pw.length<len){ pw+=set[secureRandomInt(set.length)]; }
+  pw=pw.split('').sort(function(){return secureRandomInt(2)-0.5;}).join('').slice(0,len);
+  document.getElementById('outputField').textContent=pw;
+  analyze(pw,set.length);
+}
+
+function generatePin(){
+  var len=parseInt(document.getElementById('pinLenSlider').value);
+  var pin='';
+  for(var i=0;i<len;i++){ pin+=secureRandomInt(10); }
+  document.getElementById('pinField').textContent=pin;
+  analyze(pin,10);
+}
+
+function charsetSizeOf(pw){
+  var hasLower=/[a-z]/.test(pw), hasUpper=/[A-Z]/.test(pw), hasNum=/[0-9]/.test(pw), hasSym=/[^a-zA-Z0-9]/.test(pw);
+  var size=0;
+  if(hasLower) size+=26;
+  if(hasUpper) size+=26;
+  if(hasNum) size+=10;
+  if(hasSym) size+=33;
+  return size||1;
+}
+
+function fmtTime(seconds){
+  if(seconds<1) return 'instantly';
+  var units=[['year',31536000],['day',86400],['hour',3600],['minute',60],['second',1]];
+  if(seconds>31536000*1000000000000){
+    var yrs=seconds/31536000;
+    var exp=Math.floor(Math.log10(yrs));
+    return (yrs/Math.pow(10,exp)).toFixed(1)+'e'+exp+' years';
+  }
+  for(var i=0;i<units.length;i++){
+    if(seconds>=units[i][1]){
+      var v=seconds/units[i][1];
+      return v.toFixed(v<10?1:0)+' '+units[i][0]+(v>=2?'s':'');
+    }
+  }
+  return seconds.toFixed(1)+' seconds';
+}
+
+function analyze(pw,charsetSize){
+  charsetSize=charsetSize||charsetSizeOf(pw);
+  var len=pw.length;
+  var entropy=len*Math.log2(charsetSize);
+  var combos=Math.pow(charsetSize,len);
+  document.getElementById('entropyText').textContent=(len?Math.round(entropy):0)+' bits entropy';
+
+  var fill=document.getElementById('strengthFill'), text=document.getElementById('strengthText');
+  var pct, label, color;
+  if(!len){ pct=0; label='—'; color='var(--red)'; }
+  else if(entropy<28){ pct=20; label='Very Weak'; color='#ff4d6a'; }
+  else if(entropy<36){ pct=40; label='Weak'; color='var(--red)'; }
+  else if(entropy<60){ pct=60; label='Fair'; color='var(--amber)'; }
+  else if(entropy<80){ pct=80; label='Strong'; color='#a3e635'; }
+  else { pct=100; label='Very Strong'; color='var(--green)'; }
+  fill.style.width=pct+'%'; fill.style.background=color; text.textContent=label; text.style.color=color;
+
+  var speeds=[
+    ['Online (100/sec)',100],
+    ['Slow Offline (10k/sec)',1e4],
+    ['Fast GPU (10B/sec)',1e10],
+    ['Cluster (1T/sec)',1e12]
+  ];
+  var grid=document.getElementById('crackGrid'); grid.innerHTML='';
+  speeds.forEach(function(s){
+    var secs=combos/2/s[1];
+    var chip=document.createElement('div'); chip.className='crack-chip';
+    chip.innerHTML='<div class="k">'+s[0]+'</div><div class="v">'+fmtTime(secs)+'</div>';
+    grid.appendChild(chip);
+  });
+}
+
+document.querySelectorAll('.mode-tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.mode-tab').forEach(function(t){t.classList.remove('active');});
+    tab.classList.add('active');
+    var mode=tab.dataset.mode;
+    document.getElementById('randomPanel').style.display=mode==='random'?'block':'none';
+    document.getElementById('pinPanel').style.display=mode==='pin'?'block':'none';
+    document.getElementById('checkPanel').style.display=mode==='check'?'block':'none';
+    if(mode==='random') generatePassword();
+    else if(mode==='pin') generatePin();
+    else analyze(document.getElementById('testPw').value);
+  });
+});
+
+document.getElementById('genBtn').onclick=generatePassword;
+document.getElementById('regenBtn').onclick=generatePassword;
+document.getElementById('pinGenBtn').onclick=generatePin;
+document.getElementById('pinRegenBtn').onclick=generatePin;
+document.getElementById('lenSlider').oninput=function(){document.getElementById('lenVal').textContent=this.value;generatePassword();};
+document.getElementById('pinLenSlider').oninput=function(){document.getElementById('pinLenVal').textContent=this.value;generatePin();};
+['optUpper','optLower','optNumber','optSymbol','optAmbig','optSimilarSpace'].forEach(function(id){
+  document.getElementById(id).onchange=generatePassword;
+});
+document.getElementById('testPw').oninput=function(){analyze(this.value);};
+
+function doCopy(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    btn.classList.add('copied'); btn.textContent='✓';
+    setTimeout(function(){btn.classList.remove('copied');btn.textContent='⧉';},1200);
+  });
+}
+document.getElementById('copyBtn').onclick=function(){doCopy(document.getElementById('outputField').textContent,this);};
+document.getElementById('pinCopyBtn').onclick=function(){doCopy(document.getElementById('pinField').textContent,this);};
+
+generatePassword();
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>
