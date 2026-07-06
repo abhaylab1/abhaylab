@@ -58,15 +58,7 @@ lbl{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text
 .pop-flag{font-size:1.3rem;display:block;margin-bottom:3px;}
 .pop-code{font-family:monospace;font-size:11px;color:var(--ph);font-weight:700;}
 .pop-rate{font-family:monospace;font-size:9px;color:var(--dim);margin-top:2px;word-break:break-all;}
-.history-section{margin-top:0;}
-.history-section lbl{margin-bottom:10px;}
-.hist-list{display:flex;flex-direction:column;gap:6px;}
-.hist-item{background:#070b09;border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-family:monospace;font-size:12px;gap:10px;}
-.hist-item .from{color:var(--dim);}
-.hist-item .to{color:var(--ph);font-weight:700;}
-.hist-item .time{font-size:10px;color:var(--dim);flex-shrink:0;}
-.clear-hist{background:none;border:1px solid var(--line);color:var(--dim);border-radius:6px;padding:4px 10px;font-size:10px;font-family:monospace;cursor:pointer;float:right;margin-top:-8px;transition:.15s;}
-.clear-hist:hover{border-color:#ff6a8a;color:#ff6a8a;}
+
 @media(max-width:480px){
   .conv-grid{grid-template-columns:1fr;gap:8px;}
   .swap-col{flex-direction:row;justify-content:center;padding:0;}
@@ -205,11 +197,6 @@ lbl{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text
     <lbl>Popular vs <span id="baseLbl">USD</span></lbl>
     <div class="pop-grid" id="popGrid"></div>
   </div>
-
-  <div class="panel history-section">
-    <lbl>Recent Conversions <button class="clear-hist" onclick="clearHistory()">Clear</button></lbl>
-    <div class="hist-list" id="histList"><div style="font-size:12px;color:var(--dim);font-family:monospace;">No conversions yet.</div></div>
-  </div>
 </div>
 
 <script>
@@ -232,8 +219,9 @@ var FLAGS = {
 };
 var POPULAR = ['EUR','GBP','JPY','INR','AUD','CAD','AED','CHF','CNY','SGD','SAR','KWD'];
 
-var rates = {};
-var history = [];
+var rates = {USD:1,EUR:0.92,GBP:0.79,JPY:149.5,INR:83.5,AUD:1.53,CAD:1.36,CHF:0.88,
+       CNY:7.24,AED:3.67,SAR:3.75,SGD:1.34,HKD:7.82,KWD:0.308,QAR:3.64,
+       BRL:4.97,MXN:17.2,ZAR:18.6,TRY:30.8,KRW:1320,BHD:0.376,OMR:0.385};
 var fromSel=document.getElementById('fromCur'), toSel=document.getElementById('toCur');
 var amtInp=document.getElementById('amount');
 
@@ -334,7 +322,6 @@ function convert() {
   var bkwdRate=(rates[from]/rates[to]);
   document.getElementById('resultRate').textContent='1 '+from+' = '+fwdRate.toFixed(6)+' '+to+' · 1 '+to+' = '+bkwdRate.toFixed(6)+' '+from;
   document.getElementById('baseLbl').textContent=from;
-  addHistory(amt,from,result,to);
 }
 
 function swap() {
@@ -355,37 +342,12 @@ function renderPopular() {
   });
 }
 
-function addHistory(fromAmt,fromCur,toAmt,toCur) {
-  if(history.length&&history[0].from===fromCur&&history[0].to===toCur) {
-    history[0]={from:fromCur,to:toCur,fromAmt:fromAmt,toAmt:toAmt,time:new Date()};
-  } else {
-    history.unshift({from:fromCur,to:toCur,fromAmt:fromAmt,toAmt:toAmt,time:new Date()});
-    if(history.length>8) history.pop();
-  }
-  renderHistory();
-}
-
-function renderHistory() {
-  var el=document.getElementById('histList');
-  if(!history.length){el.innerHTML='<div style="font-size:12px;color:var(--dim);font-family:monospace;">No conversions yet.</div>';return;}
-  el.innerHTML='';
-  history.forEach(function(h){
-    var div=document.createElement('div'); div.className='hist-item';
-    var toFmt=h.toAmt>=0.01?h.toAmt.toLocaleString(undefined,{maximumFractionDigits:4}):h.toAmt.toExponential(3);
-    div.innerHTML='<span class="from">'+h.fromAmt.toLocaleString()+' '+h.from+'</span>'
-      +'<span style="color:var(--dim)">→</span>'
-      +'<span class="to">'+toFmt+' '+h.to+'</span>'
-      +'<span class="time">'+h.time.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'})+'</span>';
-    el.appendChild(div);
-  });
-}
-
-function clearHistory(){history=[];renderHistory();}
-
 amtInp.oninput=convert;
 fromSel.onchange=function(){convert();renderPopular();};
 toSel.onchange=convert;
 
+convert();
+renderPopular();
 fetchRates();
 // Auto-refresh every 5 minutes
 setInterval(fetchRates, 5*60*1000);
