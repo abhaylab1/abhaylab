@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="blur image online, blur photo tool, gaussian blur online, motion blur photo, pixelate image, background blur tool, portrait blur, spot focus blur, free image blur tool"/>
+<meta name="description" content="Blur a photo online with Gaussian, Motion, Zoom, Pixelate, or Spot Focus (background blur) effects. Adjust intensity live and download the result. Runs entirely in your browser."/>
+<link rel="canonical" href="https://abhaylab.fun/blur-image/"/>
+<meta property="og:title" content="Free Blur Image Tool — Gaussian, Motion, Zoom &amp; More | Abhay Lab"/>
+<meta property="og:description" content="Blur a photo with multiple effects: Gaussian, Motion, Zoom, Pixelate, and Spot Focus. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/blur-image/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Blur Image Tool — Gaussian, Motion, Zoom &amp; More | Abhay Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;
+  --phosphor:#5dffb0;--phosphor-dim:#2d6b4f;
+  --amber:#ffb454;--text:#d8e6df;--text-dim:#6c8579;
+  --red:#ff6a8a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:36px 36px;opacity:0;animation:fadeIn .6s ease forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:linear-gradient(180deg,transparent 0%,rgba(93,255,176,.03) 50%,transparent 100%);
+  background-size:100% 6px;animation:scan 9s linear infinite;mix-blend-mode:screen}
+@keyframes scan{from{background-position-y:0}to{background-position-y:1000px}}
+.wrap{max-width:1160px;margin:0 auto;padding:40px 20px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:32px;flex-wrap:wrap;gap:10px}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--phosphor);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.brand .dot{width:7px;height:7px;border-radius:50%;background:var(--phosphor);box-shadow:0 0 8px var(--phosphor),0 0 16px var(--phosphor);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.readout{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.hero{margin-bottom:32px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;opacity:0;animation:rise .6s ease forwards .1s}
+h1{font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.05;letter-spacing:-.02em;color:#f3fbf7;opacity:0;animation:rise .6s ease forwards .2s}
+h1 span{color:var(--phosphor)}
+.sub{margin-top:12px;color:var(--text-dim);font-size:15px;max-width:560px;line-height:1.6;opacity:0;animation:rise .6s ease forwards .3s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:22px;opacity:0;animation:rise .6s ease forwards .4s}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px;position:relative;padding:18px}
+.card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);pointer-events:none}
+.card-title-row{display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor);margin-bottom:14px}
+.card-title-row .dot2{width:5px;height:5px;border-radius:50%;background:var(--phosphor);flex-shrink:0}
+
+.field-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;margin-top:16px}
+.field-label:first-of-type{margin-top:0}
+select{width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:7px;padding:9px 11px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer}
+select:focus{outline:none;border-color:var(--phosphor-dim)}
+
+/* DROPZONE */
+.dropzone{border:1px dashed var(--line);border-radius:10px;padding:36px 18px;text-align:center;cursor:pointer;transition:border-color .18s ease,background .18s ease;position:relative}
+.dropzone:hover,.dropzone.drag{border-color:var(--phosphor);background:rgba(93,255,176,.04)}
+.dropzone .icon{width:38px;height:38px;margin:0 auto 12px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.dropzone .icon svg{width:17px;height:17px;stroke:var(--text-dim)}
+.dropzone .title{font-weight:600;font-size:14px;margin-bottom:5px;color:#f3fbf7}
+.dropzone .subtext{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.04em}
+input[type=file]{display:none}
+
+/* BLUR TYPE TABS */
+.blur-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.blur-tab{background:#070b09;border:1px solid var(--line);border-radius:8px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .15s ease}
+.blur-tab:hover{border-color:var(--phosphor-dim)}
+.blur-tab.active{border-color:var(--phosphor);background:rgba(93,255,176,.06)}
+.blur-tab svg{width:18px;height:18px;stroke:var(--text-dim);margin-bottom:6px}
+.blur-tab.active svg{stroke:var(--phosphor)}
+.blur-tab .bt-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)}
+.blur-tab.active .bt-label{color:var(--phosphor)}
+
+.slider-row{margin-top:16px}
+.slider-row:first-of-type{margin-top:0}
+.slider-row .sr-label{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.slider-row .sr-label span.val{color:var(--phosphor)}
+input[type=range]{width:100%;margin-top:8px;accent-color:var(--phosphor)}
+
+.shape-toggle{display:flex;gap:8px;margin-top:8px}
+.shape-btn{flex:1;background:#070b09;border:1px solid var(--line);border-radius:7px;padding:8px 4px;cursor:pointer;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);transition:all .15s ease}
+.shape-btn:hover{border-color:var(--phosphor-dim)}
+.shape-btn.active{border-color:var(--phosphor);background:rgba(93,255,176,.06);color:var(--phosphor)}
+
+.hint-note{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);line-height:1.6;margin-top:14px}
+
+/* STAGE */
+.stage{display:flex;flex-direction:column}
+.chart-outer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;position:relative}
+.chart-outer::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent)}
+.corner{position:absolute;width:14px;height:14px;border-color:var(--phosphor-dim)}
+.corner.tl{top:8px;left:8px;border-top:2px solid;border-left:2px solid}
+.corner.tr{top:8px;right:8px;border-top:2px solid;border-right:2px solid}
+.corner.bl{bottom:8px;left:8px;border-bottom:2px solid;border-left:2px solid}
+.corner.br{bottom:8px;right:8px;border-bottom:2px solid;border-right:2px solid}
+
+.canvas-stage-wrap{display:flex;align-items:center;justify-content:center;min-height:420px;padding:14px 0}
+.canvas-holder{position:relative;max-width:100%;box-shadow:0 0 0 1px var(--line),0 18px 40px -16px rgba(93,255,176,0.18);border-radius:2px;overflow:hidden;line-height:0}
+.canvas-holder canvas{display:block;max-width:100%;height:auto;cursor:crosshair}
+.canvas-holder.no-crosshair canvas{cursor:default}
+.focal-dot{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid var(--phosphor);background:rgba(93,255,176,.25);transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 8px rgba(93,255,176,.6);display:none}
+.empty-hint{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;text-align:center}
+
+.meta{margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.08em;text-align:center;min-height:14px}
+.downloads{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.dl-btn{flex:1;min-width:150px;background:transparent;border:1px solid var(--line);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;padding:11px 8px;border-radius:8px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
+.dl-btn:hover:not(:disabled){border-color:var(--phosphor);color:var(--phosphor);background:rgba(93,255,176,.06);transform:translateY(-1px)}
+.dl-btn:disabled{opacity:.35;cursor:not-allowed}
+.dl-btn.primary{background:var(--phosphor);border-color:var(--phosphor);color:#06120c;font-weight:600}
+.dl-btn.primary:hover:not(:disabled){background:#74ffc0;color:#06120c}
+.dl-btn.ghost{flex:0 0 auto;min-width:auto;padding:11px 14px}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.08em}
+::selection{background:var(--phosphor-dim);color:#fff}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="../index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+            <a href="../passport-photo-maker/">Passport Photo Maker</a>
+            <a href="../blur-image/" class="active" aria-current="page">Blur Image</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="../bmi-calculator/">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="../dice-roller/">Dice Roller</a>
+            <a href="../picker-wheel/">Picker Wheel</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+<div class="scanline"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span> Abhay Lab</div>
+    <div class="readout">MODULE // BLUR-IMAGE&nbsp;&nbsp;STATUS: <span style="color:var(--phosphor)">READY</span></div>
+  </header>
+  <div class="hero">
+    <div class="eyebrow">Instrument 08 — Effects</div>
+    <h1>Blur it your <span>way.</span></h1>
+    <p class="sub">Gaussian, Motion, Zoom, Pixelate, or Spot Focus (blur the background, keep a subject sharp). Adjust live, then download at full resolution.</p>
+  </div>
+
+  <div class="main-grid">
+    <div class="left-panel">
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Photo</div>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop a photo">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+          <div class="title" id="dropzoneTitle">Drop a photo, or click to browse</div>
+          <div class="subtext">any image — jpg, png, webp</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*">
+      </div>
+
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Blur type</div>
+        <div class="blur-tabs" id="blurTabs">
+          <div class="blur-tab active" data-type="gaussian">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5" stroke-dasharray="2 2"/></svg>
+            <div class="bt-label">Gaussian</div>
+          </div>
+          <div class="blur-tab" data-type="motion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="3" y1="8" x2="15" y2="8"/><line x1="3" y1="12" x2="19" y2="12"/><line x1="3" y1="16" x2="15" y2="16"/></svg>
+            <div class="bt-label">Motion</div>
+          </div>
+          <div class="blur-tab" data-type="zoom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="3"/></svg>
+            <div class="bt-label">Zoom</div>
+          </div>
+          <div class="blur-tab" data-type="pixelate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <div class="bt-label">Pixelate</div>
+          </div>
+          <div class="blur-tab" data-type="spot" style="grid-column:span 2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2" stroke-dasharray="2 2"/><circle cx="12" cy="12" r="4"/></svg>
+            <div class="bt-label">Spot Focus (background blur)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="settingsCard">
+        <div class="card-title-row"><span class="dot2"></span>Settings</div>
+        <div id="settingsBody"></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="chart-outer">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="canvas-stage-wrap">
+          <div class="canvas-holder no-crosshair" id="canvasHolder">
+            <div class="empty-hint" id="emptyHint">UPLOAD A PHOTO<br>TO BEGIN</div>
+            <canvas id="previewCanvas" style="display:none"></canvas>
+            <div class="focal-dot" id="focalDot"></div>
+          </div>
+        </div>
+        <div class="meta" id="meta">—</div>
+        <div class="downloads">
+          <button class="dl-btn ghost" id="btnReset" disabled title="Reset to original">Reset</button>
+          <button class="dl-btn primary" id="dlBtn" disabled>Download blurred image</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© Abhay Lab — Client-side image blur</span>
+    <span>No data leaves your device</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var $ = id => document.getElementById(id);
+  var dropzone = $('dropzone'), fileInput = $('fileInput'), canvasHolder = $('canvasHolder'), emptyHint = $('emptyHint');
+  var previewCanvas = $('previewCanvas'), focalDot = $('focalDot'), meta = $('meta'), dlBtn = $('dlBtn'), btnReset = $('btnReset');
+  var settingsBody = $('settingsBody');
+
+  var img = null, natW=0, natH=0;
+  var blurType = 'gaussian';
+  var PREVIEW_MAX = 560;
+  var previewScale = 1;
+
+  // focal point (percent of image) used by zoom + spot modes
+  var focalX = 50, focalY = 50;
+
+  var params = {
+    gaussian: { intensity: 12 },
+    motion:   { strength: 18, angle: 0 },
+    zoom:     { strength: 22 },
+    pixelate: { block: 14 },
+    spot:     { shape:'circle', radius: 26, intensity: 16, feather: 30 }
+  };
+
+  var SETTINGS_HTML = {
+    gaussian: function(p){
+      return '<div class="slider-row"><div class="sr-label"><span>Intensity</span><span class="val" id="v_intensity">'+p.intensity+'px</span></div>'+
+             '<input type="range" id="s_intensity" min="0" max="40" value="'+p.intensity+'"></div>'+
+             '<div class="hint-note">Uniform soft blur across the whole photo.</div>';
+    },
+    motion: function(p){
+      return '<div class="slider-row"><div class="sr-label"><span>Strength</span><span class="val" id="v_strength">'+p.strength+'px</span></div>'+
+             '<input type="range" id="s_strength" min="0" max="40" value="'+p.strength+'"></div>'+
+             '<div class="slider-row"><div class="sr-label"><span>Angle</span><span class="val" id="v_angle">'+p.angle+'°</span></div>'+
+             '<input type="range" id="s_angle" min="0" max="180" value="'+p.angle+'"></div>'+
+             '<div class="hint-note">Streaks the image along a direction — good for a sense of speed.</div>';
+    },
+    zoom: function(p){
+      return '<div class="slider-row"><div class="sr-label"><span>Strength</span><span class="val" id="v_strength">'+p.strength+'</span></div>'+
+             '<input type="range" id="s_strength" min="0" max="40" value="'+p.strength+'"></div>'+
+             '<div class="hint-note">Click on the photo to set the zoom center, then blurs radiate outward from it.</div>';
+    },
+    pixelate: function(p){
+      return '<div class="slider-row"><div class="sr-label"><span>Block size</span><span class="val" id="v_block">'+p.block+'px</span></div>'+
+             '<input type="range" id="s_block" min="2" max="50" value="'+p.block+'"></div>'+
+             '<div class="hint-note">Mosaic effect — great for hiding faces or text.</div>';
+    },
+    spot: function(p){
+      return '<label class="field-label">Focus shape</label>'+
+             '<div class="shape-toggle" id="shapeToggle">'+
+               '<div class="shape-btn'+(p.shape==='circle'?' active':'')+'" data-shape="circle">Circle</div>'+
+               '<div class="shape-btn'+(p.shape==='rect'?' active':'')+'" data-shape="rect">Rectangle</div>'+
+             '</div>'+
+             '<div class="slider-row"><div class="sr-label"><span>Focus size</span><span class="val" id="v_radius">'+p.radius+'%</span></div>'+
+             '<input type="range" id="s_radius" min="8" max="45" value="'+p.radius+'"></div>'+
+             '<div class="slider-row"><div class="sr-label"><span>Background blur</span><span class="val" id="v_intensity2">'+p.intensity+'px</span></div>'+
+             '<input type="range" id="s_intensity2" min="2" max="40" value="'+p.intensity+'"></div>'+
+             '<div class="slider-row"><div class="sr-label"><span>Feather</span><span class="val" id="v_feather">'+p.feather+'px</span></div>'+
+             '<input type="range" id="s_feather" min="0" max="80" value="'+p.feather+'"></div>'+
+             '<div class="hint-note">Click on the photo to place the sharp focus area (like portrait mode).</div>';
+    }
+  };
+
+  function renderSettings(){
+    var p = params[blurType];
+    settingsBody.innerHTML = SETTINGS_HTML[blurType](p);
+    wireSettingsInputs();
+    updateFocalDotVisibility();
+  }
+
+  function wireSettingsInputs(){
+    var p = params[blurType];
+    if(blurType==='gaussian'){
+      bindRange('s_intensity','v_intensity','px', function(v){ p.intensity=v; });
+    } else if(blurType==='motion'){
+      bindRange('s_strength','v_strength','px', function(v){ p.strength=v; });
+      bindRange('s_angle','v_angle','°', function(v){ p.angle=v; });
+    } else if(blurType==='zoom'){
+      bindRange('s_strength','v_strength','', function(v){ p.strength=v; });
+    } else if(blurType==='pixelate'){
+      bindRange('s_block','v_block','px', function(v){ p.block=v; });
+    } else if(blurType==='spot'){
+      bindRange('s_radius','v_radius','%', function(v){ p.radius=v; });
+      bindRange('s_intensity2','v_intensity2','px', function(v){ p.intensity=v; });
+      bindRange('s_feather','v_feather','px', function(v){ p.feather=v; });
+      document.querySelectorAll('#shapeToggle .shape-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          document.querySelectorAll('#shapeToggle .shape-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          p.shape = btn.dataset.shape;
+          render();
+        });
+      });
+    }
+  }
+
+  function bindRange(inputId, labelId, suffix, setter){
+    var el = $(inputId);
+    if(!el) return;
+    el.addEventListener('input', function(){
+      var v = parseInt(el.value);
+      setter(v);
+      $(labelId).textContent = v+suffix;
+      render();
+    });
+  }
+
+  document.querySelectorAll('#blurTabs .blur-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('#blurTabs .blur-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      blurType = tab.dataset.type;
+      renderSettings();
+      render();
+    });
+  });
+
+  function updateFocalDotVisibility(){
+    var showDot = img && (blurType==='zoom' || blurType==='spot');
+    canvasHolder.classList.toggle('no-crosshair', !showDot);
+    positionFocalDot();
+    focalDot.style.display = showDot ? 'block':'none';
+  }
+
+  function positionFocalDot(){
+    if(!img) return;
+    var rect = previewCanvas.getBoundingClientRect();
+    var holderRect = canvasHolder.getBoundingClientRect();
+    focalDot.style.left = (rect.left - holderRect.left + rect.width*(focalX/100)) + 'px';
+    focalDot.style.top = (rect.top - holderRect.top + rect.height*(focalY/100)) + 'px';
+  }
+
+  canvasHolder.addEventListener('click', function(e){
+    if(!img) return;
+    if(blurType!=='zoom' && blurType!=='spot') return;
+    var rect = previewCanvas.getBoundingClientRect();
+    focalX = Math.max(0, Math.min(100, ((e.clientX-rect.left)/rect.width)*100));
+    focalY = Math.max(0, Math.min(100, ((e.clientY-rect.top)/rect.height)*100));
+    positionFocalDot();
+    render();
+  });
+
+  dropzone.addEventListener('click', function(){ fileInput.click(); });
+  dropzone.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fileInput.click(); } });
+  ['dragenter','dragover'].forEach(evt=>dropzone.addEventListener(evt, function(e){ e.preventDefault(); dropzone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(evt=>dropzone.addEventListener(evt, function(e){ e.preventDefault(); dropzone.classList.remove('drag'); }));
+  dropzone.addEventListener('drop', function(e){ handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', function(e){ handleFile(e.target.files[0]); fileInput.value=''; });
+
+  function handleFile(file){
+    if(!file || !file.type.startsWith('image/')) return;
+    var url = URL.createObjectURL(file);
+    var im = new Image();
+    im.onload = function(){
+      natW = im.naturalWidth; natH = im.naturalHeight;
+      img = im;
+      focalX = 50; focalY = 50;
+      if(emptyHint){ emptyHint.remove(); emptyHint = null; }
+      previewCanvas.style.display = 'block';
+      var scale = Math.min(PREVIEW_MAX/natW, PREVIEW_MAX/natH, 1);
+      previewScale = scale;
+      previewCanvas.width = Math.round(natW*scale);
+      previewCanvas.height = Math.round(natH*scale);
+      $('dropzoneTitle').textContent = file.name.length > 28 ? file.name.slice(0,25)+'…' : file.name;
+      dlBtn.disabled = false; btnReset.disabled = false;
+      updateFocalDotVisibility();
+      render();
+      renderMeta();
+    };
+    im.src = url;
+  }
+
+  btnReset.addEventListener('click', function(){
+    params = {
+      gaussian: { intensity: 12 },
+      motion:   { strength: 18, angle: 0 },
+      zoom:     { strength: 22 },
+      pixelate: { block: 14 },
+      spot:     { shape:'circle', radius: 26, intensity: 16, feather: 30 }
+    };
+    focalX = 50; focalY = 50;
+    renderSettings();
+    positionFocalDot();
+    render();
+  });
+
+  window.addEventListener('resize', positionFocalDot);
+
+  // ---- BLUR ALGORITHMS (operate on any canvas ctx at its own resolution) ----
+
+  function applyGaussian(ctx, srcImg, w, h, intensity){
+    ctx.clearRect(0,0,w,h);
+    ctx.filter = intensity>0 ? 'blur('+intensity+'px)' : 'none';
+    ctx.drawImage(srcImg, 0,0, w,h);
+    ctx.filter = 'none';
+  }
+
+  function applyMotion(ctx, srcImg, w, h, strength, angleDeg){
+    ctx.clearRect(0,0,w,h);
+    if(strength<=0){ ctx.drawImage(srcImg,0,0,w,h); return; }
+    var steps = 24;
+    var rad = angleDeg*Math.PI/180;
+    var dx = Math.cos(rad), dy = Math.sin(rad);
+    ctx.save();
+    ctx.globalAlpha = 1/steps;
+    for(var i=0;i<steps;i++){
+      var t = (i/(steps-1) - 0.5) * strength;
+      ctx.drawImage(srcImg, dx*t, dy*t, w, h);
+    }
+    ctx.restore();
+  }
+
+  function applyZoom(ctx, srcImg, w, h, strength, cxPct, cyPct){
+    ctx.clearRect(0,0,w,h);
+    if(strength<=0){ ctx.drawImage(srcImg,0,0,w,h); return; }
+    var cx = w*(cxPct/100), cy = h*(cyPct/100);
+    var steps = 20;
+    ctx.save();
+    ctx.globalAlpha = 1/steps;
+    for(var i=0;i<steps;i++){
+      var s = 1 + (i/(steps-1)) * (strength/100);
+      var dw = w*s, dh = h*s;
+      var dxOff = cx - (cx/w)*dw;
+      var dyOff = cy - (cy/h)*dh;
+      ctx.drawImage(srcImg, dxOff, dyOff, dw, dh);
+    }
+    ctx.restore();
+  }
+
+  function applyPixelate(ctx, srcImg, w, h, block){
+    ctx.clearRect(0,0,w,h);
+    if(block<=1){ ctx.drawImage(srcImg,0,0,w,h); return; }
+    var sw = Math.max(1, Math.round(w/block)), sh = Math.max(1, Math.round(h/block));
+    var tmp = document.createElement('canvas');
+    tmp.width = sw; tmp.height = sh;
+    var tctx = tmp.getContext('2d');
+    tctx.drawImage(srcImg, 0,0, sw, sh);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(tmp, 0,0, sw, sh, 0,0, w, h);
+    ctx.imageSmoothingEnabled = true;
+  }
+
+  function applySpot(ctx, srcImg, w, h, opts){
+    ctx.clearRect(0,0,w,h);
+    // sharp base
+    ctx.drawImage(srcImg, 0,0, w,h);
+
+    // blurred layer
+    var blurCanvas = document.createElement('canvas');
+    blurCanvas.width = w; blurCanvas.height = h;
+    var bctx = blurCanvas.getContext('2d');
+    bctx.filter = opts.intensity>0 ? 'blur('+opts.intensity+'px)' : 'none';
+    bctx.drawImage(srcImg, 0,0, w,h);
+    bctx.filter = 'none';
+
+    // feathered mask (opaque shape = erase blur there = reveal sharp)
+    var maskCanvas = document.createElement('canvas');
+    maskCanvas.width = w; maskCanvas.height = h;
+    var mctx = maskCanvas.getContext('2d');
+    mctx.filter = opts.feather>0 ? 'blur('+opts.feather+'px)' : 'none';
+    mctx.fillStyle = '#000';
+    var cx = w*(opts.cxPct/100), cy = h*(opts.cyPct/100);
+    var rPx = Math.min(w,h) * (opts.radius/100);
+    if(opts.shape === 'circle'){
+      mctx.beginPath();
+      mctx.arc(cx, cy, rPx, 0, Math.PI*2);
+      mctx.fill();
+    } else {
+      var rw = rPx*1.7, rh = rPx*1.25;
+      mctx.fillRect(cx-rw, cy-rh, rw*2, rh*2);
+    }
+    mctx.filter = 'none';
+
+    bctx.globalCompositeOperation = 'destination-out';
+    bctx.drawImage(maskCanvas, 0,0);
+    bctx.globalCompositeOperation = 'source-over';
+
+    ctx.drawImage(blurCanvas, 0,0);
+  }
+
+  function render(){
+    if(!img) return;
+    var ctx = previewCanvas.getContext('2d');
+    var w = previewCanvas.width, h = previewCanvas.height;
+    var p = params[blurType];
+    if(blurType==='pixelate'){
+      applyPixelate(ctx, img, w, h, p.block * previewScale);
+    } else if(blurType==='gaussian'){
+      applyGaussian(ctx, img, w, h, p.intensity * previewScale);
+    } else if(blurType==='motion'){
+      applyMotion(ctx, img, w, h, p.strength * previewScale, p.angle);
+    } else if(blurType==='zoom'){
+      applyZoom(ctx, img, w, h, p.strength, focalX, focalY);
+    } else if(blurType==='spot'){
+      applySpot(ctx, img, w, h, { shape:p.shape, radius:p.radius, intensity:p.intensity*previewScale, feather:p.feather*previewScale, cxPct:focalX, cyPct:focalY });
+    }
+    positionFocalDot();
+    renderMeta();
+  }
+
+  function renderMeta(){
+    if(!img){ meta.textContent='—'; return; }
+    var names = {gaussian:'Gaussian', motion:'Motion', zoom:'Zoom', pixelate:'Pixelate', spot:'Spot Focus'};
+    meta.textContent = names[blurType]+' · '+natW+'×'+natH+'px source';
+  }
+
+  dlBtn.addEventListener('click', function(){
+    if(!img) return;
+    var canvas = document.createElement('canvas');
+    canvas.width = natW; canvas.height = natH;
+    var ctx = canvas.getContext('2d');
+    var p = params[blurType];
+    if(blurType==='pixelate') applyPixelate(ctx, img, natW, natH, p.block);
+    else if(blurType==='gaussian') applyGaussian(ctx, img, natW, natH, p.intensity);
+    else if(blurType==='motion') applyMotion(ctx, img, natW, natH, p.strength, p.angle);
+    else if(blurType==='zoom') applyZoom(ctx, img, natW, natH, p.strength, focalX, focalY);
+    else if(blurType==='spot') applySpot(ctx, img, natW, natH, { shape:p.shape, radius:p.radius, intensity:p.intensity, feather:p.feather, cxPct:focalX, cyPct:focalY });
+    canvas.toBlob(function(blob){
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'abhay-lab-blurred-image.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    }, 'image/png');
+  });
+
+  renderSettings();
+})();
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

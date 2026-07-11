@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="bmi calculator, body mass index calculator, free bmi calculator online, healthy weight range calculator, bmi chart, metric imperial bmi calculator, weight category calculator, adult bmi calculator"/>
+<meta name="description" content="Calculate your Body Mass Index (BMI) in metric or imperial units. See your category, a visual gauge, and your healthy weight range instantly. Runs entirely in your browser."/>
+<link rel="canonical" href="https://abhaylab.fun/bmi-calculator/"/>
+<meta property="og:title" content="Free BMI Calculator — Metric &amp; Imperial | Abhay Lab"/>
+<meta property="og:description" content="Calculate your Body Mass Index (BMI), see your category and healthy weight range instantly. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/bmi-calculator/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free BMI Calculator — Metric &amp; Imperial | Abhay Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;
+  --phosphor:#5dffb0;--phosphor-dim:#2d6b4f;
+  --amber:#ffb454;--text:#d8e6df;--text-dim:#6c8579;
+  --red:#ff6a8a;--blue:#6aa9ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:36px 36px;opacity:0;animation:fadeIn .6s ease forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:linear-gradient(180deg,transparent 0%,rgba(93,255,176,.03) 50%,transparent 100%);
+  background-size:100% 6px;animation:scan 9s linear infinite;mix-blend-mode:screen}
+@keyframes scan{from{background-position-y:0}to{background-position-y:1000px}}
+.wrap{max-width:1160px;margin:0 auto;padding:40px 20px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:32px;flex-wrap:wrap;gap:10px}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--phosphor);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.brand .dot{width:7px;height:7px;border-radius:50%;background:var(--phosphor);box-shadow:0 0 8px var(--phosphor),0 0 16px var(--phosphor);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.readout{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.hero{margin-bottom:32px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;opacity:0;animation:rise .6s ease forwards .1s}
+h1{font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.05;letter-spacing:-.02em;color:#f3fbf7;opacity:0;animation:rise .6s ease forwards .2s}
+h1 span{color:var(--phosphor)}
+.sub{margin-top:12px;color:var(--text-dim);font-size:15px;max-width:560px;line-height:1.6;opacity:0;animation:rise .6s ease forwards .3s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:22px;opacity:0;animation:rise .6s ease forwards .4s}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px;position:relative;padding:18px 18px 20px}
+.card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);pointer-events:none}
+.card-title-row{display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor);margin-bottom:14px}
+.card-title-row .dot2{width:5px;height:5px;border-radius:50%;background:var(--phosphor);flex-shrink:0}
+
+.unit-toggle{display:flex;gap:8px;margin-bottom:18px}
+.unit-btn{flex:1;background:#070b09;border:1px solid var(--line);border-radius:8px;padding:9px 4px;cursor:pointer;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);transition:all .15s ease}
+.unit-btn:hover{border-color:var(--phosphor-dim)}
+.unit-btn.active{border-color:var(--phosphor);background:rgba(93,255,176,.06);color:var(--phosphor)}
+
+.field-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;margin-top:16px}
+.field-label:first-of-type{margin-top:0}
+input[type=number]{
+  width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);
+  border-radius:7px;padding:10px 11px;font-family:'IBM Plex Mono',monospace;font-size:15px;
+  transition:border-color .2s,box-shadow .2s}
+input[type=number]:focus{outline:none;border-color:var(--phosphor-dim);box-shadow:0 0 0 3px rgba(93,255,176,.08)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.units-suffix{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);margin-top:5px}
+
+.age-gender-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select{width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:7px;padding:10px 11px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer}
+select:focus{outline:none;border-color:var(--phosphor-dim)}
+
+/* STAGE */
+.stage{display:flex;flex-direction:column}
+.result-outer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;position:relative;text-align:center}
+.result-outer::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent)}
+.corner{position:absolute;width:14px;height:14px;border-color:var(--phosphor-dim)}
+.corner.tl{top:8px;left:8px;border-top:2px solid;border-left:2px solid}
+.corner.tr{top:8px;right:8px;border-top:2px solid;border-right:2px solid}
+.corner.bl{bottom:8px;left:8px;border-bottom:2px solid;border-left:2px solid}
+.corner.br{bottom:8px;right:8px;border-bottom:2px solid;border-right:2px solid}
+
+.bmi-value{font-family:'IBM Plex Mono',monospace;font-size:clamp(48px,9vw,76px);font-weight:600;color:var(--phosphor);line-height:1;margin:6px 0 4px}
+.bmi-category{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:20px;border:1px solid var(--line);margin-bottom:8px}
+.bmi-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.14em;text-transform:uppercase}
+
+.gauge-wrap{margin:28px 0 8px;position:relative}
+.gauge-track{height:14px;border-radius:8px;overflow:hidden;display:flex;position:relative}
+.gauge-seg{height:100%}
+.gauge-pointer{position:absolute;top:-9px;width:2px;height:32px;background:#f3fbf7;box-shadow:0 0 8px rgba(255,255,255,.6);transition:left .3s ease}
+.gauge-pointer::after{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #f3fbf7}
+.gauge-ticks{display:flex;justify-content:space-between;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)}
+
+.range-note{margin-top:22px;padding-top:20px;border-top:1px solid var(--line);text-align:left}
+.range-note .rn-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.range-note .rn-value{font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--phosphor)}
+
+.legend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:22px}
+.legend-item{background:#070b09;border:1px solid var(--line);border-radius:9px;padding:11px 8px;text-align:center}
+.legend-item .lg-dot{width:8px;height:8px;border-radius:50%;margin:0 auto 6px}
+.legend-item .lg-name{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim)}
+.legend-item .lg-range{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-dim);opacity:.7;margin-top:2px}
+@media(max-width:520px){.legend-grid{grid-template-columns:repeat(2,1fr)}}
+
+.meta-note{margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);line-height:1.7}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.08em}
+::selection{background:var(--phosphor-dim);color:#fff}
+</style>
+<style id="abhaylab-nav-css">
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="../index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+            <a href="../passport-photo-maker/">Passport Photo Maker</a>
+            <a href="../blur-image/">Blur Image</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="../bmi-calculator/" class="active" aria-current="page">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="../dice-roller/">Dice Roller</a>
+            <a href="../picker-wheel/">Picker Wheel</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+<div class="scanline"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span> Abhay Lab</div>
+    <div class="readout">MODULE // BMI-CALC&nbsp;&nbsp;STATUS: <span style="color:var(--phosphor)">READY</span></div>
+  </header>
+  <div class="hero">
+    <div class="eyebrow">Instrument 06 — Health</div>
+    <h1>Know your <span>numbers</span>.</h1>
+    <p class="sub">Enter your height and weight — get your BMI, category, and a healthy weight range instantly. Nothing leaves your browser.</p>
+  </div>
+
+  <div class="main-grid">
+    <div class="left-panel">
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Units</div>
+        <div class="unit-toggle" id="unitToggle">
+          <div class="unit-btn active" data-unit="metric">Metric (cm / kg)</div>
+          <div class="unit-btn" data-unit="imperial">Imperial (ft-in / lb)</div>
+        </div>
+
+        <div id="metricFields">
+          <label class="field-label" for="cmHeight">Height</label>
+          <input type="number" id="cmHeight" value="170" min="0" step="0.5">
+          <div class="units-suffix">centimeters</div>
+
+          <label class="field-label" for="kgWeight">Weight</label>
+          <input type="number" id="kgWeight" value="68" min="0" step="0.1">
+          <div class="units-suffix">kilograms</div>
+        </div>
+
+        <div id="imperialFields" style="display:none">
+          <label class="field-label">Height</label>
+          <div class="two-col">
+            <div>
+              <input type="number" id="ftHeight" value="5" min="0" step="1">
+              <div class="units-suffix">feet</div>
+            </div>
+            <div>
+              <input type="number" id="inHeight" value="7" min="0" max="11" step="1">
+              <div class="units-suffix">inches</div>
+            </div>
+          </div>
+
+          <label class="field-label" for="lbWeight">Weight</label>
+          <input type="number" id="lbWeight" value="150" min="0" step="0.5">
+          <div class="units-suffix">pounds</div>
+        </div>
+
+        <label class="field-label">Age &amp; Gender <span style="opacity:.6">(optional)</span></label>
+        <div class="age-gender-row">
+          <input type="number" id="ageInput" placeholder="Age" min="2" max="120">
+          <select id="genderInput">
+            <option value="">Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="result-outer">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+
+        <div class="bmi-label">Your BMI</div>
+        <div class="bmi-value" id="bmiValue">—</div>
+        <div class="bmi-category" id="bmiCategory">Enter your details</div>
+
+        <div class="gauge-wrap">
+          <div class="gauge-track" id="gaugeTrack">
+            <div class="gauge-pointer" id="gaugePointer" style="left:0%"></div>
+          </div>
+          <div class="gauge-ticks">
+            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40+</span>
+          </div>
+        </div>
+
+        <div class="range-note">
+          <div class="rn-label">Healthy weight range for your height</div>
+          <div class="rn-value" id="rangeValue">—</div>
+        </div>
+
+        <div class="legend-grid">
+          <div class="legend-item"><div class="lg-dot" style="background:var(--blue)"></div><div class="lg-name">Under</div><div class="lg-range">&lt;18.5</div></div>
+          <div class="legend-item"><div class="lg-dot" style="background:var(--phosphor)"></div><div class="lg-name">Normal</div><div class="lg-range">18.5–24.9</div></div>
+          <div class="legend-item"><div class="lg-dot" style="background:var(--amber)"></div><div class="lg-name">Over</div><div class="lg-range">25–29.9</div></div>
+          <div class="legend-item"><div class="lg-dot" style="background:var(--red)"></div><div class="lg-name">Obese</div><div class="lg-range">30+</div></div>
+        </div>
+
+        <div class="meta-note">BMI is a simple screening measure based on height and weight — it doesn't account for muscle mass, bone density, or body composition directly. It isn't a diagnosis. If you have concerns about your weight or health, talk to a doctor or registered dietitian.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© Abhay Lab — Client-side calculator</span>
+    <span>No data leaves your device</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var unit = 'metric';
+  var $ = id => document.getElementById(id);
+
+  document.querySelectorAll('#unitToggle .unit-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#unitToggle .unit-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      unit = btn.dataset.unit;
+      $('metricFields').style.display = unit==='metric' ? 'block':'none';
+      $('imperialFields').style.display = unit==='imperial' ? 'block':'none';
+      calc();
+    });
+  });
+
+  function getHeightM(){
+    if(unit==='metric'){
+      var cm = parseFloat($('cmHeight').value)||0;
+      return cm/100;
+    } else {
+      var ft = parseFloat($('ftHeight').value)||0;
+      var inch = parseFloat($('inHeight').value)||0;
+      var totalIn = ft*12 + inch;
+      return totalIn*0.0254;
+    }
+  }
+  function getWeightKg(){
+    if(unit==='metric'){
+      return parseFloat($('kgWeight').value)||0;
+    } else {
+      var lb = parseFloat($('lbWeight').value)||0;
+      return lb*0.453592;
+    }
+  }
+
+  function categoryOf(bmi){
+    if(bmi < 18.5) return {name:'Underweight', color:'var(--blue)'};
+    if(bmi < 25)   return {name:'Normal weight', color:'var(--phosphor)'};
+    if(bmi < 30)   return {name:'Overweight', color:'var(--amber)'};
+    return {name:'Obese', color:'var(--red)'};
+  }
+
+  function buildGauge(){
+    var track = $('gaugeTrack');
+    track.querySelectorAll('.gauge-seg').forEach(n=>n.remove());
+    // scale 15 -> 40
+    var stops = [
+      {from:15, to:18.5, color:'#6aa9ff'},
+      {from:18.5, to:25, color:'#5dffb0'},
+      {from:25, to:30, color:'#ffb454'},
+      {from:30, to:40, color:'#ff6a8a'}
+    ];
+    stops.forEach(function(s){
+      var seg = document.createElement('div');
+      seg.className = 'gauge-seg';
+      seg.style.width = ((s.to-s.from)/(40-15)*100)+'%';
+      seg.style.background = s.color;
+      track.insertBefore(seg, $('gaugePointer'));
+    });
+  }
+  buildGauge();
+
+  function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
+
+  function calc(){
+    var hM = getHeightM();
+    var wKg = getWeightKg();
+
+    if(hM <= 0 || wKg <= 0){
+      $('bmiValue').textContent = '—';
+      $('bmiCategory').textContent = 'Enter your details';
+      $('bmiCategory').style.borderColor = 'var(--line)';
+      $('bmiCategory').style.color = 'var(--text-dim)';
+      $('rangeValue').textContent = '—';
+      $('gaugePointer').style.left = '0%';
+      return;
+    }
+
+    var bmi = wKg / (hM*hM);
+    var cat = categoryOf(bmi);
+
+    $('bmiValue').textContent = fmt1(bmi);
+    $('bmiCategory').textContent = cat.name;
+    $('bmiCategory').style.borderColor = cat.color;
+    $('bmiCategory').style.color = cat.color;
+
+    var pct = Math.max(0, Math.min(100, (bmi-15)/(40-15)*100));
+    $('gaugePointer').style.left = pct+'%';
+
+    // healthy weight range 18.5 - 24.9
+    var minKg = 18.5 * hM*hM;
+    var maxKg = 24.9 * hM*hM;
+    if(unit==='metric'){
+      $('rangeValue').textContent = fmt1(minKg)+' – '+fmt1(maxKg)+' kg';
+    } else {
+      var minLb = minKg/0.453592, maxLb = maxKg/0.453592;
+      $('rangeValue').textContent = fmt1(minLb)+' – '+fmt1(maxLb)+' lb';
+    }
+  }
+
+  ['cmHeight','kgWeight','ftHeight','inHeight','lbWeight','ageInput','genderInput'].forEach(function(id){
+    var el = $(id);
+    if(el) el.addEventListener('input', calc);
+  });
+
+  calc();
+})();
+</script>
+
+<div style="max-width:1080px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>
