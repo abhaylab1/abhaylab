@@ -51,7 +51,7 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
 .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
 .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
 .nav-dropdown:hover .nav-chevron,.nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
-.nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(4,minmax(150px,1fr));gap:4px 26px;min-width:660px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+.nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
 .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown.open .nav-dropdown-menu{display:grid;}
 .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
 .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
@@ -135,6 +135,8 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
             <a href="image-compressor/">Image Compressor</a>
             <a href="pdf-maker/">PDF Maker</a>
             <a href="merge-pdf/">Merge PDF</a>
+            <a href="passport-photo-maker/">Passport Photo Maker</a>
+            <a href="blur-image/">Blur Image</a>
           </div>
           <div class="nav-menu-cat">
             <div class="nav-menu-cat-label">Generators &amp; Security</div>
@@ -146,6 +148,15 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
             <a href="graph-generator/">Graph Generator</a>
             <a href="periodic-table/">Periodic Table</a>
             <a href="unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="bmi-calculator/">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="dice-roller/">Dice Roller</a>
+            <a href="picker-wheel/">Picker Wheel</a>
           </div>
         </div>
       </li>
@@ -175,6 +186,8 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
       <a href="#cat-media">🖼️ Media &amp; Files</a>
       <a href="#cat-generators">🔐 Generators &amp; Security</a>
       <a href="#cat-science">🔬 Science &amp; Data</a>
+      <a href="#cat-health">❤️ Health</a>
+      <a href="#cat-fun">🎲 Fun &amp; Games</a>
     </div>
 
     <div class="cat-block" id="cat-finance">
@@ -228,6 +241,16 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
           <div class="sc-body"><div class="sc-tag">Media</div><h3 class="sc-title">Merge PDF</h3><p class="sc-desc">Combine multiple PDFs into one in any order you choose, right in-browser.</p></div>
           <div class="sc-footer"><span class="sc-open">Merge <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
         </div>
+        <div class="sc-card reveal" style="--cc:#a78bfa;" onclick="location.href='passport-photo-maker/'">
+          <div class="sc-preview" style="background:rgba(251,113,133,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#fb7185,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3.2"/><path d="M7 17c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg></span></div>
+          <div class="sc-body"><div class="sc-tag">Media</div><h3 class="sc-title">Passport Photo Maker</h3><p class="sc-desc">Crop to exact passport/visa sizes, add a background, and export a single photo or a 4×6 print sheet.</p></div>
+          <div class="sc-footer"><span class="sc-open">Crop photo <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        </div>
+        <div class="sc-card reveal" style="--cc:#a78bfa;" onclick="location.href='blur-image/'">
+          <div class="sc-preview" style="background:rgba(167,139,250,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#a78bfa,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5" stroke-dasharray="2 2"/></svg></span></div>
+          <div class="sc-body"><div class="sc-tag">Media</div><h3 class="sc-title">Blur Image</h3><p class="sc-desc">Gaussian, motion, zoom, pixelate, or spot-focus background blur — adjust live and download.</p></div>
+          <div class="sc-footer"><span class="sc-open">Blur photo <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        </div>
       </div>
     </div>
 
@@ -266,6 +289,35 @@ body{background:#08090d;color:#e8eaf0;font-family:'Space Grotesk',system-ui,sans
           <div class="sc-preview" style="background:rgba(56,189,248,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#38bdf8,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="1.5"/><line x1="6.5" y1="7" x2="6.5" y2="10.5"/><line x1="10.5" y1="7" x2="10.5" y2="11.5"/><line x1="14.5" y1="7" x2="14.5" y2="10.5"/><line x1="18.5" y1="7" x2="18.5" y2="11.5"/></svg></span></div>
           <div class="sc-body"><div class="sc-tag">Science</div><h3 class="sc-title">Unit Converter</h3><p class="sc-desc">Convert data, length, weight, temperature, speed, area, volume & more.</p></div>
           <div class="sc-footer"><span class="sc-open">Convert <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="cat-health">
+      <div class="cat-block-label">Health</div>
+      <h3 class="cat-block-heading">Body &amp; wellness</h3>
+      <div class="sc-grid">
+        <div class="sc-card reveal" style="--cc:#fb7185;" onclick="location.href='bmi-calculator/'">
+          <div class="sc-preview" style="background:rgba(251,113,133,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#fb7185,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></span></div>
+          <div class="sc-body"><div class="sc-tag">Health</div><h3 class="sc-title">BMI Calculator</h3><p class="sc-desc">Metric or imperial units, a visual gauge, and your healthy weight range.</p></div>
+          <div class="sc-footer"><span class="sc-open">Calculate <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="cat-fun">
+      <div class="cat-block-label">Fun &amp; Games</div>
+      <h3 class="cat-block-heading">Roll with it</h3>
+      <div class="sc-grid">
+        <div class="sc-card reveal" style="--cc:#a78bfa;" onclick="location.href='dice-roller/'">
+          <div class="sc-preview" style="background:rgba(167,139,250,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#a78bfa,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span></div>
+          <div class="sc-body"><div class="sc-tag">Fun</div><h3 class="sc-title">Dice Roller</h3><p class="sc-desc">d4 to d100, any quantity, modifiers, keep-highest/lowest, and roll history.</p></div>
+          <div class="sc-footer"><span class="sc-open">Roll <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+        </div>
+        <div class="sc-card reveal" style="--cc:#fb923c;" onclick="location.href='picker-wheel/'">
+          <div class="sc-preview" style="background:rgba(251,146,60,0.10);"><div class="sc-glow" style="background:radial-gradient(circle,#fb923c,transparent 68%);"></div><span class="sc-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.5 3.75" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span></div>
+          <div class="sc-body"><div class="sc-tag">Fun</div><h3 class="sc-title">Picker Wheel</h3><p class="sc-desc">Add your own options, spin to pick, and run elimination rounds for a ranked order.</p></div>
+          <div class="sc-footer"><span class="sc-open">Spin <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
         </div>
       </div>
     </div>
