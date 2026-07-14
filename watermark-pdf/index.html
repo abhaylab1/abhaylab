@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="watermark pdf online, add text watermark to pdf, stamp pdf free, pdf watermark tool, confidential stamp pdf, protect pdf watermark, free pdf watermarker"/>
+<meta name="description" content="Add a text watermark to every page of a PDF for free. Control opacity, rotation, size, color and position, then download instantly. Processed locally in your browser.">
+<link rel="canonical" href="https://abhaylab.fun/watermark-pdf/"/>
+<meta property="og:title" content="Free Watermark PDF Tool — Stamp Text on Every Page | Abhay Lab"/>
+<meta property="og:description" content="Add a text watermark to a PDF for free. Control opacity, rotation, size and position. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/watermark-pdf/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Watermark PDF Tool — Stamp Text on Every Page | Abhay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0d10;--panel:#0f151a;--line:#1d2b33;--ph:#38bdf8;--ph2:#1c5a78;--amber:#ffb454;--text:#dbe9ef;--dim:#6c8290;--green:#5dffb0;--red:#ff6a8a;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 60px;}
+.main-grid{display:grid;grid-template-columns:420px 1fr;gap:20px;align-items:start;}
+@media(max-width:960px){.main-grid{grid-template-columns:1fr;}}
+.stage{display:flex;flex-direction:column;min-width:0;position:sticky;top:16px;}
+.preview-frame{background:repeating-conic-gradient(#12181f 0% 25%,#0b0e12 0% 50%) 50%/16px 16px;border-radius:12px;border:1px solid var(--line);min-height:460px;display:flex;align-items:center;justify-content:center;position:relative;overflow:auto;padding:14px;max-height:calc(100vh - 40px);}
+.preview-frame canvas{max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5);border-radius:2px;background:#fff;}
+.preview-placeholder{font-family:monospace;font-size:11.5px;color:var(--dim);text-align:center;letter-spacing:.05em;}
+.preview-meta{margin-top:12px;font-family:monospace;font-size:10.5px;color:var(--dim);letter-spacing:.06em;text-align:center;}
+
+.color-wheel-wrap{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-top:2px;}
+.color-wheel-wrap canvas.wheel{border-radius:50%;cursor:crosshair;box-shadow:0 0 0 1px var(--line);touch-action:none;flex-shrink:0;}
+.cw-controls{flex:1;min-width:120px;}
+.cw-preview-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.cw-preview{width:30px;height:30px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;}
+.cw-preview-row input[type=text]{font-family:monospace;text-transform:uppercase;}
+.brand{font-family:monospace;font-size:12px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(24px,5vw,40px);font-weight:700;letter-spacing:-.02em;color:#f0f9fc;margin-bottom:6px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:14px;margin-bottom:28px;max-width:70ch;line-height:1.6;}
+.dropzone{border:2px dashed var(--line);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:20px;}
+.dropzone:hover,.dropzone.drag{border-color:var(--ph);background:rgba(56,189,248,.05);}
+.dropzone .icn{font-size:34px;margin-bottom:10px;}
+.dropzone .t1{font-size:15px;font-weight:600;margin-bottom:4px;}
+.dropzone .t2{font-size:12px;color:var(--dim);}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+label{display:block;font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;margin-top:16px;}
+label:first-child{margin-top:0;}
+input[type=text],select{width:100%;background:#080b0e;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--ph);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.range-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.range-row .val{font-family:monospace;color:var(--ph);font-weight:700;font-size:12px;}
+input[type=range]{width:100%;accent-color:var(--ph);}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+.swatch{width:26px;height:26px;border-radius:6px;border:2px solid var(--line);cursor:pointer;transition:transform .15s,border-color .15s;}
+.swatch:hover{transform:translateY(-2px);}
+.swatch.active{border-color:var(--ph);}
+input[type=color]{width:36px;height:30px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:#080b0e;padding:2px;}
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:220px;}
+.pos-btn{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:#080b0e;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.pos-btn:hover{border-color:var(--ph2);}
+.pos-btn.active{border-color:var(--ph);background:rgba(56,189,248,.1);}
+.pos-btn .d{width:6px;height:6px;border-radius:50%;background:var(--dim);}
+.pos-btn.active .d{background:var(--ph);}
+.pdf-list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+.pdf-item{display:flex;align-items:center;gap:12px;background:#080b0e;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.pdf-icon{width:38px;height:38px;border-radius:8px;background:rgba(56,189,248,.12);color:var(--ph);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;font-family:monospace;}
+.pdf-info{flex:1;min-width:0;}
+.pdf-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pdf-meta{font-family:monospace;font-size:11.5px;color:var(--dim);margin-top:4px;}
+.mini-btn{background:rgba(255,106,138,.08);border:1px solid #5a2030;color:var(--red);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;flex-shrink:0;}
+.mini-btn:hover{background:rgba(255,106,138,.18);}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.btn-primary{background:linear-gradient(125deg,var(--ph),#818cf8);color:#04121a;border:none;border-radius:10px;padding:14px 24px;font-size:13px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.18s;text-transform:uppercase;}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{background:rgba(56,189,248,.08);border:1px solid var(--ph2);color:var(--ph);border-radius:10px;padding:14px 20px;font-size:13px;font-weight:600;cursor:pointer;}
+.empty-hint{color:var(--dim);font-size:13px;text-align:center;padding:14px;}
+.status-msg{margin-top:14px;font-family:monospace;font-size:12.5px;}
+.status-msg.ok{color:var(--green);}
+.status-msg.err{color:var(--red);}
+.support{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);}
+.support h2{font-weight:600;font-size:16px;color:#f0f9fc;margin-bottom:6px;}
+.support p{font-size:13px;color:var(--dim);max-width:70ch;line-height:1.6;margin-bottom:10px;}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:monospace;font-size:10.5px;color:var(--dim);letter-spacing:.08em;}
+@media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+            <a href="../passport-photo-maker/">Passport Photo Maker</a>
+            <a href="../blur-image/">Blur Image</a>
+            <a href="../watermark-image/">Watermark Image</a>
+            <a href="../watermark-pdf/" class="active" aria-current="page">Watermark PDF</a>
+            <a href="../resume-maker/">Resume / CV Maker</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="../bmi-calculator/">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="../dice-roller/">Dice Roller</a>
+            <a href="../picker-wheel/">Picker Wheel</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — Watermark PDF</div>
+  <h1>Watermark <span>PDF</span></h1>
+  <p class="sub">Stamp a text watermark across every page of a PDF — set opacity, rotation, size, color and position. Everything is processed locally in your browser, so your file is never uploaded.</p>
+
+  <div class="main-grid">
+    <div class="controls">
+      <div class="dropzone" id="dropzone">
+        <div class="icn">📄</div>
+        <div class="t1">Drop a PDF here or click to browse</div>
+        <div class="t2">One file at a time, any number of pages</div>
+        <input type="file" id="fileInput" accept="application/pdf" style="display:none;"/>
+      </div>
+
+      <div class="pdf-list" id="pdfList">
+        <div class="empty-hint" id="emptyHint">No PDF added yet</div>
+      </div>
+
+      <div class="panel">
+        <label for="wmText">Watermark text</label>
+        <input type="text" id="wmText" value="CONFIDENTIAL"/>
+
+        <div class="grid2">
+          <div>
+            <label for="wmSize">Font size <span class="val" id="wmSizeVal" style="font-family:monospace;color:var(--ph);"></span></label>
+            <input type="range" id="wmSize" min="10" max="120" value="48"/>
+          </div>
+          <div>
+            <label for="wmOpacity">Opacity <span class="val" id="wmOpacityVal" style="font-family:monospace;color:var(--ph);"></span></label>
+            <input type="range" id="wmOpacity" min="5" max="100" value="30"/>
+          </div>
+        </div>
+
+        <label for="wmRotate">Rotation <span class="val" id="wmRotateVal" style="font-family:monospace;color:var(--ph);"></span></label>
+        <input type="range" id="wmRotate" min="-90" max="90" value="45"/>
+
+        <label>Color</label>
+        <div class="color-wheel-wrap">
+          <canvas class="wheel" id="colorWheel" width="130" height="130"></canvas>
+          <div class="cw-controls">
+            <label style="margin-top:0;">Lightness</label>
+            <input type="range" id="cwLightness" min="0" max="100" value="50">
+            <div class="cw-preview-row">
+              <div id="cwPreview" class="cw-preview"></div>
+              <input type="text" id="cwHex" value="#808080">
+            </div>
+          </div>
+        </div>
+
+        <label>Position (used when tiling is off)</label>
+        <div class="pos-grid" id="posGrid"></div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:16px;">
+          <input type="checkbox" id="wmTile" style="width:16px;height:16px;accent-color:var(--ph);">
+          <label style="margin:0;text-transform:none;font-family:inherit;font-size:12.5px;letter-spacing:0;color:var(--text);" for="wmTile">Tile watermark across the page</label>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" id="watermarkBtn" disabled>Watermark & Download</button>
+          <button class="btn-ghost" id="clearBtn" disabled>Clear</button>
+        </div>
+        <div class="status-msg" id="statusMsg"></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="preview-frame" id="previewFrame">
+        <div class="preview-placeholder" id="previewPlaceholder">ADD A PDF<br>TO PREVIEW THE WATERMARK</div>
+      </div>
+      <div class="preview-meta" id="previewMeta">—</div>
+    </div>
+  </div>
+
+  <section class="support">
+    <h2>How it works</h2>
+    <p>Your PDF is parsed and modified entirely in the browser using an open-source PDF library — the watermark text is drawn directly onto each page at the size, rotation, opacity and color you choose, then the file is rebuilt and handed straight to your downloads folder.</p>
+    <p>Encrypted or password-protected PDFs may fail to open; remove the password first if you hit an error.</p>
+  </section>
+
+  <footer>
+    <span>ABHAY LAB — RUNS ENTIRELY CLIENT-SIDE</span>
+    <span>CLOSE THE TAB AND IT'S GONE</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var dropzone=document.getElementById('dropzone'), fileInput=document.getElementById('fileInput');
+  var pdfList=document.getElementById('pdfList'), emptyHint=document.getElementById('emptyHint');
+  var watermarkBtn=document.getElementById('watermarkBtn'), clearBtn=document.getElementById('clearBtn');
+  var statusMsg=document.getElementById('statusMsg');
+  var currentFile=null, currentPages='?';
+  var currentColor='#808080';
+  var position='mc'; // default center
+
+  var wmSize=document.getElementById('wmSize'), wmOpacity=document.getElementById('wmOpacity'), wmRotate=document.getElementById('wmRotate');
+  function syncLabels(){
+    document.getElementById('wmSizeVal').textContent=wmSize.value+'px';
+    document.getElementById('wmOpacityVal').textContent=wmOpacity.value+'%';
+    document.getElementById('wmRotateVal').textContent=wmRotate.value+'°';
+  }
+  [wmSize,wmOpacity,wmRotate].forEach(function(el){ el.addEventListener('input',function(){ syncLabels(); renderPreview(); }); });
+  document.getElementById('wmText').addEventListener('input', renderPreview);
+  document.getElementById('wmTile').addEventListener('change', renderPreview);
+  syncLabels();
+
+  // ---------- Color wheel widget (reusable) ----------
+  function initColorWheel(canvasId, lightnessId, hexId, previewId, initialHex, onChange){
+    var canvas=document.getElementById(canvasId);
+    var ctx=canvas.getContext('2d');
+    var size=canvas.width, cx=size/2, cy=size/2, R=size/2-2;
+    var lightnessInput=document.getElementById(lightnessId);
+    var hexInput=document.getElementById(hexId);
+    var preview=document.getElementById(previewId);
+    var curHue=0, curSat=0, curLight=50;
+
+    function hslToHex(h,s,l){
+      s/=100; l/=100;
+      var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r,g,b;
+      if(h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
+      else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else {r=c;g=0;b=x;}
+      r=Math.round((r+m)*255); g=Math.round((g+m)*255); b=Math.round((b+m)*255);
+      function h2(v){ var s2=v.toString(16); return s2.length<2?'0'+s2:s2; }
+      return '#'+h2(r)+h2(g)+h2(b);
+    }
+    function hexToHsl(hex){
+      hex=hex.replace('#','');
+      var r=parseInt(hex.slice(0,2),16)/255, g=parseInt(hex.slice(2,4),16)/255, b=parseInt(hex.slice(4,6),16)/255;
+      var max=Math.max(r,g,b), min=Math.min(r,g,b), h,s,l=(max+min)/2;
+      if(max===min){ h=0; s=0; } else {
+        var d=max-min; s=l>0.5 ? d/(2-max-min) : d/(max+min);
+        if(max===r) h=(g-b)/d+(g<b?6:0);
+        else if(max===g) h=(b-r)/d+2;
+        else h=(r-g)/d+4;
+        h*=60;
+      }
+      return {h:h,s:s*100,l:l*100};
+    }
+
+    function drawWheel(){
+      var img=ctx.createImageData(size,size);
+      for(var y=0;y<size;y++){
+        for(var x=0;x<size;x++){
+          var dx=x-cx, dy=y-cy, dist=Math.sqrt(dx*dx+dy*dy);
+          var idx=(y*size+x)*4;
+          if(dist>R){ img.data[idx+3]=0; continue; }
+          var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+          var sat=Math.min(100,dist/R*100);
+          var hex=hslToHex(angle,sat,curLight);
+          img.data[idx]=parseInt(hex.slice(1,3),16);
+          img.data[idx+1]=parseInt(hex.slice(3,5),16);
+          img.data[idx+2]=parseInt(hex.slice(5,7),16);
+          img.data[idx+3]=255;
+        }
+      }
+      ctx.putImageData(img,0,0);
+      var rad=curSat/100*R;
+      var mx=cx+rad*Math.cos(curHue*Math.PI/180), my=cy+rad*Math.sin(curHue*Math.PI/180);
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#000'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    function apply(hex, silent){
+      preview.style.background=hex;
+      hexInput.value=hex;
+      if(!silent && onChange) onChange(hex);
+    }
+
+    function setFromHex(hex, silent){
+      var hsl=hexToHsl(hex);
+      curHue=hsl.h; curSat=hsl.s; curLight=hsl.l;
+      lightnessInput.value=Math.round(curLight);
+      drawWheel();
+      apply(hex, silent);
+    }
+
+    function pick(e){
+      var rect=canvas.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var x=(clientX-rect.left)*(size/rect.width), y=(clientY-rect.top)*(size/rect.height);
+      var dx=x-cx, dy=y-cy, dist=Math.min(R,Math.sqrt(dx*dx+dy*dy));
+      var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+      curHue=angle; curSat=dist/R*100;
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    }
+
+    var dragging=false;
+    canvas.addEventListener('mousedown', function(e){ dragging=true; pick(e); });
+    document.addEventListener('mousemove', function(e){ if(dragging) pick(e); });
+    document.addEventListener('mouseup', function(){ dragging=false; });
+    canvas.addEventListener('touchstart', function(e){ dragging=true; pick(e); e.preventDefault(); }, {passive:false});
+    document.addEventListener('touchmove', function(e){ if(dragging){ pick(e); e.preventDefault(); } }, {passive:false});
+    document.addEventListener('touchend', function(){ dragging=false; });
+
+    lightnessInput.addEventListener('input', function(){
+      curLight=parseInt(this.value);
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    });
+
+    hexInput.addEventListener('change', function(){
+      var v=this.value.trim();
+      if(/^#?[0-9a-fA-F]{6}$/.test(v)){
+        if(v[0]!=='#') v='#'+v;
+        setFromHex(v);
+      }
+    });
+
+    setFromHex(initialHex, true);
+    return { setColor:setFromHex };
+  }
+
+  initColorWheel('colorWheel','cwLightness','cwHex','cwPreview','#808080', function(hex){
+    currentColor=hex;
+    renderPreview();
+  });
+
+  var posGrid=document.getElementById('posGrid');
+  ['tl','tc','tr','ml','mc','mr','bl','bc','br'].forEach(function(p){
+    var b=document.createElement('div');
+    b.className='pos-btn'+(p==='mc'?' active':'');
+    b.dataset.pos=p;
+    b.innerHTML='<span class="d"></span>';
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.pos-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      position=p;
+      renderPreview();
+    });
+    posGrid.appendChild(b);
+  });
+
+  dropzone.onclick=function(){fileInput.click();};
+  dropzone.ondragover=function(e){e.preventDefault();dropzone.classList.add('drag');};
+  dropzone.ondragleave=function(){dropzone.classList.remove('drag');};
+  dropzone.ondrop=function(e){e.preventDefault();dropzone.classList.remove('drag');handleFile(e.dataTransfer.files[0]);};
+  fileInput.onchange=function(){handleFile(this.files[0]);fileInput.value='';};
+
+  function fmtBytes(b){
+    if(b<1024) return b+' B';
+    if(b<1024*1024) return (b/1024).toFixed(1)+' KB';
+    return (b/1024/1024).toFixed(2)+' MB';
+  }
+
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  var previewFrame=document.getElementById('previewFrame');
+  var previewPlaceholder=document.getElementById('previewPlaceholder');
+  var previewMeta=document.getElementById('previewMeta');
+  var baseCanvas=null; // rendered first page (no watermark)
+  var pageBoxPt={w:612,h:792}; // PDF point dimensions of previewed page
+
+  async function handleFile(f){
+    if(!f) return;
+    if(f.type!=='application/pdf' && !f.name.toLowerCase().endsWith('.pdf')) return;
+    currentFile=f; currentPages='?'; baseCanvas=null;
+    try{
+      var buf=await f.arrayBuffer();
+      var doc=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+      currentPages=doc.getPageCount();
+      var p0=doc.getPage(0);
+      pageBoxPt={w:p0.getWidth(),h:p0.getHeight()};
+    }catch(e){ currentPages='?'; }
+    render();
+    loadPreview(f);
+  }
+
+  async function loadPreview(f){
+    if(!window.pdfjsLib) return;
+    try{
+      var buf=await f.arrayBuffer();
+      var pdf=await pdfjsLib.getDocument({data:buf}).promise;
+      var page=await pdf.getPage(1);
+      var targetWidth=520;
+      var baseViewport=page.getViewport({scale:1});
+      var scale=targetWidth/baseViewport.width;
+      var viewport=page.getViewport({scale:scale});
+      var canvas=document.createElement('canvas');
+      canvas.width=viewport.width; canvas.height=viewport.height;
+      var ctx=canvas.getContext('2d');
+      await page.render({canvasContext:ctx, viewport:viewport}).promise;
+      baseCanvas=canvas;
+      previewPlaceholder.style.display='none';
+      renderPreview();
+    }catch(e){
+      previewMeta.textContent='Preview unavailable for this PDF — download still works.';
+    }
+  }
+
+  function renderPreview(){
+    if(!baseCanvas){
+      previewFrame.querySelectorAll('canvas').forEach(function(c){c.remove();});
+      previewPlaceholder.style.display='block';
+      previewMeta.textContent='—';
+      return;
+    }
+    var canvas=previewFrame.querySelector('canvas') || document.createElement('canvas');
+    if(!canvas.parentNode) previewFrame.insertBefore(canvas, previewPlaceholder);
+    canvas.width=baseCanvas.width; canvas.height=baseCanvas.height;
+    var ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(baseCanvas,0,0);
+
+    var scale=canvas.width/pageBoxPt.w;
+    var text=document.getElementById('wmText').value || 'WATERMARK';
+    var sizePt=parseInt(wmSize.value);
+    var sizePx=sizePt*scale;
+    var opacity=parseInt(wmOpacity.value)/100;
+    var rotateDeg=parseInt(wmRotate.value);
+    var tile=document.getElementById('wmTile').checked;
+
+    ctx.save();
+    ctx.globalAlpha=opacity;
+    ctx.fillStyle=currentColor;
+    ctx.font='bold '+sizePx+'px Arial, sans-serif';
+    ctx.textBaseline='middle';
+    var tw=ctx.measureText(text).width, th=sizePx;
+
+    if(tile){
+      var stepX=tw+sizePx*3, stepY=sizePx*4;
+      ctx.translate(canvas.width/2,canvas.height/2);
+      ctx.rotate(-rotateDeg*Math.PI/180);
+      ctx.translate(-canvas.width/2,-canvas.height/2);
+      var diag=Math.sqrt(canvas.width*canvas.width+canvas.height*canvas.height);
+      for(var y=-diag;y<diag;y+=stepY){
+        for(var x=-diag;x<diag;x+=stepX){
+          ctx.fillText(text,x,y);
+        }
+      }
+    } else {
+      var pos=previewPos(canvas.width,canvas.height,tw,th,position);
+      ctx.translate(pos.x+tw/2,pos.y+th/2);
+      ctx.rotate(-rotateDeg*Math.PI/180);
+      ctx.fillText(text,-tw/2,0);
+    }
+    ctx.restore();
+    previewMeta.textContent=(currentFile?currentFile.name:'')+' · page 1 of '+currentPages+' shown';
+  }
+
+  function previewPos(w,h,tw,th,pos){
+    var pad=Math.max(14,w*0.04);
+    var x,y;
+    if(pos[1]==='l') x=pad;
+    else if(pos[1]==='c') x=(w-tw)/2;
+    else x=w-tw-pad;
+    if(pos[0]==='t') y=pad;
+    else if(pos[0]==='m') y=(h-th)/2;
+    else y=h-th-pad;
+    return {x:x,y:y};
+  }
+
+  function render(){
+    pdfList.innerHTML='';
+    if(!currentFile){
+      pdfList.appendChild(emptyHint);
+      watermarkBtn.disabled=true; clearBtn.disabled=true;
+      return;
+    }
+    var el=document.createElement('div'); el.className='pdf-item';
+    el.innerHTML='<div class="pdf-icon">PDF</div>'+
+      '<div class="pdf-info"><div class="pdf-name">'+currentFile.name+'</div><div class="pdf-meta">'+fmtBytes(currentFile.size)+' · '+currentPages+' page'+(currentPages===1?'':'s')+'</div></div>'+
+      '<button class="mini-btn" title="Remove">✕</button>';
+    el.querySelector('.mini-btn').onclick=function(){ currentFile=null; baseCanvas=null; render(); renderPreview(); statusMsg.textContent=''; };
+    pdfList.appendChild(el);
+    watermarkBtn.disabled=false; clearBtn.disabled=false;
+  }
+
+  clearBtn.onclick=function(){ currentFile=null; baseCanvas=null; render(); renderPreview(); statusMsg.textContent=''; };
+
+  function hexToRgb01(hex){
+    var r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+    return {r:r,g:g,b:b};
+  }
+
+  watermarkBtn.onclick=async function(){
+    if(!currentFile) return;
+    var btn=this; btn.disabled=true; btn.textContent='Stamping…';
+    statusMsg.className='status-msg'; statusMsg.textContent='';
+    try{
+      var buf=await currentFile.arrayBuffer();
+      var doc=await PDFLib.PDFDocument.load(buf,{ignoreEncryption:true});
+      var font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      var text=document.getElementById('wmText').value || 'WATERMARK';
+      var size=parseInt(wmSize.value);
+      var opacity=parseInt(wmOpacity.value)/100;
+      var rotateDeg=parseInt(wmRotate.value);
+      var tile=document.getElementById('wmTile').checked;
+      var rgb=hexToRgb01(currentColor);
+      var textWidth=font.widthOfTextAtSize(text,size);
+
+      doc.getPages().forEach(function(page){
+        var w=page.getWidth(), h=page.getHeight();
+        if(tile){
+          var stepX=textWidth+size*3, stepY=size*4;
+          for(var y=-h;y<h*2;y+=stepY){
+            for(var x=-w;x<w*2;x+=stepX){
+              page.drawText(text,{x:x,y:y,size:size,font:font,color:PDFLib.rgb(rgb.r,rgb.g,rgb.b),opacity:opacity,rotate:PDFLib.degrees(rotateDeg)});
+            }
+          }
+        } else {
+          var pos=getPos(w,h,textWidth,size,position);
+          page.drawText(text,{x:pos.x,y:pos.y,size:size,font:font,color:PDFLib.rgb(rgb.r,rgb.g,rgb.b),opacity:opacity,rotate:PDFLib.degrees(rotateDeg)});
+        }
+      });
+
+      var bytes=await doc.save();
+      var blob=new Blob([bytes],{type:'application/pdf'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=currentFile.name.replace(/\.pdf$/i,'')+'-watermarked.pdf';
+      document.body.appendChild(a); a.click(); a.remove();
+      statusMsg.className='status-msg ok'; statusMsg.textContent='✓ Watermark applied and downloaded.';
+    }catch(e){
+      statusMsg.className='status-msg err'; statusMsg.textContent='Something went wrong watermarking this PDF. Make sure it is not password-protected.';
+    }
+    btn.disabled=false; btn.textContent='Watermark & Download';
+  };
+
+  function getPos(w,h,tw,th,pos){
+    var pad=Math.max(20,w*0.04);
+    var x,y;
+    if(pos[1]==='l') x=pad;
+    else if(pos[1]==='c') x=(w-tw)/2;
+    else x=w-tw-pad;
+    if(pos[0]==='t') y=h-th-pad;
+    else if(pos[0]==='m') y=(h-th)/2;
+    else y=pad;
+    return {x:x,y:y};
+  }
+
+  render();
+  renderPreview();
+})();
+</script>
+
+<div style="max-width:1180px;margin:12px auto 0;padding:0 16px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b70;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

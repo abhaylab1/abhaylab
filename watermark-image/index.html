@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="watermark image online, add text watermark to photo, add logo watermark, free watermark tool, batch watermark images, protect photos watermark, image watermark generator"/>
+<meta name="description" content="Add a text or logo watermark to your photos for free. Control position, opacity, rotation, size and tiling, batch process multiple images, and download as PNG/JPG or a ZIP. Runs entirely in your browser.">
+<link rel="canonical" href="https://abhaylab.fun/watermark-image/"/>
+<meta property="og:title" content="Free Watermark Image Tool — Add Text or Logo Watermarks | Abhay Lab"/>
+<meta property="og:description" content="Add a text or logo watermark to your photos, in bulk, for free. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/watermark-image/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free Watermark Image Tool — Add Text or Logo Watermarks | Abhay Lab</title>
+<style>
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#0b0f0d;--panel:#0f1512;--line:#1d2b24;
+  --phosphor:#5dffb0;--phosphor-dim:#2d6b4f;
+  --amber:#ffb454;--text:#d8e6df;--text-dim:#6c8579;
+  --red:#ff6a8a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:36px 36px;opacity:0;animation:fadeIn .6s ease forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:linear-gradient(180deg,transparent 0%,rgba(93,255,176,.03) 50%,transparent 100%);
+  background-size:100% 6px;animation:scan 9s linear infinite;mix-blend-mode:screen}
+@keyframes scan{from{background-position-y:0}to{background-position-y:1000px}}
+::selection{background:var(--phosphor-dim);color:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 20px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:32px;flex-wrap:wrap;gap:10px}
+.brand{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--phosphor);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.brand .dot{width:7px;height:7px;border-radius:50%;background:var(--phosphor);box-shadow:0 0 8px var(--phosphor),0 0 16px var(--phosphor);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.readout{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.readout span{color:var(--phosphor)}
+.hero{margin-bottom:32px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;opacity:0;animation:rise .6s ease forwards .1s}
+h1{font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.05;letter-spacing:-.02em;color:#f3fbf7;opacity:0;animation:rise .6s ease forwards .2s}
+h1 span{color:var(--phosphor)}
+.sub{margin-top:12px;color:var(--text-dim);font-size:15px;max-width:600px;line-height:1.6;opacity:0;animation:rise .6s ease forwards .3s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:22px;opacity:0;animation:rise .6s ease forwards .4s}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px;position:relative;padding:18px}
+.card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);pointer-events:none}
+.card-title-row{display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor);margin-bottom:14px}
+.card-title-row .dot2{width:5px;height:5px;border-radius:50%;background:var(--phosphor);flex-shrink:0}
+
+.field-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;margin-top:16px}
+.field-label:first-child{margin-top:0}
+
+.dropzone{border:1px dashed var(--line);border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .18s ease,background .18s ease;position:relative}
+.dropzone:hover,.dropzone.drag{border-color:var(--phosphor);background:rgba(93,255,176,.04)}
+.dropzone .title{font-weight:600;font-size:14px;margin-bottom:4px;color:#f3fbf7}
+.dropzone .subtext{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim)}
+input[type=file]{display:none}
+
+.mode-tabs{display:flex;gap:8px}
+.mode-tab{flex:1;text-align:center;padding:9px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:'IBM Plex Mono',monospace;cursor:pointer;color:var(--text-dim);background:transparent;transition:.18s}
+.mode-tab.active{border-color:var(--phosphor);color:var(--phosphor);background:rgba(93,255,176,.08)}
+
+textarea,select,input[type=text],input[type=number]{
+  width:100%;background:#070b09;border:1px solid var(--line);color:var(--text);border-radius:8px;
+  padding:10px 12px;font-family:'Inter',sans-serif;font-size:13.5px;transition:border-color .2s,box-shadow .2s;
+}
+textarea{min-height:60px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+textarea:focus,select:focus,input:focus{outline:none;border-color:var(--phosphor-dim);box-shadow:0 0 0 3px rgba(93,255,176,.08)}
+
+input[type=range]{width:100%;accent-color:var(--phosphor);margin-top:4px}
+.range-row{display:flex;justify-content:space-between;align-items:center}
+.range-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--phosphor)}
+
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.pos-btn{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:#070b09;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.pos-btn:hover{border-color:var(--phosphor-dim)}
+.pos-btn.active{border-color:var(--phosphor);background:rgba(93,255,176,.1)}
+.pos-btn .d{width:6px;height:6px;border-radius:50%;background:var(--text-dim)}
+.pos-btn.active .d{background:var(--phosphor)}
+
+.swatches{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.swatch{width:26px;height:26px;border-radius:6px;border:2px solid var(--line);cursor:pointer;transition:transform .15s,border-color .15s}
+.swatch:hover{transform:translateY(-2px)}
+.swatch.active{border-color:var(--phosphor)}
+input[type=color]{width:36px;height:32px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:#070b09;padding:2px}
+
+.color-wheel-wrap{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-top:4px}
+.color-wheel-wrap canvas{border-radius:50%;cursor:crosshair;box-shadow:0 0 0 1px var(--line);touch-action:none;flex-shrink:0}
+.cw-controls{flex:1;min-width:120px}
+.cw-preview-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.cw-preview{width:30px;height:30px;border-radius:7px;border:2px solid var(--line);flex-shrink:0}
+.cw-preview-row input[type=text]{font-family:'IBM Plex Mono',monospace;text-transform:uppercase}
+
+.check-row{display:flex;align-items:center;gap:8px;margin-top:14px}
+.check-row input{width:16px;height:16px;accent-color:var(--phosphor)}
+.check-row label{font-size:12.5px;color:var(--text)}
+
+.btn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;transition:all .18s ease;width:100%}
+.btn:hover:not(:disabled){border-color:var(--phosphor);color:var(--phosphor);background:rgba(93,255,176,.06)}
+.btn.primary{background:var(--phosphor);border-color:var(--phosphor);color:#06120c;font-weight:600}
+.btn.primary:hover:not(:disabled){background:#74ffc0}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;margin-top:14px}
+
+.stage{display:flex;flex-direction:column;min-width:0}
+.preview-frame{background:repeating-conic-gradient(#141a17 0% 25%,#0d1210 0% 50%) 50%/16px 16px;border-radius:10px;border:1px solid var(--line);min-height:420px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:14px}
+.preview-frame canvas{max-width:100%;max-height:70vh;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.placeholder{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-dim);text-align:center;letter-spacing:.05em}
+.meta{margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.06em;text-align:center}
+
+.files{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.file-item{display:flex;align-items:center;gap:10px;background:#070b09;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.file-item.active{border-color:var(--phosphor-dim)}
+.file-item img{width:34px;height:34px;object-fit:cover;border-radius:5px;flex-shrink:0;background:#000}
+.file-item .fname{flex:1;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.file-item .frm{background:none;border:1px solid var(--line);border-radius:5px;color:var(--text-dim);font-size:11px;padding:3px 7px;cursor:pointer}
+.file-item .frm:hover{border-color:var(--red);color:var(--red)}
+
+.support{margin-top:52px;padding-top:22px;border-top:1px solid var(--line)}
+.support h2{font-weight:600;font-size:17px;color:#f3fbf7;margin-bottom:6px}
+.support p{font-size:13px;color:var(--text-dim);max-width:70ch;line-height:1.6;margin-bottom:10px}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);letter-spacing:.08em}
+</style>
+</head>
+<body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+            <a href="../passport-photo-maker/">Passport Photo Maker</a>
+            <a href="../blur-image/">Blur Image</a>
+            <a href="../watermark-image/" class="active" aria-current="page">Watermark Image</a>
+            <a href="../watermark-pdf/">Watermark PDF</a>
+            <a href="../resume-maker/">Resume / CV Maker</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="../bmi-calculator/">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="../dice-roller/">Dice Roller</a>
+            <a href="../picker-wheel/">Picker Wheel</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+
+<div class="scanline"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span> Abhay Lab</div>
+    <div class="readout">MODULE // WATERMARK-IMG&nbsp;&nbsp;STATUS: <span>READY</span></div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Client-side watermarker</div>
+    <h1>Stamp your photos <span>before they go out.</span></h1>
+    <p class="sub">Add a text or logo watermark with full control over position, size, rotation, opacity and tiling. Batch multiple images and download as a ZIP — nothing leaves your browser.</p>
+  </div>
+
+  <div class="main-grid">
+    <div class="controls">
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Source images</div>
+        <div class="dropzone" id="dropzone">
+          <div class="title">Drop images or click to browse</div>
+          <div class="subtext">PNG · JPG · WEBP — multiple files supported</div>
+          <input type="file" id="fileInput" accept="image/*" multiple>
+        </div>
+        <div class="files" id="fileList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Watermark</div>
+        <div class="mode-tabs">
+          <div class="mode-tab active" data-mode="text">Text</div>
+          <div class="mode-tab" data-mode="logo">Logo Image</div>
+        </div>
+
+        <div id="textOpts">
+          <label class="field-label" for="wmText">Watermark text</label>
+          <textarea id="wmText">© Abhay Lab</textarea>
+          <label class="field-label" for="wmFont">Font</label>
+          <select id="wmFont">
+            <option value="'Inter',sans-serif">Sans (Inter)</option>
+            <option value="'IBM Plex Mono',monospace">Mono</option>
+            <option value="Georgia,serif">Serif</option>
+            <option value="'Brush Script MT',cursive">Script</option>
+          </select>
+          <label class="field-label">Text color</label>
+          <div class="color-wheel-wrap">
+            <canvas id="colorWheel" width="130" height="130"></canvas>
+            <div class="cw-controls">
+              <label class="field-label" style="margin-top:0;">Lightness</label>
+              <input type="range" id="cwLightness" min="0" max="100" value="100">
+              <div class="cw-preview-row">
+                <div id="cwPreview" class="cw-preview"></div>
+                <input type="text" id="cwHex" value="#ffffff">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="logoOpts" style="display:none">
+          <label class="field-label">Logo image</label>
+          <div class="dropzone" id="logoDropzone" style="padding:18px">
+            <div class="title" style="font-size:13px">Click to choose a logo</div>
+            <div class="subtext">PNG with transparency works best</div>
+            <input type="file" id="logoInput" accept="image/*">
+          </div>
+        </div>
+
+        <label class="field-label" for="wmSize">Size</label>
+        <div class="range-row"><input type="range" id="wmSize" min="2" max="30" value="6"><span class="range-val" id="wmSizeVal">6%</span></div>
+
+        <label class="field-label" for="wmOpacity">Opacity</label>
+        <div class="range-row"><input type="range" id="wmOpacity" min="5" max="100" value="45"><span class="range-val" id="wmOpacityVal">45%</span></div>
+
+        <label class="field-label" for="wmRotate">Rotation</label>
+        <div class="range-row"><input type="range" id="wmRotate" min="-90" max="90" value="0"><span class="range-val" id="wmRotateVal">0°</span></div>
+
+        <div class="check-row">
+          <input type="checkbox" id="wmTile">
+          <label for="wmTile">Tile watermark across the whole image</label>
+        </div>
+
+        <div id="positionField">
+          <label class="field-label">Position</label>
+          <div class="pos-grid" id="posGrid"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title-row"><span class="dot2"></span>Export</div>
+        <label class="field-label" for="wmFormat">Format</label>
+        <select id="wmFormat">
+          <option value="image/png">PNG</option>
+          <option value="image/jpeg">JPG</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn" id="applyAllBtn">Apply to all</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="downloadBtn" disabled>Download current</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="downloadZipBtn" disabled>Download all as ZIP</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="preview-frame" id="previewFrame">
+        <div class="placeholder" id="placeholder">ADD AN IMAGE<br>TO PREVIEW WATERMARK</div>
+      </div>
+      <div class="meta" id="meta">—</div>
+    </div>
+  </div>
+
+  <section class="support">
+    <h2>How it works</h2>
+    <p>Every image is decoded and re-rendered on an in-browser canvas — the watermark text or logo is drawn directly onto the pixels, positioned, sized and rotated exactly as previewed. Nothing is ever uploaded to a server: close the tab and every trace is gone.</p>
+    <p>Use "Apply to all" to stamp the same watermark settings across every image you've added, then export a single file or grab the whole batch as a ZIP.</p>
+  </section>
+
+  <footer>
+    <span>ABHAY LAB — RUNS ENTIRELY CLIENT-SIDE</span>
+    <span>CLOSE THE TAB AND IT'S GONE</span>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var dropzone=document.getElementById('dropzone'), fileInput=document.getElementById('fileInput');
+  var fileListEl=document.getElementById('fileList');
+  var previewFrame=document.getElementById('previewFrame'), placeholder=document.getElementById('placeholder');
+  var meta=document.getElementById('meta');
+  var downloadBtn=document.getElementById('downloadBtn'), downloadZipBtn=document.getElementById('downloadZipBtn'), applyAllBtn=document.getElementById('applyAllBtn');
+
+  var items=[]; var activeIdx=-1; var idCounter=0;
+  var logoImg=null;
+  var mode='text';
+  var position='br'; // tl,tc,tr,ml,mc,mr,bl,bc,br
+  var currentColor='#ffffff';
+
+  // Mode tabs
+  document.querySelectorAll('.mode-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.mode-tab').forEach(function(t){t.classList.remove('active');});
+      tab.classList.add('active');
+      mode=tab.dataset.mode;
+      document.getElementById('textOpts').style.display = mode==='text' ? 'block':'none';
+      document.getElementById('logoOpts').style.display = mode==='logo' ? 'block':'none';
+      render();
+    });
+  });
+
+  // Color wheel widget (reusable)
+  function initColorWheel(canvasId, lightnessId, hexId, previewId, initialHex, onChange){
+    var canvas=document.getElementById(canvasId);
+    var ctx=canvas.getContext('2d');
+    var size=canvas.width, cx=size/2, cy=size/2, R=size/2-2;
+    var lightnessInput=document.getElementById(lightnessId);
+    var hexInput=document.getElementById(hexId);
+    var preview=document.getElementById(previewId);
+    var curHue=0, curSat=0, curLight=100;
+
+    function hslToHex(h,s,l){
+      s/=100; l/=100;
+      var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r,g,b;
+      if(h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
+      else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else {r=c;g=0;b=x;}
+      r=Math.round((r+m)*255); g=Math.round((g+m)*255); b=Math.round((b+m)*255);
+      function h2(v){ var s2=v.toString(16); return s2.length<2?'0'+s2:s2; }
+      return '#'+h2(r)+h2(g)+h2(b);
+    }
+    function hexToHsl(hex){
+      hex=hex.replace('#','');
+      var r=parseInt(hex.slice(0,2),16)/255, g=parseInt(hex.slice(2,4),16)/255, b=parseInt(hex.slice(4,6),16)/255;
+      var max=Math.max(r,g,b), min=Math.min(r,g,b), h,s,l=(max+min)/2;
+      if(max===min){ h=0; s=0; } else {
+        var d=max-min; s=l>0.5 ? d/(2-max-min) : d/(max+min);
+        if(max===r) h=(g-b)/d+(g<b?6:0);
+        else if(max===g) h=(b-r)/d+2;
+        else h=(r-g)/d+4;
+        h*=60;
+      }
+      return {h:h,s:s*100,l:l*100};
+    }
+
+    function drawWheel(){
+      var img=ctx.createImageData(size,size);
+      for(var y=0;y<size;y++){
+        for(var x=0;x<size;x++){
+          var dx=x-cx, dy=y-cy, dist=Math.sqrt(dx*dx+dy*dy);
+          var idx=(y*size+x)*4;
+          if(dist>R){ img.data[idx+3]=0; continue; }
+          var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+          var sat=Math.min(100,dist/R*100);
+          var hex=hslToHex(angle,sat,curLight);
+          img.data[idx]=parseInt(hex.slice(1,3),16);
+          img.data[idx+1]=parseInt(hex.slice(3,5),16);
+          img.data[idx+2]=parseInt(hex.slice(5,7),16);
+          img.data[idx+3]=255;
+        }
+      }
+      ctx.putImageData(img,0,0);
+      var rad=curSat/100*R;
+      var mx=cx+rad*Math.cos(curHue*Math.PI/180), my=cy+rad*Math.sin(curHue*Math.PI/180);
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#000'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    function apply(hex, silent){
+      preview.style.background=hex;
+      hexInput.value=hex;
+      if(!silent && onChange) onChange(hex);
+    }
+
+    function setFromHex(hex, silent){
+      var hsl=hexToHsl(hex);
+      curHue=hsl.h; curSat=hsl.s; curLight=hsl.l;
+      lightnessInput.value=Math.round(curLight);
+      drawWheel();
+      apply(hex, silent);
+    }
+
+    function pick(e){
+      var rect=canvas.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var x=(clientX-rect.left)*(size/rect.width), y=(clientY-rect.top)*(size/rect.height);
+      var dx=x-cx, dy=y-cy, dist=Math.min(R,Math.sqrt(dx*dx+dy*dy));
+      var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+      curHue=angle; curSat=dist/R*100;
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    }
+
+    var dragging=false;
+    canvas.addEventListener('mousedown', function(e){ dragging=true; pick(e); });
+    document.addEventListener('mousemove', function(e){ if(dragging) pick(e); });
+    document.addEventListener('mouseup', function(){ dragging=false; });
+    canvas.addEventListener('touchstart', function(e){ dragging=true; pick(e); e.preventDefault(); }, {passive:false});
+    document.addEventListener('touchmove', function(e){ if(dragging){ pick(e); e.preventDefault(); } }, {passive:false});
+    document.addEventListener('touchend', function(){ dragging=false; });
+
+    lightnessInput.addEventListener('input', function(){
+      curLight=parseInt(this.value);
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    });
+
+    hexInput.addEventListener('change', function(){
+      var v=this.value.trim();
+      if(/^#?[0-9a-fA-F]{6}$/.test(v)){
+        if(v[0]!=='#') v='#'+v;
+        setFromHex(v);
+      }
+    });
+
+    setFromHex(initialHex, true);
+    return { setColor:setFromHex };
+  }
+
+  initColorWheel('colorWheel','cwLightness','cwHex','cwPreview','#ffffff', function(hex){
+    currentColor=hex;
+    render();
+  });
+
+  // Position grid
+  var posGrid=document.getElementById('posGrid');
+  var posOrder=['tl','tc','tr','ml','mc','mr','bl','bc','br'];
+  posOrder.forEach(function(p){
+    var b=document.createElement('div');
+    b.className='pos-btn'+(p==='br'?' active':'');
+    b.dataset.pos=p;
+    b.innerHTML='<span class="d"></span>';
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.pos-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      position=p;
+      render();
+    });
+    posGrid.appendChild(b);
+  });
+
+  document.getElementById('wmTile').addEventListener('change',function(){
+    document.getElementById('positionField').style.opacity = this.checked ? '0.35':'1';
+    document.getElementById('positionField').style.pointerEvents = this.checked ? 'none':'auto';
+    render();
+  });
+
+  ['wmText','wmFont','wmSize','wmOpacity','wmRotate','wmFormat'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',function(){
+      if(id==='wmSize') document.getElementById('wmSizeVal').textContent=this.value+'%';
+      if(id==='wmOpacity') document.getElementById('wmOpacityVal').textContent=this.value+'%';
+      if(id==='wmRotate') document.getElementById('wmRotateVal').textContent=this.value+'°';
+      render();
+    });
+  });
+
+  // Logo upload
+  document.getElementById('logoDropzone').addEventListener('click',function(){ document.getElementById('logoInput').click(); });
+  document.getElementById('logoInput').addEventListener('change',function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var img=new Image();
+    img.onload=function(){ logoImg=img; render(); };
+    img.src=URL.createObjectURL(f);
+  });
+
+  // Main dropzone
+  dropzone.addEventListener('click',function(){ fileInput.click(); });
+  ['dragenter','dragover'].forEach(function(evt){ dropzone.addEventListener(evt,function(e){ e.preventDefault(); dropzone.classList.add('drag'); }); });
+  ['dragleave','drop'].forEach(function(evt){ dropzone.addEventListener(evt,function(e){ e.preventDefault(); dropzone.classList.remove('drag'); }); });
+  dropzone.addEventListener('drop',function(e){ handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change',function(e){ handleFiles(e.target.files); fileInput.value=''; });
+
+  function handleFiles(fileArr){
+    var files=Array.prototype.slice.call(fileArr).filter(function(f){ return f.type.startsWith('image/'); });
+    if(!files.length) return;
+    files.forEach(function(file){
+      var id='f'+(++idCounter);
+      var url=URL.createObjectURL(file);
+      var img=new Image();
+      img.onload=function(){
+        var item={id:id,file:file,img:img,url:url};
+        items.push(item);
+        if(activeIdx<0) activeIdx=items.length-1;
+        renderFileList();
+        render();
+      };
+      img.src=url;
+    });
+  }
+
+  function renderFileList(){
+    fileListEl.innerHTML='';
+    items.forEach(function(item,i){
+      var el=document.createElement('div');
+      el.className='file-item'+(i===activeIdx?' active':'');
+      el.innerHTML='<img src="'+item.url+'"><span class="fname">'+item.file.name+'</span><button class="frm" title="Remove">✕</button>';
+      el.querySelector('.fname').addEventListener('click',function(){ activeIdx=i; renderFileList(); render(); });
+      el.querySelector('.frm').addEventListener('click',function(){
+        items.splice(i,1);
+        if(activeIdx>=items.length) activeIdx=items.length-1;
+        renderFileList(); render();
+      });
+      fileListEl.appendChild(el);
+    });
+  }
+
+  function drawWatermark(ctx,w,h){
+    var sizePct=parseInt(document.getElementById('wmSize').value)/100;
+    var opacity=parseInt(document.getElementById('wmOpacity').value)/100;
+    var rotateDeg=parseInt(document.getElementById('wmRotate').value);
+    var tile=document.getElementById('wmTile').checked;
+    var text=document.getElementById('wmText').value || '© Abhay Lab';
+    var font=document.getElementById('wmFont').value;
+
+    ctx.save();
+    ctx.globalAlpha=opacity;
+
+    if(mode==='text'){
+      var fontSize=Math.max(10,Math.round(h*sizePct*0.5));
+      ctx.font=fontSize+'px '+font;
+      ctx.fillStyle=currentColor;
+      ctx.textBaseline='middle';
+      var metrics=ctx.measureText(text);
+      var tw=metrics.width, th=fontSize;
+
+      if(tile){
+        var stepX=tw+fontSize*2.2, stepY=th+fontSize*2.2;
+        ctx.rotate(rotateDeg*Math.PI/180);
+        var diag=Math.sqrt(w*w+h*h);
+        for(var y=-diag;y<diag;y+=stepY){
+          for(var x=-diag;x<diag;x+=stepX){
+            ctx.fillText(text,x,y);
+          }
+        }
+      } else {
+        var pos=getPos(w,h,tw,th);
+        ctx.translate(pos.x+tw/2,pos.y+th/2);
+        ctx.rotate(rotateDeg*Math.PI/180);
+        ctx.fillText(text,-tw/2,-th/2+th/2);
+      }
+    } else if(mode==='logo' && logoImg){
+      var lw=Math.round(w*sizePct*1.2), lh=Math.round(lw*(logoImg.height/logoImg.width));
+      if(tile){
+        var sx=lw*1.8, sy=lh*1.8;
+        ctx.rotate(rotateDeg*Math.PI/180);
+        var diag2=Math.sqrt(w*w+h*h);
+        for(var yy=-diag2;yy<diag2;yy+=sy){
+          for(var xx=-diag2;xx<diag2;xx+=sx){
+            ctx.drawImage(logoImg,xx,yy,lw,lh);
+          }
+        }
+      } else {
+        var pos2=getPos(w,h,lw,lh);
+        ctx.translate(pos2.x+lw/2,pos2.y+lh/2);
+        ctx.rotate(rotateDeg*Math.PI/180);
+        ctx.drawImage(logoImg,-lw/2,-lh/2,lw,lh);
+      }
+    }
+    ctx.restore();
+  }
+
+  function getPos(w,h,tw,th){
+    var pad=Math.max(12,w*0.03);
+    var x,y;
+    if(position[1]==='l') x=pad;
+    else if(position[1]==='c') x=(w-tw)/2;
+    else x=w-tw-pad;
+    if(position[0]==='t') y=pad;
+    else if(position[0]==='m') y=(h-th)/2;
+    else y=h-th-pad;
+    return {x:x,y:y};
+  }
+
+  function render(){
+    if(activeIdx<0 || !items[activeIdx]){
+      previewFrame.querySelectorAll('canvas').forEach(function(c){c.remove();});
+      placeholder.style.display='block';
+      meta.textContent='—';
+      downloadBtn.disabled=true; downloadZipBtn.disabled = items.length===0;
+      return;
+    }
+    placeholder.style.display='none';
+    var item=items[activeIdx];
+    var canvas=previewFrame.querySelector('canvas') || document.createElement('canvas');
+    if(!canvas.parentNode) previewFrame.appendChild(canvas);
+    canvas.width=item.img.naturalWidth;
+    canvas.height=item.img.naturalHeight;
+    var ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(item.img,0,0);
+    drawWatermark(ctx,canvas.width,canvas.height);
+    meta.textContent=item.file.name+' · '+canvas.width+'×'+canvas.height+'px';
+    downloadBtn.disabled=false;
+    downloadZipBtn.disabled = items.length===0;
+  }
+
+  function renderToBlob(item,cb){
+    var canvas=document.createElement('canvas');
+    canvas.width=item.img.naturalWidth; canvas.height=item.img.naturalHeight;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(item.img,0,0);
+    drawWatermark(ctx,canvas.width,canvas.height);
+    var format=document.getElementById('wmFormat').value;
+    canvas.toBlob(function(blob){ cb(blob); }, format, 0.92);
+  }
+
+  downloadBtn.addEventListener('click',function(){
+    if(activeIdx<0) return;
+    var item=items[activeIdx];
+    renderToBlob(item,function(blob){
+      var ext = document.getElementById('wmFormat').value==='image/png' ? 'png':'jpg';
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='watermarked-'+item.file.name.replace(/\.[^.]+$/,'')+'.'+ext;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+  });
+
+  applyAllBtn.addEventListener('click',function(){
+    if(!items.length) return;
+    downloadZipBtn.disabled=false;
+    meta.textContent='Watermark settings will apply to all '+items.length+' image(s) on export.';
+  });
+
+  downloadZipBtn.addEventListener('click',function(){
+    if(!items.length) return;
+    var zip=new JSZip();
+    var ext = document.getElementById('wmFormat').value==='image/png' ? 'png':'jpg';
+    var done=0;
+    items.forEach(function(item){
+      renderToBlob(item,function(blob){
+        zip.file('watermarked-'+item.file.name.replace(/\.[^.]+$/,'')+'.'+ext, blob);
+        done++;
+        if(done===items.length){
+          zip.generateAsync({type:'blob'}).then(function(content){
+            var a=document.createElement('a');
+            a.href=URL.createObjectURL(content);
+            a.download='abhay-lab-watermarked.zip';
+            document.body.appendChild(a); a.click(); a.remove();
+          });
+        }
+      });
+    });
+  });
+
+  render();
+})();
+</script>
+
+<div style="max-width:1180px;margin:12px auto 0;padding:0 20px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b6b63;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>

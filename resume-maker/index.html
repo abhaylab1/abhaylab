@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="../favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png"/>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"/>
+<meta name="keywords" content="resume maker online, cv maker free, build resume online, resume builder no signup, free cv generator, download resume pdf, professional resume template"/>
+<meta name="description" content="Build a clean, professional resume or CV for free. Choose from 6 resume designs, add a photo, pick an accent color with a live preview, and download a print-ready PDF. Runs entirely in your browser.">
+<link rel="canonical" href="https://abhaylab.fun/resume-maker/"/>
+<meta property="og:title" content="Free CV / Resume Maker — Build & Download a PDF Resume | Abhay Lab"/>
+<meta property="og:description" content="Build a clean, professional resume for free with a live preview and instant PDF download. No signup, runs in your browser."/>
+<meta property="og:url" content="https://abhaylab.fun/resume-maker/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary"/>
+<title>Free CV / Resume Maker — Build & Download a PDF Resume | Abhay Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+#site-nav{position:sticky;top:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 28px;background:rgba(8,9,13,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Space Grotesk',system-ui,sans-serif;}
+#site-nav .nav-brand{grid-column:1;justify-self:start;font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#e8eaf0;text-decoration:none;display:flex;align-items:center;gap:8px;}
+#site-nav .nav-brand span{color:#ffffff;}
+#site-nav .nav-brand-icon{color:#6ee7b7;flex-shrink:0;}
+#site-nav .nav-dropdown{position:relative;}
+#site-nav .nav-dropdown-toggle{display:flex;align-items:center;gap:5px;}
+#site-nav .nav-chevron{transition:transform 0.2s;flex-shrink:0;}
+#site-nav .nav-dropdown:hover .nav-chevron,#site-nav .nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+#site-nav .nav-dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:10px;background:#0d0f16;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;display:none;grid-template-columns:repeat(6,minmax(150px,1fr));gap:4px 24px;min-width:900px;box-shadow:0 20px 50px rgba(0,0,0,0.55);}
+#site-nav .nav-dropdown:hover .nav-dropdown-menu,#site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+#site-nav .nav-dropdown-menu a{display:block;padding:8px 12px;border-radius:8px;color:#9ca3af;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#site-nav .nav-dropdown-menu a:hover{background:rgba(255,255,255,0.07);color:#e8eaf0;}
+#site-nav .nav-dropdown-menu a.active{background:rgba(93,255,176,0.1);color:#6ee7b7;}
+#site-nav .nav-menu-cat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6ee7b7;padding:6px 12px 6px;}
+#site-nav .nav-links{grid-column:2;justify-self:center;display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;}
+#site-nav .nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:8px;transition:background 0.2s,color 0.2s;}
+#site-nav .nav-links a:hover,#site-nav .nav-links a.active{color:#e8eaf0;background:rgba(255,255,255,0.07);}
+#site-nav #nav-toggle{grid-column:3;justify-self:end;display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e8eaf0;width:38px;height:38px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;}
+@media(max-width:680px){
+  #site-nav .nav-links{position:fixed;top:57px;left:0;right:0;background:#0d0f16;border-bottom:1px solid rgba(255,255,255,0.08);flex-direction:column;align-items:stretch;padding:8px;gap:2px;display:none;z-index:201;}
+  #site-nav .nav-links.open{display:flex;}
+  #site-nav .nav-links a{padding:12px 14px;}
+  #site-nav #nav-toggle{display:flex;}
+  #site-nav .nav-dropdown-menu{position:static;transform:none;margin:2px 0 4px 14px;box-shadow:none;border:none;background:none;padding:0;display:none;grid-template-columns:1fr;min-width:0;gap:0;}
+  #site-nav .nav-dropdown:hover .nav-dropdown-menu{display:none;}
+  #site-nav .nav-dropdown.open .nav-dropdown-menu{display:grid;}
+  #site-nav .nav-dropdown-menu a{padding:10px 14px;color:#8a97a6;}
+  #site-nav .nav-menu-cat-label{padding:12px 14px 4px;}
+}
+
+:root{
+  --bg:#0b0d12;--panel:#101319;--line:#232838;
+  --ph:#818cf8;--ph2:#3a3f7a;--amber:#ffb454;--text:#e3e5ee;--dim:#7c80a0;--red:#ff6a8a;--green:#5dffb0;
+  --accent:#2563eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh;}
+body{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px;}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 16px 60px;}
+.brand{font-family:monospace;font-size:12px;letter-spacing:.18em;color:var(--ph);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:20px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ph);box-shadow:0 0 8px var(--ph);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+h1{font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:-.02em;color:#f2f2fb;margin-bottom:4px;}
+h1 span{color:var(--ph);}
+.sub{color:var(--dim);font-size:13.5px;margin-bottom:24px;max-width:70ch;line-height:1.6;}
+
+.layout{display:grid;grid-template-columns:420px 1fr;gap:20px;align-items:start;}
+@media(max-width:980px){.layout{grid-template-columns:1fr;}}
+
+.editor{max-height:none;}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;position:relative;}
+.panel::before{content:'';position:absolute;top:-1px;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ph2),transparent);}
+.panel h3{font-family:monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ph);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+label{display:block;font-family:monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;margin-top:12px;}
+label:first-of-type{margin-top:0;}
+input[type=text],input[type=email],input[type=tel],input[type=url],textarea,select{
+  width:100%;background:#080a0e;border:1px solid var(--line);color:var(--text);border-radius:7px;
+  padding:9px 11px;font-size:13px;font-family:inherit;transition:border-color .15s;
+}
+textarea{resize:vertical;min-height:56px;line-height:1.5;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ph);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+.entry-block{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#0d1016;position:relative;}
+.entry-block .rm{position:absolute;top:10px;right:10px;background:rgba(255,106,138,.08);border:1px solid #5a2030;color:var(--red);border-radius:6px;width:24px;height:24px;font-size:12px;cursor:pointer;}
+.entry-block .rm:hover{background:rgba(255,106,138,.18);}
+
+.add-btn{width:100%;background:transparent;border:1px dashed var(--ph2);color:var(--ph);font-family:monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:9px;border-radius:8px;cursor:pointer;margin-top:6px;transition:.15s;}
+.add-btn:hover{background:rgba(129,140,248,.08);}
+
+.swatches{display:flex;gap:8px;flex-wrap:wrap;}
+.swatch{width:26px;height:26px;border-radius:6px;border:2px solid var(--line);cursor:pointer;transition:transform .15s,border-color .15s;}
+.swatch:hover{transform:translateY(-2px);}
+.swatch.active{border-color:#fff;}
+input[type=color]{width:36px;height:30px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:#080a0e;padding:2px;}
+
+.color-wheel-wrap{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;}
+.color-wheel-wrap canvas{border-radius:50%;cursor:crosshair;box-shadow:0 0 0 1px var(--line);touch-action:none;flex-shrink:0;}
+.cw-controls{flex:1;min-width:130px;}
+.cw-controls input[type=range]{margin-top:6px;}
+.cw-preview-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.cw-preview{width:32px;height:32px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;}
+.cw-preview-row input[type=text]{font-family:monospace;text-transform:uppercase;}
+.tpl-tabs{display:flex;gap:8px;}
+.tpl-tab{flex:1;text-align:center;padding:9px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:monospace;cursor:pointer;color:var(--dim);background:transparent;transition:.15s;}
+.tpl-tab.active{border-color:var(--ph);color:var(--ph);background:rgba(129,140,248,.08);}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.btn-primary{background:linear-gradient(125deg,var(--ph),#818cf8);color:#0b0a0f;border:none;border-radius:10px;padding:13px 22px;font-size:13px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.18s;text-transform:uppercase;flex:1;}
+.btn-primary:hover{filter:brightness(1.1);}
+
+.stage{position:sticky;top:16px;}
+.paper-outer{background:#191c22;border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;justify-content:center;overflow:auto;max-height:calc(100vh - 40px);}
+#resumePaper{
+  width:210mm;min-height:297mm;background:#ffffff;color:#1a1a1a;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);flex-shrink:0;overflow:hidden;padding:0;position:relative;
+}
+
+/* ===== shared building blocks ===== */
+.rp-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block;}
+.rp-photo-ph{width:120px;height:120px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;}
+.rp-name{font-weight:800;letter-spacing:-.01em;}
+.rp-title{font-weight:600;letter-spacing:.03em;text-transform:uppercase;}
+.rp-section-title{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:9px;}
+.rp-icon-title{display:flex;align-items:center;gap:8px;}
+.rp-icon-title svg{flex-shrink:0;}
+.rp-icon-badge{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rp-item{margin-bottom:11px;}
+.rp-item-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;}
+.rp-item-title{font-size:12.5px;font-weight:700;}
+.rp-item-sub{font-size:11.5px;color:#555;}
+.rp-item-date{font-size:10.5px;color:#777;white-space:nowrap;}
+.rp-item-desc{font-size:11.2px;color:#333;line-height:1.55;margin-top:4px;white-space:pre-line;}
+.rp-skills{display:flex;flex-wrap:wrap;gap:6px;}
+.rp-skills.list,.rp-skills-list{display:flex;flex-direction:column;gap:6px;}
+.rp-skill-chip{font-size:10.3px;padding:3px 9px;border-radius:20px;}
+.rp-skill-dot{font-size:11px;display:flex;align-items:center;gap:7px;}
+.rp-skill-dot::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.rp-contact-list{display:flex;flex-direction:column;gap:9px;font-size:11px;}
+.rp-contact-row{display:flex;align-items:flex-start;gap:8px;}
+.rp-contact-row svg{flex-shrink:0;margin-top:1px;}
+.rp-contact-block-label{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.rp-lang-list,.rp-ref-list{display:flex;flex-direction:column;gap:7px;font-size:11px;}
+.rp-empty{font-size:11px;font-style:italic;color:#999;}
+.rp-ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* date-left item layout (used by Rounded Dark template) */
+.rp-item-dl{display:flex;gap:12px;margin-bottom:13px;}
+.rp-item-dl-date{width:24mm;flex-shrink:0;font-size:10px;color:#888;padding-top:1px;}
+.rp-item-dl-body{flex:1;min-width:0;}
+
+/* dotted / solid connector timeline (Split-style & Dark Timeline) */
+.rp-timeline{position:relative;padding-left:22px;margin-left:3px;}
+.rp-timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--accent);}
+.rp-timeline.dotted::before{background:repeating-linear-gradient(var(--accent) 0 3px, transparent 3px 7px);}
+.rp-timeline .rp-item{position:relative;}
+.rp-timeline .rp-item::before{content:'';position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-sizing:border-box;}
+
+/* ===== Modern Sans (simple, no photo) ===== */
+.tpl-sans{padding:16mm;color:#1a1a1a;font-family:'Inter',Arial,sans-serif;}
+.tpl-sans .rp-header{border-bottom:2.5px solid var(--accent);padding-bottom:10px;margin-bottom:14px;}
+.tpl-sans .rp-name{font-size:26px;color:#111;}
+.tpl-sans .rp-title{font-size:13.5px;color:var(--accent);margin-top:2px;}
+.tpl-sans .rp-contacts{margin-top:8px;font-size:11px;color:#444;display:flex;flex-wrap:wrap;gap:4px 14px;}
+.tpl-sans .rp-section{margin-bottom:14px;}
+.tpl-sans .rp-section-title{color:var(--accent);border-bottom:1px solid #ddd;padding-bottom:3px;}
+.tpl-sans .rp-summary{font-size:12px;line-height:1.6;color:#333;}
+.tpl-sans .rp-skill-chip{background:#f1f3fa;border:1px solid #dde1ee;color:#333;}
+.tpl-sans .rp-lang-list{flex-direction:row;flex-wrap:wrap;gap:8px 16px;}
+
+/* ===================================================================
+   TEMPLATE: NAVY BANNER  (Richard Sanchez reference)
+   =================================================================== */
+.tpl-navy{font-family:'Inter',Arial,sans-serif;min-height:297mm;position:relative;}
+.tpl-navy .rp-navband{background:#333a4d;padding:14mm 14mm 20mm;position:relative;}
+.tpl-navy .rp-navband .rp-name{color:#fff;font-size:27px;}
+.tpl-navy .rp-navband .rp-title{color:#c9cee0;font-size:13px;margin-top:4px;}
+.tpl-navy .rp-navphoto{position:absolute;left:14mm;bottom:-19mm;width:130px;height:130px;border-radius:50%;border:5px solid #fff;object-fit:cover;box-shadow:0 6px 16px rgba(0,0,0,.25);}
+.tpl-navy .rp-navphoto-ph{position:absolute;left:14mm;bottom:-19mm;width:130px;height:130px;border-radius:50%;border:5px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:700;color:#fff;background:#6b7590;}
+.tpl-navy .rp-navheader{padding-left:150px;}
+.tpl-navy .rp-body{display:grid;grid-template-columns:64mm 1fr;}
+.tpl-navy .rp-side{background:#f2f3f6;padding:22mm 9mm 14mm;color:#1a1a1a;}
+.tpl-navy .rp-main{padding:14mm 12mm;color:#1a1a1a;}
+.tpl-navy .rp-side .rp-section{margin-bottom:20px;}
+.tpl-navy .rp-side .rp-section-title{color:#222;border-bottom:2px solid var(--accent);padding-bottom:4px;display:inline-block;}
+.tpl-navy .rp-side .rp-skill-dot{color:#333;}
+.tpl-navy .rp-side .rp-skill-dot::before{background:var(--accent);}
+.tpl-navy .rp-main .rp-section{margin-bottom:16px;}
+.tpl-navy .rp-main .rp-section-title{color:#222;}
+.tpl-navy .rp-icon-badge{background:var(--accent);color:#fff;}
+.tpl-navy .rp-summary{font-size:12px;line-height:1.65;color:#333;}
+.tpl-navy .rp-item-title{color:#222;}
+
+/* ===================================================================
+   TEMPLATE: DIAGONAL BLUE  (Lorna Alvarado reference)
+   =================================================================== */
+.tpl-diag{display:grid;grid-template-columns:66mm 1fr;font-family:'Inter',Arial,sans-serif;min-height:297mm;}
+.tpl-diag .rp-side{position:relative;padding:14mm 8mm 14mm;overflow:hidden;color:#1a1a1a;}
+.tpl-diag .rp-side::before{content:'';position:absolute;top:0;left:0;width:100%;height:52mm;background:var(--accent);clip-path:polygon(0 0,100% 0,0 100%);z-index:0;}
+.tpl-diag .rp-side>*{position:relative;z-index:1;}
+.tpl-diag .rp-photo,.tpl-diag .rp-photo-ph{width:104px;height:104px;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2);margin-bottom:20px;}
+.tpl-diag .rp-name{font-size:19px;color:#1a2233;margin-top:2px;line-height:1.2;}
+.tpl-diag .rp-title{font-size:11.5px;color:var(--accent);font-weight:700;margin-top:4px;margin-bottom:16px;}
+.tpl-diag .rp-side .rp-section{margin-bottom:18px;}
+.tpl-diag .rp-side .rp-section-title{color:#1a1a1a;}
+.tpl-diag .rp-side .rp-summary{font-size:11px;line-height:1.6;color:#444;}
+.tpl-diag .rp-side .rp-skill-dot{color:#333;}
+.tpl-diag .rp-side .rp-skill-dot::before{background:var(--accent);}
+.tpl-diag .rp-main{padding:14mm 12mm;color:#1a1a1a;}
+.tpl-diag .rp-main .rp-section{margin-bottom:18px;}
+.tpl-diag .rp-main .rp-section-title{color:#1a1a1a;}
+.tpl-diag .rp-icon-badge{color:var(--accent);background:none;}
+.tpl-diag .rp-ref-grid .rp-item-title{color:#1a1a1a;}
+
+/* ===================================================================
+   TEMPLATE: ROUNDED DARK  (Isabel Mercado reference)
+   =================================================================== */
+.tpl-rounded{border:3px solid var(--accent);}
+.tpl-rounded .rp-inner{display:grid;grid-template-columns:60mm 1fr;min-height:calc(297mm - 6px);overflow:hidden;}
+.tpl-rounded .rp-side{background:#2c3547;color:#e7ebf3;padding:14mm 8mm;font-family:'Inter',Arial,sans-serif;}
+.tpl-rounded .rp-photo,.tpl-rounded .rp-photo-ph{margin-bottom:16px;border:3px solid rgba(255,255,255,.2);}
+.tpl-rounded .rp-photo-ph{background:rgba(255,255,255,.12);color:#fff;}
+.tpl-rounded .rp-side .rp-section{margin-bottom:20px;}
+.tpl-rounded .rp-side .rp-section-title{color:#fff;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:4px;}
+.tpl-rounded .rp-side .rp-contact-list,.tpl-rounded .rp-side .rp-lang-list{color:#c7cedb;}
+.tpl-rounded .rp-side .rp-contact-block-label{color:#fff;}
+.tpl-rounded .rp-side .rp-skill-dot{color:#c7cedb;}
+.tpl-rounded .rp-side .rp-skill-dot::before{background:var(--accent);}
+.tpl-rounded .rp-main{padding:14mm 12mm;color:#1a1a1a;font-family:'Inter',Arial,sans-serif;}
+.tpl-rounded .rp-name{font-size:24px;color:#111;}
+.tpl-rounded .rp-title{font-size:12.5px;color:#555;margin-top:2px;}
+.tpl-rounded .rp-header{margin-bottom:18px;}
+.tpl-rounded .rp-main .rp-section{margin-bottom:18px;}
+.tpl-rounded .rp-main .rp-section-title{color:#111;}
+.tpl-rounded .rp-item-dl-date{color:var(--accent);font-weight:600;}
+
+/* ===================================================================
+   TEMPLATE: BLUE BAND  (Donna Stroupe reference)
+   =================================================================== */
+.tpl-band{font-family:'Inter',Arial,sans-serif;min-height:297mm;}
+.tpl-band .rp-topband{background:#dbe4ef;padding:14mm 14mm 14mm;display:flex;align-items:center;gap:20px;}
+.tpl-band .rp-photo,.tpl-band .rp-photo-ph{border:4px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.tpl-band .rp-name{font-size:24px;color:#2b3648;letter-spacing:.02em;}
+.tpl-band .rp-title{font-size:12.5px;color:#4a5772;margin-top:4px;}
+.tpl-band .rp-body{display:grid;grid-template-columns:58mm 1fr;}
+.tpl-band .rp-side{background:#dbe4ef;padding:10mm 8mm 14mm;color:#2b3648;}
+.tpl-band .rp-main{padding:14mm 12mm;color:#1a1a1a;}
+.tpl-band .rp-side .rp-section{margin-bottom:18px;}
+.tpl-band .rp-side .rp-section-title{color:#2b3648;}
+.tpl-band .rp-side .rp-contact-row svg{color:#4a5772;}
+.tpl-band .rp-side .rp-skill-dot{color:#2b3648;}
+.tpl-band .rp-side .rp-skill-dot::before{background:var(--accent);}
+.tpl-band .rp-main .rp-section{margin-bottom:16px;}
+.tpl-band .rp-main .rp-section-title{color:#111;border-bottom:1.5px solid #ddd;padding-bottom:4px;}
+.tpl-band .rp-summary{font-size:12px;line-height:1.6;color:#333;}
+.tpl-band .rp-item-sub{font-style:italic;}
+
+/* ===================================================================
+   TEMPLATE: DARK TIMELINE  (Isabel Schumacher reference)
+   =================================================================== */
+.tpl-dtimeline{font-family:'Inter',Arial,sans-serif;}
+.tpl-dtimeline .rp-inner{display:grid;grid-template-columns:66mm 1fr;min-height:297mm;}
+.tpl-dtimeline .rp-side{background:#26282c;color:#e9e9ea;padding:14mm 8mm;}
+.tpl-dtimeline .rp-photo,.tpl-dtimeline .rp-photo-ph{border:5px solid rgba(255,255,255,.85);margin-bottom:16px;}
+.tpl-dtimeline .rp-photo-ph{background:rgba(255,255,255,.12);color:#fff;}
+.tpl-dtimeline .rp-side .rp-section{margin-bottom:20px;}
+.tpl-dtimeline .rp-side .rp-section-title{color:#fff;}
+.tpl-dtimeline .rp-icon-badge{background:rgba(255,255,255,.1);color:#fff;}
+.tpl-dtimeline .rp-side .rp-summary{font-size:11px;line-height:1.6;color:#c9c9cc;}
+.tpl-dtimeline .rp-side .rp-contact-list{color:#c9c9cc;}
+.tpl-dtimeline .rp-side .rp-skill-dot{color:#dcdcdc;}
+.tpl-dtimeline .rp-side .rp-skill-dot::before{background:var(--accent);}
+.tpl-dtimeline .rp-main{padding:14mm 12mm;color:#1a1a1a;}
+.tpl-dtimeline .rp-name{font-size:26px;line-height:1.15;color:#111;}
+.tpl-dtimeline .rp-title{font-size:13px;color:#666;margin-top:4px;font-weight:500;text-transform:none;letter-spacing:0;}
+.tpl-dtimeline .rp-header{margin-bottom:20px;}
+.tpl-dtimeline .rp-main .rp-section{margin-bottom:18px;}
+.tpl-dtimeline .rp-main .rp-section-title{color:#111;}
+.tpl-dtimeline .rp-timeline .rp-item-date{display:block;font-weight:700;color:#333;margin-bottom:1px;}
+.tpl-dtimeline .rp-timeline .rp-item-title{text-transform:uppercase;font-size:11.5px;}
+
+.rp-photo-upload-row{display:flex;align-items:center;gap:12px;margin-top:4px;}
+.rp-photo-preview{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#080a0e;border:1px solid var(--line);flex-shrink:0;}
+.rp-photo-preview.empty{display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:9px;font-family:monospace;text-align:center;}
+.photo-btn-row{display:flex;gap:8px;flex:1;}
+
+.empty-note{font-size:11px;color:#aaa;font-style:italic;}
+
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:monospace;font-size:10.5px;color:var(--dim);letter-spacing:.08em;}
+
+@media print{
+  body *{visibility:hidden;}
+  #resumePaper,#resumePaper *{visibility:visible;}
+  #resumePaper{position:absolute;left:0;top:0;box-shadow:none;margin:0;width:210mm;min-height:297mm;}
+  .paper-outer{padding:0;max-height:none;overflow:visible;background:#fff;}
+}
+</style>
+
+</head><body>
+<nav id="site-nav">
+    <a href="../" class="nav-brand"><svg class="nav-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg> <span>Abhay Lab</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../">Home</a></li>
+      <li class="nav-dropdown" id="toolsDropdown">
+        <a href="index.html#tools" class="nav-dropdown-toggle" id="toolsToggle">Tools <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown-menu">
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Finance</div>
+            <a href="../currency-converter/">Currency Converter</a>
+            <a href="../emi-calculator/">EMI Calculator</a>
+            <a href="../sip-calculator/">SIP Calculator</a>
+            <a href="../swp-calculator/">SWP Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Media &amp; Files</div>
+            <a href="../image-converter/">Image Converter</a>
+            <a href="../image-compressor/">Image Compressor</a>
+            <a href="../pdf-maker/">PDF Maker</a>
+            <a href="../merge-pdf/">Merge PDF</a>
+            <a href="../passport-photo-maker/">Passport Photo Maker</a>
+            <a href="../blur-image/">Blur Image</a>
+            <a href="../watermark-image/">Watermark Image</a>
+            <a href="../watermark-pdf/">Watermark PDF</a>
+            <a href="../resume-maker/" class="active" aria-current="page">Resume / CV Maker</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Generators &amp; Security</div>
+            <a href="../qr-code-generator/">QR Generator</a>
+            <a href="../password-generator/">Password Generator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Science &amp; Data</div>
+            <a href="../graph-generator/">Graph Generator</a>
+            <a href="../periodic-table/">Periodic Table</a>
+            <a href="../unit-converter/">Unit Converter</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Health</div>
+            <a href="../bmi-calculator/">BMI Calculator</a>
+          </div>
+          <div class="nav-menu-cat">
+            <div class="nav-menu-cat-label">Fun &amp; Games</div>
+            <a href="../dice-roller/">Dice Roller</a>
+            <a href="../picker-wheel/">Picker Wheel</a>
+          </div>
+        </div>
+      </li>
+      <li><a href="../about/">About</a></li>
+      <li><a href="../contact/">Contact</a></li>
+      <li><a href="../privacy/">Privacy</a></li>
+      <li><a href="../terms/">Terms</a></li>
+    </ul>
+    <button id="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+</nav>
+
+<script id="abhaylab-nav-js">
+(function(){
+  var toolsDropdown=document.getElementById('toolsDropdown');
+  var toolsToggle=document.getElementById('toolsToggle');
+  if(!toolsDropdown||!toolsToggle) return;
+  toolsToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    toolsDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e){
+    if(!toolsDropdown.contains(e.target)) toolsDropdown.classList.remove('open');
+  });
+})();
+</script>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>Abhay Lab — Resume Maker</div>
+  <h1>CV / Resume <span>Maker</span></h1>
+  <p class="sub">Fill in your details on the left, pick from 6 resume designs, add a photo and accent color, then download it as a clean, print-ready PDF. Nothing you type is uploaded anywhere.</p>
+
+  <div class="layout">
+    <div class="editor">
+
+      <div class="panel">
+        <h3>Style</h3>
+        <label>Template</label>
+        <div class="tpl-tabs">
+          <div class="tpl-tab active" data-tpl="sans">Modern Sans</div>
+          <div class="tpl-tab" data-tpl="navy">Navy Banner</div>
+          <div class="tpl-tab" data-tpl="diag">Diagonal Blue</div>
+        </div>
+        <div class="tpl-tabs" style="margin-top:8px;">
+          <div class="tpl-tab" data-tpl="rounded">Rounded Dark</div>
+          <div class="tpl-tab" data-tpl="band">Blue Band</div>
+          <div class="tpl-tab" data-tpl="dtimeline">Dark Timeline</div>
+        </div>
+        <label>Accent color</label>
+        <div class="color-wheel-wrap">
+          <canvas id="accentWheel" width="140" height="140"></canvas>
+          <div class="cw-controls">
+            <label style="margin-top:0;">Lightness</label>
+            <input type="range" id="accentLightness" min="0" max="100" value="50">
+            <div class="cw-preview-row">
+              <div id="accentPreview" class="cw-preview"></div>
+              <input type="text" id="accentHex" value="#2563eb">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Personal details</h3>
+        <label>Photo <span style="text-transform:none;letter-spacing:0;color:var(--dim);">(used by every template except Modern Sans)</span></label>
+        <div class="rp-photo-upload-row">
+          <div class="rp-photo-preview empty" id="photoPreview">No photo</div>
+          <div class="photo-btn-row">
+            <button type="button" class="add-btn" id="photoUploadBtn" style="margin-top:0;">Upload photo</button>
+            <button type="button" class="add-btn" id="photoRemoveBtn" style="margin-top:0;display:none;">Remove</button>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" style="display:none;">
+        </div>
+
+        <label for="fName">Full name</label>
+        <input type="text" id="fName" value="Abhay Pratap Singh">
+        <label for="fTitle">Job title / headline</label>
+        <input type="text" id="fTitle" value="Product Designer">
+        <div class="grid2">
+          <div><label for="fEmail">Email</label><input type="email" id="fEmail" value="example@email.com"></div>
+          <div><label for="fPhone">Phone</label><input type="tel" id="fPhone" value="1234567899"></div>
+        </div>
+        <div class="grid2">
+          <div><label for="fLocation">Location</label><input type="text" id="fLocation" value="Jaipur, India"></div>
+          <div><label for="fLink">Website / LinkedIn</label><input type="url" id="fLink" value="linkedin.com/example"></div>
+        </div>
+        <label for="fSummary">Professional summary</label>
+        <textarea id="fSummary">Product designer with 6+ years crafting user-centered digital experiences for fintech and SaaS products. Skilled in end-to-end design systems, rapid prototyping, and cross-functional collaboration.</textarea>
+      </div>
+
+      <div class="panel">
+        <h3>Experience</h3>
+        <div id="expList"></div>
+        <button class="add-btn" id="addExp">+ Add experience</button>
+      </div>
+
+      <div class="panel">
+        <h3>Education</h3>
+        <div id="eduList"></div>
+        <button class="add-btn" id="addEdu">+ Add education</button>
+      </div>
+
+      <div class="panel">
+        <h3>Projects <span style="font-weight:400;color:var(--dim);text-transform:none;letter-spacing:0;font-size:10px;">(optional)</span></h3>
+        <div id="projList"></div>
+        <button class="add-btn" id="addProj">+ Add project</button>
+      </div>
+
+      <div class="panel">
+        <h3>Skills</h3>
+        <label for="fSkills">Comma-separated list</label>
+        <textarea id="fSkills">Figma, User Research, Design Systems, Prototyping, HTML/CSS, Usability Testing, Agile/Scrum</textarea>
+      </div>
+
+      <div class="panel">
+        <h3>Languages <span style="font-weight:400;color:var(--dim);text-transform:none;letter-spacing:0;font-size:10px;">(optional)</span></h3>
+        <label for="fLanguages">Comma-separated list</label>
+        <textarea id="fLanguages">English, Hindi</textarea>
+      </div>
+
+      <div class="panel">
+        <h3>References <span style="font-weight:400;color:var(--dim);text-transform:none;letter-spacing:0;font-size:10px;">(optional)</span></h3>
+        <div id="refList"></div>
+        <button class="add-btn" id="addRef">+ Add reference</button>
+      </div>
+
+      <div class="panel">
+        <div class="actions">
+          <button class="btn-primary" id="downloadBtn">⬇ Download as PDF</button>
+        </div>
+        <div id="downloadStatus" style="margin-top:10px;font-family:monospace;font-size:11px;color:var(--dim);"></div>
+      </div>
+
+    </div>
+
+    <div class="stage">
+      <div class="paper-outer">
+        <div id="resumePaper"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>ABHAY LAB — RUNS ENTIRELY CLIENT-SIDE</span>
+    <span>CLOSE THE TAB AND IT'S GONE</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var paper=document.getElementById('resumePaper');
+  var idc=0;
+  var currentTpl='sans';
+  var photoDataUrl=null;
+
+  function esc(s){
+    var d=document.createElement('div'); d.textContent=s||''; return d.innerHTML;
+  }
+
+  // ---------- Icons ----------
+  function icon(key, extra){
+    var paths={
+      user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
+      phone:'<path d="M6 3h4l2 5-2.5 1.5a11 11 0 005 5L16 12l5 2v4a2 2 0 01-2 2C10 20 4 14 4 5a2 2 0 012-2z"/>',
+      mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+      pin:'<path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/>',
+      globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>',
+      briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>',
+      cap:'<path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/>',
+      star:'<path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.9-6.2 3.9 1.6-7L2 9.5l7.1-.6z"/>',
+      trophy:'<path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 01-10 0V4z"/><path d="M7 5H4v2a3 3 0 003 3M17 5h3v2a3 3 0 01-3 3"/>',
+      chat:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>'
+    };
+    return '<svg width="'+(extra&&extra.size||13)+'" height="'+(extra&&extra.size||13)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(paths[key]||paths.user)+'</svg>';
+  }
+
+  // ---------- Template tabs ----------
+  document.querySelectorAll('.tpl-tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tpl-tab').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      currentTpl=t.dataset.tpl;
+      renderResume();
+    });
+  });
+
+  // ---------- Accent color wheel ----------
+  function setAccent(c){ paper.style.setProperty('--accent',c); }
+
+  function initColorWheel(canvasId, lightnessId, hexId, previewId, initialHex, onChange){
+    var canvas=document.getElementById(canvasId);
+    var ctx=canvas.getContext('2d');
+    var size=canvas.width, cx=size/2, cy=size/2, R=size/2-2;
+    var lightnessInput=document.getElementById(lightnessId);
+    var hexInput=document.getElementById(hexId);
+    var preview=document.getElementById(previewId);
+    var curHue=220, curSat=70, curLight=50;
+
+    function hslToHex(h,s,l){
+      s/=100; l/=100;
+      var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r,g,b;
+      if(h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
+      else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else {r=c;g=0;b=x;}
+      r=Math.round((r+m)*255); g=Math.round((g+m)*255); b=Math.round((b+m)*255);
+      function h2(v){ var s2=v.toString(16); return s2.length<2?'0'+s2:s2; }
+      return '#'+h2(r)+h2(g)+h2(b);
+    }
+    function hexToHsl(hex){
+      hex=hex.replace('#','');
+      var r=parseInt(hex.slice(0,2),16)/255, g=parseInt(hex.slice(2,4),16)/255, b=parseInt(hex.slice(4,6),16)/255;
+      var max=Math.max(r,g,b), min=Math.min(r,g,b), h,s,l=(max+min)/2;
+      if(max===min){ h=0; s=0; } else {
+        var d=max-min; s=l>0.5 ? d/(2-max-min) : d/(max+min);
+        if(max===r) h=(g-b)/d+(g<b?6:0);
+        else if(max===g) h=(b-r)/d+2;
+        else h=(r-g)/d+4;
+        h*=60;
+      }
+      return {h:h,s:s*100,l:l*100};
+    }
+
+    function drawWheel(){
+      var img=ctx.createImageData(size,size);
+      for(var y=0;y<size;y++){
+        for(var x=0;x<size;x++){
+          var dx=x-cx, dy=y-cy, dist=Math.sqrt(dx*dx+dy*dy);
+          var idx=(y*size+x)*4;
+          if(dist>R){ img.data[idx+3]=0; continue; }
+          var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+          var sat=Math.min(100,dist/R*100);
+          var hex=hslToHex(angle,sat,curLight);
+          img.data[idx]=parseInt(hex.slice(1,3),16);
+          img.data[idx+1]=parseInt(hex.slice(3,5),16);
+          img.data[idx+2]=parseInt(hex.slice(5,7),16);
+          img.data[idx+3]=255;
+        }
+      }
+      ctx.putImageData(img,0,0);
+      var rad=curSat/100*R;
+      var mx=cx+rad*Math.cos(curHue*Math.PI/180), my=cy+rad*Math.sin(curHue*Math.PI/180);
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(mx,my,5,0,2*Math.PI); ctx.strokeStyle='#000'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    function apply(hex, silent){
+      preview.style.background=hex;
+      hexInput.value=hex;
+      if(!silent && onChange) onChange(hex);
+    }
+
+    function setFromHex(hex, silent){
+      var hsl=hexToHsl(hex);
+      curHue=hsl.h; curSat=hsl.s; curLight=hsl.l;
+      lightnessInput.value=Math.round(curLight);
+      drawWheel();
+      apply(hex, silent);
+    }
+
+    function pick(e){
+      var rect=canvas.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var x=(clientX-rect.left)*(size/rect.width), y=(clientY-rect.top)*(size/rect.height);
+      var dx=x-cx, dy=y-cy, dist=Math.min(R,Math.sqrt(dx*dx+dy*dy));
+      var angle=Math.atan2(dy,dx)*180/Math.PI; if(angle<0) angle+=360;
+      curHue=angle; curSat=dist/R*100;
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    }
+
+    var dragging=false;
+    canvas.addEventListener('mousedown', function(e){ dragging=true; pick(e); });
+    document.addEventListener('mousemove', function(e){ if(dragging) pick(e); });
+    document.addEventListener('mouseup', function(){ dragging=false; });
+    canvas.addEventListener('touchstart', function(e){ dragging=true; pick(e); e.preventDefault(); }, {passive:false});
+    document.addEventListener('touchmove', function(e){ if(dragging){ pick(e); e.preventDefault(); } }, {passive:false});
+    document.addEventListener('touchend', function(){ dragging=false; });
+
+    lightnessInput.addEventListener('input', function(){
+      curLight=parseInt(this.value);
+      drawWheel();
+      apply(hslToHex(curHue,curSat,curLight));
+    });
+
+    hexInput.addEventListener('change', function(){
+      var v=this.value.trim();
+      if(/^#?[0-9a-fA-F]{6}$/.test(v)){
+        if(v[0]!=='#') v='#'+v;
+        setFromHex(v);
+      }
+    });
+
+    setFromHex(initialHex, true);
+    return { setColor:setFromHex };
+  }
+
+  initColorWheel('accentWheel','accentLightness','accentHex','accentPreview','#2563eb', setAccent);
+
+  // ---------- Photo upload ----------
+  var photoPreview=document.getElementById('photoPreview');
+  var photoUploadBtn=document.getElementById('photoUploadBtn');
+  var photoRemoveBtn=document.getElementById('photoRemoveBtn');
+  var photoInput=document.getElementById('photoInput');
+
+  photoUploadBtn.addEventListener('click',function(){ photoInput.click(); });
+  photoInput.addEventListener('change',function(){
+    var f=this.files[0]; if(!f) return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      photoDataUrl=e.target.result;
+      photoPreview.classList.remove('empty');
+      photoPreview.textContent='';
+      photoPreview.style.backgroundImage='url('+photoDataUrl+')';
+      photoPreview.style.backgroundSize='cover';
+      photoPreview.style.backgroundPosition='center';
+      photoRemoveBtn.style.display='inline-block';
+      renderResume();
+    };
+    reader.readAsDataURL(f);
+    photoInput.value='';
+  });
+  photoRemoveBtn.addEventListener('click',function(){
+    photoDataUrl=null;
+    photoPreview.classList.add('empty');
+    photoPreview.textContent='No photo';
+    photoPreview.style.backgroundImage='';
+    photoRemoveBtn.style.display='none';
+    renderResume();
+  });
+
+  // ---------- Repeatable entry blocks ----------
+  function makeEntry(container, fields, initial){
+    var id='e'+(++idc);
+    var block=document.createElement('div');
+    block.className='entry-block';
+    block.dataset.id=id;
+    var html='<button type="button" class="rm">✕</button>';
+    fields.forEach(function(f){
+      html+='<label>'+f.label+'</label>';
+      if(f.type==='textarea'){
+        html+='<textarea data-k="'+f.key+'">'+(f.value||'')+'</textarea>';
+      } else {
+        html+='<input type="text" data-k="'+f.key+'" value="'+(f.value||'').replace(/"/g,'&quot;')+'">';
+      }
+    });
+    block.innerHTML=html;
+    block.querySelector('.rm').addEventListener('click',function(){
+      block.remove();
+      renderResume();
+    });
+    block.querySelectorAll('input,textarea').forEach(function(el){
+      el.addEventListener('input', renderResume);
+    });
+    container.appendChild(block);
+    return block;
+  }
+
+  function readEntries(container, keys){
+    var out=[];
+    container.querySelectorAll('.entry-block').forEach(function(block){
+      var obj={};
+      keys.forEach(function(k){
+        var el=block.querySelector('[data-k="'+k+'"]');
+        obj[k]=el?el.value:'';
+      });
+      out.push(obj);
+    });
+    return out;
+  }
+
+  var expList=document.getElementById('expList');
+  var eduList=document.getElementById('eduList');
+  var projList=document.getElementById('projList');
+  var refList=document.getElementById('refList');
+
+  document.getElementById('addExp').addEventListener('click',function(){
+    makeEntry(expList,[
+      {key:'role',label:'Role / job title',value:'Senior Product Designer'},
+      {key:'company',label:'Company',value:'Nimbus Labs'},
+      {key:'dates',label:'Dates (e.g. 2022 — Present)',value:'2022 — Present'},
+      {key:'desc',label:'Description (one bullet per line)',type:'textarea',value:'Led redesign of core onboarding flow, lifting activation by 24%\nMentored 2 junior designers and ran weekly critique sessions'}
+    ]);
+    renderResume();
+  });
+  document.getElementById('addEdu').addEventListener('click',function(){
+    makeEntry(eduList,[
+      {key:'degree',label:'Degree / course',value:'B.Des in Communication Design'},
+      {key:'school',label:'Institution',value:'National Institute of Design'},
+      {key:'dates',label:'Dates',value:'2015 — 2019'},
+      {key:'desc',label:'Notes (optional)',type:'textarea',value:''}
+    ]);
+    renderResume();
+  });
+  document.getElementById('addProj').addEventListener('click',function(){
+    makeEntry(projList,[
+      {key:'name',label:'Project name',value:'Fintech Dashboard Redesign'},
+      {key:'link',label:'Link (optional)',value:''},
+      {key:'desc',label:'Description',type:'textarea',value:'Redesigned analytics dashboard used by 40k+ monthly active users, improving task completion time by 30%.'}
+    ]);
+    renderResume();
+  });
+  document.getElementById('addRef').addEventListener('click',function(){
+    makeEntry(refList,[
+      {key:'name',label:'Full name',value:'Harumi Kobayashi'},
+      {key:'role',label:'Role / company',value:'CEO, Wardiere Inc.'},
+      {key:'phone',label:'Phone',value:'123-456-7890'},
+      {key:'email',label:'Email',value:'example@email.com'}
+    ]);
+    renderResume();
+  });
+
+  // seed with example entries
+  makeEntry(expList,[
+    {key:'role',label:'Role / job title',value:'Senior Product Designer'},
+    {key:'company',label:'Company',value:'Nimbus Labs'},
+    {key:'dates',label:'Dates (e.g. 2022 — Present)',value:'2022 — Present'},
+    {key:'desc',label:'Description (one bullet per line)',type:'textarea',value:'Led redesign of core onboarding flow, lifting activation by 24%\nMentored 2 junior designers and ran weekly critique sessions'}
+  ]);
+  makeEntry(expList,[
+    {key:'role',label:'Role / job title',value:'Product Designer'},
+    {key:'company',label:'Company',value:'Orbit Fintech'},
+    {key:'dates',label:'Dates',value:'2019 — 2022'},
+    {key:'desc',label:'Description (one bullet per line)',type:'textarea',value:'Owned design system adopted across 5 product squads\nShipped mobile app redesign that cut support tickets by 18%'}
+  ]);
+  makeEntry(eduList,[
+    {key:'degree',label:'Degree / course',value:'B.Des in Communication Design'},
+    {key:'school',label:'Institution',value:'National Institute of Design'},
+    {key:'dates',label:'Dates',value:'2015 — 2019'},
+    {key:'desc',label:'Notes (optional)',type:'textarea',value:''}
+  ]);
+  makeEntry(refList,[
+    {key:'name',label:'Full name',value:'Harumi Kobayashi'},
+    {key:'role',label:'Role / company',value:'CEO, Wardiere Inc.'},
+    {key:'phone',label:'Phone',value:'123-456-7890'},
+    {key:'email',label:'Email',value:'example@email.com'}
+  ]);
+
+  // ---------- Personal fields ----------
+  ['fName','fTitle','fEmail','fPhone','fLocation','fLink','fSummary','fSkills','fLanguages'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', renderResume);
+  });
+
+  // ---------- Shared HTML builders ----------
+  function sectionHTML(title, inner, iconKey){
+    if(!inner) return '';
+    var titleHtml = iconKey
+      ? '<div class="rp-section-title rp-icon-title"><span class="rp-icon-badge">'+icon(iconKey,{size:12})+'</span><span>'+esc(title)+'</span></div>'
+      : '<div class="rp-section-title">'+esc(title)+'</div>';
+    return '<div class="rp-section">'+titleHtml+inner+'</div>';
+  }
+  function photoHTML(initials, cls, phCls){
+    cls = cls || 'rp-photo'; phCls = phCls || 'rp-photo-ph';
+    if(photoDataUrl) return '<img class="'+cls+'" src="'+photoDataUrl+'" alt="">';
+    return '<div class="'+phCls+'">'+esc(initials)+'</div>';
+  }
+  function expItemsHTML(exp){
+    if(!exp.length) return '';
+    return exp.map(function(e){
+      return '<div class="rp-item">'
+        +'<div class="rp-item-top"><span class="rp-item-title">'+esc(e.role)+(e.company?' — '+esc(e.company):'')+'</span><span class="rp-item-date">'+esc(e.dates)+'</span></div>'
+        +(e.desc?'<div class="rp-item-desc">'+esc(e.desc).replace(/\n/g,'<br>')+'</div>':'')
+        +'</div>';
+    }).join('');
+  }
+  function eduItemsHTML(edu){
+    if(!edu.length) return '';
+    return edu.map(function(e){
+      return '<div class="rp-item">'
+        +'<div class="rp-item-top"><span class="rp-item-title">'+esc(e.degree)+'</span><span class="rp-item-date">'+esc(e.dates)+'</span></div>'
+        +(e.school?'<div class="rp-item-sub">'+esc(e.school)+'</div>':'')
+        +(e.desc?'<div class="rp-item-desc">'+esc(e.desc).replace(/\n/g,'<br>')+'</div>':'')
+        +'</div>';
+    }).join('');
+  }
+  function projItemsHTML(proj){
+    if(!proj.length) return '';
+    return proj.map(function(p){
+      return '<div class="rp-item">'
+        +'<div class="rp-item-top"><span class="rp-item-title">'+esc(p.name)+'</span>'+(p.link?'<span class="rp-item-date">'+esc(p.link)+'</span>':'')+'</div>'
+        +(p.desc?'<div class="rp-item-desc">'+esc(p.desc).replace(/\n/g,'<br>')+'</div>':'')
+        +'</div>';
+    }).join('');
+  }
+  // date-left variant (Rounded Dark template) — works for exp or edu entries
+  function itemsDateLeftHTML(items, titleKey, subKey){
+    if(!items.length) return '';
+    return items.map(function(it){
+      return '<div class="rp-item-dl">'
+        +'<div class="rp-item-dl-date">'+esc(it.dates)+'</div>'
+        +'<div class="rp-item-dl-body"><div class="rp-item-title">'+esc(it[titleKey])+'</div>'
+        +(it[subKey]?'<div class="rp-item-sub">'+esc(it[subKey])+'</div>':'')
+        +(it.desc?'<div class="rp-item-desc">'+esc(it.desc).replace(/\n/g,'<br>')+'</div>':'')
+        +'</div></div>';
+    }).join('');
+  }
+  function skillsHTML(skills){
+    if(!skills.length) return '';
+    return '<div class="rp-skills">'+skills.map(function(s){ return '<span class="rp-skill-chip">'+esc(s)+'</span>'; }).join('')+'</div>';
+  }
+  function skillsDotHTML(skills){
+    if(!skills.length) return '';
+    return '<div class="rp-skills-list">'+skills.map(function(s){ return '<div class="rp-skill-dot">'+esc(s)+'</div>'; }).join('')+'</div>';
+  }
+  function langListHTML(languages){
+    if(!languages.length) return '';
+    return '<div class="rp-lang-list">'+languages.map(function(l){ return '<div>'+esc(l)+'</div>'; }).join('')+'</div>';
+  }
+  function langInlineHTML(languages){
+    if(!languages.length) return '';
+    return '<div class="rp-lang-list">'+languages.map(function(l){ return '<span>'+esc(l)+'</span>'; }).join('')+'</div>';
+  }
+  function contactsListHTML(contacts){
+    if(!contacts.length) return '';
+    return '<div class="rp-contact-list">'+contacts.map(function(c){ return '<div>'+esc(c.value)+'</div>'; }).join('')+'</div>';
+  }
+  function contactsIconHTML(contacts){
+    if(!contacts.length) return '';
+    return '<div class="rp-contact-list">'+contacts.map(function(c){ return '<div class="rp-contact-row">'+icon(c.type||'globe')+'<span>'+esc(c.value)+'</span></div>'; }).join('')+'</div>';
+  }
+  function contactsLabeledHTML(contacts){
+    if(!contacts.length) return '';
+    return '<div class="rp-contact-list">'+contacts.map(function(c){ return '<div><div class="rp-contact-block-label">'+esc(c.label||'')+'</div>'+esc(c.value)+'</div>'; }).join('')+'</div>';
+  }
+  function contactsInlineHTML(contacts){
+    if(!contacts.length) return '';
+    return '<div class="rp-contacts">'+contacts.map(function(c){ return '<span>'+esc(c.value)+'</span>'; }).join('<span>·</span>')+'</div>';
+  }
+  function refHTML(references, grid){
+    if(!references.length) return '';
+    var inner=references.map(function(r){
+      return '<div class="rp-item">'
+        +(r.name?'<div class="rp-item-title">'+esc(r.name)+'</div>':'')
+        +(r.role?'<div class="rp-item-sub">'+esc(r.role)+'</div>':'')
+        +(r.phone?'<div class="rp-item-sub">Phone: '+esc(r.phone)+'</div>':'')
+        +(r.email?'<div class="rp-item-sub">Email: '+esc(r.email)+'</div>':'')
+        +'</div>';
+    }).join('');
+    return '<div class="'+(grid?'rp-ref-grid':'rp-ref-list')+'">'+inner+'</div>';
+  }
+
+  function gatherData(){
+    var name=document.getElementById('fName').value.trim() || 'Your Name';
+    var title=document.getElementById('fTitle').value.trim();
+    var contacts=[];
+    var contactFields=[
+      {id:'fEmail',type:'mail',label:'Email'},
+      {id:'fPhone',type:'phone',label:'Phone'},
+      {id:'fLocation',type:'pin',label:'Address'},
+      {id:'fLink',type:'globe',label:'Website'}
+    ];
+    contactFields.forEach(function(f){
+      var v=document.getElementById(f.id).value.trim();
+      if(v) contacts.push({value:v,type:f.type,label:f.label});
+    });
+    var summary=document.getElementById('fSummary').value.trim();
+    var exp=readEntries(expList,['role','company','dates','desc']);
+    var edu=readEntries(eduList,['degree','school','dates','desc']);
+    var proj=readEntries(projList,['name','link','desc']);
+    var refs=readEntries(refList,['name','role','phone','email']);
+    var skills=document.getElementById('fSkills').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    var languages=document.getElementById('fLanguages').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    var initials=name.split(/\s+/).filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase();}).join('') || 'AB';
+    return {name:name,title:title,contacts:contacts,summary:summary,exp:exp,edu:edu,proj:proj,references:refs,skills:skills,languages:languages,initials:initials};
+  }
+
+  // ================= Template renderers =================
+
+  function renderSans(d){
+    return '<div class="tpl-sans">'
+      +'<div class="rp-header"><div class="rp-name">'+esc(d.name)+'</div>'
+      +(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')
+      +contactsInlineHTML(d.contacts)
+      +'</div>'
+      +sectionHTML('Summary', d.summary?'<div class="rp-summary">'+esc(d.summary)+'</div>':'')
+      +sectionHTML('Experience', expItemsHTML(d.exp))
+      +sectionHTML('Education', eduItemsHTML(d.edu))
+      +sectionHTML('Projects', projItemsHTML(d.proj))
+      +sectionHTML('Skills', skillsHTML(d.skills))
+      +sectionHTML('Languages', langInlineHTML(d.languages))
+      +sectionHTML('References', refHTML(d.references))
+      +'</div>';
+  }
+
+  // TEMPLATE: Navy Banner (Richard Sanchez ref)
+  function renderNavy(d){
+    var navband='<div class="rp-navband">'
+      +photoHTML(d.initials,'rp-navphoto','rp-navphoto-ph')
+      +'<div class="rp-navheader"><div class="rp-name">'+esc(d.name)+'</div>'+(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')+'</div>'
+      +'</div>';
+    var side=sectionHTML('Contact', contactsIconHTML(d.contacts))
+      +sectionHTML('Skills', skillsDotHTML(d.skills))
+      +sectionHTML('Languages', langListHTML(d.languages))
+      +sectionHTML('Reference', refHTML(d.references));
+    var main=sectionHTML('Profile', d.summary?'<div class="rp-summary">'+esc(d.summary)+'</div>':'', 'user')
+      +sectionHTML('Work Experience', expItemsHTML(d.exp), 'briefcase')
+      +sectionHTML('Education', eduItemsHTML(d.edu), 'cap');
+    return '<div class="tpl-navy">'+navband+'<div class="rp-body"><div class="rp-side">'+side+'</div><div class="rp-main">'+main+'</div></div></div>';
+  }
+
+  // TEMPLATE: Diagonal Blue (Lorna Alvarado ref)
+  function renderDiag(d){
+    var side=photoHTML(d.initials)
+      +'<div class="rp-name">'+esc(d.name)+'</div>'+(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')
+      +sectionHTML('Contact', contactsIconHTML(d.contacts))
+      +sectionHTML('About Me', d.summary?'<div class="rp-summary">'+esc(d.summary)+'</div>':'')
+      +sectionHTML('Skills', skillsDotHTML(d.skills));
+    var main=sectionHTML('Education', eduItemsHTML(d.edu), 'cap')
+      +sectionHTML('Experience', '<div class="rp-timeline">'+expItemsHTML(d.exp)+'</div>', 'briefcase')
+      +sectionHTML('References', refHTML(d.references, true));
+    return '<div class="tpl-diag"><div class="rp-side">'+side+'</div><div class="rp-main">'+main+'</div></div>';
+  }
+
+  // TEMPLATE: Rounded Dark (Isabel Mercado ref)
+  function renderRounded(d){
+    var side=photoHTML(d.initials)
+      +sectionHTML('Contact', contactsLabeledHTML(d.contacts))
+      +sectionHTML('Expertise', skillsDotHTML(d.skills))
+      +sectionHTML('Language', langListHTML(d.languages))
+      +sectionHTML('Awards', refHTML(d.references));
+    var main='<div class="rp-header"><div class="rp-name">'+esc(d.name)+'</div>'+(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')+'</div>'
+      +sectionHTML('Experience', itemsDateLeftHTML(d.exp,'role','company'))
+      +sectionHTML('Education', itemsDateLeftHTML(d.edu,'degree','school'))
+      +sectionHTML('References', refHTML(d.references, true));
+    return '<div class="tpl-rounded"><div class="rp-inner"><div class="rp-side">'+side+'</div><div class="rp-main">'+main+'</div></div></div>';
+  }
+
+  // TEMPLATE: Blue Band (Donna Stroupe ref)
+  function renderBand(d){
+    var topband=photoHTML(d.initials)+'<div><div class="rp-name">'+esc(d.name)+'</div>'+(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')+'</div>';
+    var side=sectionHTML('Contact', contactsIconHTML(d.contacts))
+      +sectionHTML('Education', eduItemsHTML(d.edu))
+      +sectionHTML('Skills', skillsDotHTML(d.skills))
+      +sectionHTML('Language', langListHTML(d.languages));
+    var main=sectionHTML('About Me', d.summary?'<div class="rp-summary">'+esc(d.summary)+'</div>':'')
+      +sectionHTML('Work Experience', expItemsHTML(d.exp))
+      +sectionHTML('References', refHTML(d.references, true));
+    return '<div class="tpl-band"><div class="rp-topband">'+topband+'</div><div class="rp-body"><div class="rp-side">'+side+'</div><div class="rp-main">'+main+'</div></div></div>';
+  }
+
+  // TEMPLATE: Dark Timeline (Isabel Schumacher ref)
+  function renderDTimeline(d){
+    var side=photoHTML(d.initials)
+      +sectionHTML('About Me', d.summary?'<div class="rp-summary">'+esc(d.summary)+'</div>':'', 'user')
+      +sectionHTML('Contact', contactsIconHTML(d.contacts), 'phone')
+      +sectionHTML('Skills', skillsDotHTML(d.skills), 'star')
+      +sectionHTML('Language', langListHTML(d.languages), 'globe');
+    var main='<div class="rp-header"><div class="rp-name">'+esc(d.name)+'</div>'+(d.title?'<div class="rp-title">'+esc(d.title)+'</div>':'')+'</div>'
+      +sectionHTML('Education', d.edu.length?'<div class="rp-timeline dotted">'+eduItemsHTML(d.edu)+'</div>':'', 'cap')
+      +sectionHTML('Experience', d.exp.length?'<div class="rp-timeline dotted">'+expItemsHTML(d.exp)+'</div>':'', 'briefcase')
+      +sectionHTML('References', refHTML(d.references, true));
+    return '<div class="tpl-dtimeline"><div class="rp-inner"><div class="rp-side">'+side+'</div><div class="rp-main">'+main+'</div></div></div>';
+  }
+
+  function renderResume(){
+    var d=gatherData();
+    var html;
+    switch(currentTpl){
+      case 'navy': html=renderNavy(d); break;
+      case 'diag': html=renderDiag(d); break;
+      case 'rounded': html=renderRounded(d); break;
+      case 'band': html=renderBand(d); break;
+      case 'dtimeline': html=renderDTimeline(d); break;
+      default: html=renderSans(d);
+    }
+    paper.innerHTML=html;
+  }
+
+  document.getElementById('downloadBtn').addEventListener('click',function(){
+    var btn=this;
+    var statusEl=document.getElementById('downloadStatus');
+    if(!window.html2canvas || !window.jspdf){
+      statusEl.textContent='PDF engine failed to load — check your connection and try again.';
+      return;
+    }
+    btn.disabled=true;
+    var origText=btn.textContent;
+    btn.textContent='Rendering…';
+    statusEl.textContent='Rendering your resume…';
+
+    html2canvas(paper, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: paper.scrollWidth,
+      windowHeight: paper.scrollHeight
+    }).then(function(canvas){
+      statusEl.textContent='Building PDF…';
+      var imgData = canvas.toDataURL('image/jpeg', 0.97);
+      var jsPDF = window.jspdf.jsPDF;
+      var pdf = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+      var pageW = pdf.internal.pageSize.getWidth();
+      var pageH = pdf.internal.pageSize.getHeight();
+      var imgH = pageW * (canvas.height / canvas.width);
+
+      if(imgH <= pageH){
+        pdf.addImage(imgData, 'JPEG', 0, 0, pageW, imgH);
+      } else {
+        // taller than one page: slice the canvas across multiple pages
+        var pxPerPage = Math.floor(canvas.width * (pageH / pageW));
+        var totalPages = Math.ceil(canvas.height / pxPerPage);
+        for(var p=0; p<totalPages; p++){
+          var sliceCanvas=document.createElement('canvas');
+          sliceCanvas.width=canvas.width;
+          sliceCanvas.height=Math.min(pxPerPage, canvas.height - p*pxPerPage);
+          var ctx=sliceCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, p*pxPerPage, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
+          var sliceImg=sliceCanvas.toDataURL('image/jpeg', 0.97);
+          var sliceH=pageW * (sliceCanvas.height / canvas.width);
+          if(p>0) pdf.addPage();
+          pdf.addImage(sliceImg, 'JPEG', 0, 0, pageW, sliceH);
+        }
+      }
+
+      var fileName=(document.getElementById('fName').value.trim()||'resume').replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').toLowerCase()||'resume';
+      pdf.save(fileName+'.pdf');
+      statusEl.textContent='✓ Downloaded '+fileName+'.pdf';
+      btn.disabled=false;
+      btn.textContent=origText;
+    }).catch(function(err){
+      statusEl.textContent='Something went wrong generating the PDF. Please try again.';
+      btn.disabled=false;
+      btn.textContent=origText;
+    });
+  });
+
+  renderResume();
+})();
+</script>
+
+<div style="max-width:1320px;margin:12px auto 0;padding:0 16px 30px;text-align:center;font-family:monospace;font-size:10px;color:#5b5f70;line-height:1.7;">&copy; 2026 AbhayLab. All rights reserved. The design, code, graphics, and original content on this website are protected by copyright. Unauthorized copying, redistribution, or commercial use without permission is prohibited.</div>
+</body>
+</html>
